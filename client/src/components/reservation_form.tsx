@@ -1,7 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, makeStyles, Theme, createStyles, Grid, Typography } from "@material-ui/core";
 import TextComponent from "./form_elements/text-component";
 import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
+import {
+   getFirebaseElementAsync,
+   getFirebaseElementsAsync,
+   findFirebaseElementAsync,
+   getFirebaseKey,
+} from "Firebase/Firebase.Utils";
+import { ICompany } from "Firebase/Interfaces/Database";
+import { Nullable } from "Interfaces/Common";
 
 export interface FormProps {
    id?: string;
@@ -48,8 +56,20 @@ const Reservation_Form = (props: FormProps) => {
    const [montant, setMontant] = useState<number>();
    const [isBancontact, setIsBancontact] = useState<boolean>(false);
 
+   let ref: Nullable<string>;
+   useEffect(() => {
+      const getData = async () => {
+         const res = await findFirebaseElementAsync<ICompany>("Companies", "Name", "MMDA");
+         if (res) ref = getFirebaseKey(res);
+      };
+
+      getData();
+   }, []);
    return (
       <Box paddingX="100px" paddingY="20px" height="100%">
+         <button type="button" onClick={() => console.log(ref)}>
+            Show me
+         </button>
          <Grid container alignItems="center" justify="space-evenly">
             <Grid item xs={12}>
                <Typography variant="h4">Client</Typography>
