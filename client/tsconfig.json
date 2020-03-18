@@ -1,13 +1,13 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "module": "esnext",
+    "module": "ESNext",
     "moduleResolution": "node",
-    "target": "es6",
+    "target": "ES6",
     "sourceMap": true,
     "noImplicitAny": true,
     "jsx": "react",
-    "outDir": "built",
+    "outDir": "./dist/",
     "allowJs": true,
     "charset": "utf-8",
     "skipLibCheck": true,
@@ -39,15 +39,10 @@
   },
   "include": [
     "./src/**/*",
-    "node_modules/eslint-plugin-react/lib/types.d.ts"
+    "node_modules/eslint-plugin-react/lib/types.d.ts",
+    "webpack.config.js"
   ],
   "exclude": [
-    "node_modules",
-    "wwwroot",
-    "lib",
-    "__tests__",
-    "tests",
-    "**/*.test.ts",
-    "**/*.spec.ts"
+    "node_modules"
   ]
 }
