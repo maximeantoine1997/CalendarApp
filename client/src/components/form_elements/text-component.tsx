@@ -2,6 +2,7 @@ import React, { useEffect, useState, FunctionComponent, ReactElement } from "rea
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { Box } from "@material-ui/core";
+import { getFirebaseElementAsync } from "Firebase/Firebase.Utils";
 
 interface TextProps {
    placeholder: string;
@@ -17,17 +18,15 @@ const TextComponent: FunctionComponent<TextProps> = ({ placeholder, options = []
       }
    };
 
+   let ref: string;
    useEffect(() => {
-      const getInitData = () => {
-         try {
-         } catch (error) {
-            throw new Error(error);
-         }
+      const getData = async () => {
+         const res = await getFirebaseElementAsync("Users/1");
+         ref = res;
       };
-      getInitData();
-   }, []);
 
-   console.log("I'm rendering...");
+      getData();
+   }, []);
 
    return (
       <Box width="75%">
