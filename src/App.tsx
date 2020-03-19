@@ -1,9 +1,11 @@
 import React from "react";
-import Reservation_Form from "./components/reservation_form";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import { AppBar, Toolbar, IconButton, Typography, makeStyles, Theme, createStyles } from "@material-ui/core";
+import { AppBar, Toolbar, makeStyles, Theme, createStyles } from "@material-ui/core";
 import * as firebase from "firebase/app";
 import "firebase/database";
+import ReservationPage from "pages/ReservationPage";
+import CalendarPage from "pages/CalendarPage";
+import HomePage from "pages/HomePage";
 
 const firebaseConfig = {
    apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -70,13 +72,13 @@ const App: React.FC = () => {
          </AppBar>
          <Switch>
             <Route path="/reservation">
-               <Reservation_Form />
+               <ReservationPage />
             </Route>
             <Route path="/calendrier">
-               <>CALENDRIER</>
+               <CalendarPage />
             </Route>
             <Route path="/">
-               <>HOME</>
+               <HomePage />
             </Route>
          </Switch>
       </Router>
