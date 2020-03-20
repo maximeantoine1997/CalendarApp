@@ -1,7 +1,6 @@
 import * as firebase from "firebase/app";
 import "firebase/database";
 import { Nullable } from "Interfaces/Common";
-import { isArray } from "util";
 
 export const getFirebaseElementAsync = async (url: string): Promise<string> => {
    let res: string = "";
@@ -16,15 +15,16 @@ export const getFirebaseElementAsync = async (url: string): Promise<string> => {
    return res;
 };
 
-export const getFirebaseElementsAsync = async (url: string): Promise<Array<string>> => {
-   const res: Array<string> = [];
+export const getFirebaseElementsAsync = async (url: string): Promise<Array<any>> => {
+   const res: Array<any> = [];
    await firebase
       .database()
       .ref(url)
       .once("value")
       .then(snapshot => {
-         const values: Array<string> = snapshot.val();
-         values.forEach(value => {
+         const obj: Object = snapshot.val();
+
+         Object.values(obj).forEach(value => {
             if (value) res.push(value);
          });
       });
