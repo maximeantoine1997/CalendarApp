@@ -1,30 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { Box, makeStyles, Theme, createStyles, Grid, Typography } from "@material-ui/core";
-import TextComponent from "./form_elements/text-component";
+import React, { useRef, MutableRefObject } from "react";
+import { Box, Grid, Typography } from "@material-ui/core";
+import TextComponent from "./FormElements/TextComponent";
 import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
-import {
-   getFirebaseElementAsync,
-   getFirebaseElementsAsync,
-   findFirebaseElementAsync,
-   getFirebaseKey,
-} from "Firebase/Firebase.Utils";
-import { ICompany } from "Firebase/Interfaces/Database";
-import { Nullable } from "Interfaces/Common";
+import DateComponent from "components/FormElements/DateComponent";
+import EuroComponent from "components/FormElements/EuroComponent";
+import CheckBoxComponent from "components/FormElements/CheckboxComponent";
 
 export interface FormProps {
    id?: string;
 }
-
-const useStyles = makeStyles((theme: Theme) =>
-   createStyles({
-      root: {
-         "& > *": {
-            margin: theme.spacing(1),
-            width: 200,
-         },
-      },
-   })
-);
 
 interface Reservation {
    societe: string;
@@ -40,55 +24,97 @@ interface Reservation {
    isBancontact?: boolean;
 }
 
-const Reservation_Form = (props: FormProps) => {
-   const classes = useStyles();
+const ReservationForm = (props: FormProps) => {
+   // const classes = useStyles();
 
-   const [prenom, setPrenom] = useState<string>();
-   const [nom, setNom] = useState<string>();
-   const [societe, setSociete] = useState<string>();
-   const [modele, setModele] = useState<string>();
-   const [accessoires, setAccessoires] = useState<Array<string>>();
-   const [gsm, setGsm] = useState<string>();
-   const [email, setEmail] = useState<string>();
-   const [address, setAddress] = useState<string>();
-   const [startDate, setStartDate] = useState<MaterialUiPickersDate>();
-   const [endDate, setEndDate] = useState<MaterialUiPickersDate>();
-   const [montant, setMontant] = useState<number>();
-   const [isBancontact, setIsBancontact] = useState<boolean>(false);
+   const prenom = useRef<string>("");
+   const nom = useRef<string>("");
+   const societe = useRef<string>("");
+   const modele = useRef<string>("");
+   const accessoires = useRef<Array<string>>([]);
+   const gsm = useRef<string>("");
+   const email = useRef<string>("");
+   const address = useRef<string>("");
+   const startDate = useRef<MaterialUiPickersDate>();
+   const endDate = useRef<MaterialUiPickersDate>();
+   const montant = useRef<number>();
+   const isBancontact = useRef<boolean>(false);
+   const isReceived = useRef<boolean>(false);
 
-   let ref: Nullable<string>;
-   useEffect(() => {
-      const getData = async () => {
-         const res = await findFirebaseElementAsync<ICompany>("Companies", "Name", "MMDA");
-         if (res) ref = getFirebaseKey(res);
-      };
+   const onChange = (ref: MutableRefObject<any>, newValue: any) => {
+      ref.current = newValue;
+   };
 
-      getData();
-   }, []);
    return (
-      <Box paddingX="100px" paddingY="20px" height="100%">
-         <button type="button" onClick={() => console.log(ref)}>
-            Show me
-         </button>
-         <Grid container alignItems="center" justify="space-evenly">
+      <Box
+         width="70%"
+         paddingX="5%"
+         paddingY="2%"
+         marginX="10%"
+         border="1px solid black"
+         borderRadius="25px"
+         alignContent="center"
+         bgcolor="#5D5C61"
+      >
+         <Grid container xs={12}>
+            <Grid item xs={6}>
+               <Typography variant="h4">Machine</Typography>
+            </Grid>
+            <Grid item xs={6}>
+               <Typography variant="h4">Info</Typography>
+            </Grid>
+            <Grid item xs={6}>
+               <TextComponent placeholder="Modèle" onChange={e => onChange(modele, e)} />
+            </Grid>
+            <Grid item xs={6}>
+               <EuroComponent placeholder="Montant" onChange={e => onChange(montant, e)} />
+            </Grid>
+            <Grid item xs={6}>
+               <TextComponent placeholder="Accessoires" onChange={e => onChange(accessoires, e)} multiple />
+            </Grid>
+            <Grid item xs={6}>
+               <CheckBoxComponent placeholder="Par Bancontact" onChange={e => onChange(isBancontact, e)} />
+               <CheckBoxComponent placeholder="Reçu" onChange={e => onChange(isReceived, e)} />
+            </Grid>
+            <Grid item xs={12}>
+               <Typography variant="h4">Chantier</Typography>
+            </Grid>
+            <Grid item xs={6}>
+               <TextComponent
+                  placeholder="Société"
+                  onChange={e => onChange(societe, e)}
+                  url="Companies"
+                  sortBy="Name"
+               />
+            </Grid>
+            <Grid item xs={12}>
+               <TextComponent placeholder="Adresse" onChange={e => onChange(address, e)} />
+            </Grid>
+            <Grid item xs={6}>
+               <DateComponent placeholder="Début" onChange={e => onChange(startDate, e)} />
+            </Grid>
+            <Grid item xs={6}>
+               <DateComponent placeholder="Fin" onChange={e => onChange(endDate, e)} />
+            </Grid>
+
             <Grid item xs={12}>
                <Typography variant="h4">Client</Typography>
             </Grid>
             <Grid item xs={6}>
-               <TextComponent placeholder="Nom" onChange={e => setNom(e)} />
+               <TextComponent placeholder="Nom" onChange={e => onChange(nom, e)} />
             </Grid>
             <Grid item xs={6}>
-               <TextComponent placeholder="Prénom" onChange={e => setPrenom(e)} />
+               <TextComponent placeholder="Prénom" onChange={e => onChange(prenom, e)} />
             </Grid>
             <Grid item xs={6}>
-               <TextComponent placeholder="Prénom" onChange={e => setSociete(e)} />
+               <TextComponent placeholder="Téléphone" onChange={e => onChange(gsm, e)} />
             </Grid>
             <Grid item xs={6}>
-               <TextComponent placeholder="Prénom" onChange={e => setSociete(e)} />
+               <TextComponent placeholder="Email" onChange={e => onChange(email, e)} />
             </Grid>
          </Grid>
       </Box>
    );
 };
 
-export default Reservation_Form;
+export default ReservationForm;
