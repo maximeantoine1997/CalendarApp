@@ -5,10 +5,9 @@
    "version": "0.2.0",
    "configurations": [
       {
-         "type": "edge",
-         "version": "stable",
+         "type": "chrome",
          "request": "launch",
-         "name": "Lancer Edge en utilisant localhost",
+         "name": "Launch Chrome",
          "url": "http://localhost:3000",
          "webRoot": "${workspaceFolder}"
       }
