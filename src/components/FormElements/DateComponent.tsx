@@ -14,7 +14,7 @@ interface DateProps {
 }
 
 const DateComponent: FunctionComponent<DateProps> = ({ onChange: onChange_, placeholder }) => {
-   const [selectedDate, handleDateChange] = useState<MaterialUiPickersDate>();
+   const [selectedDate, handleDateChange] = useState<MaterialUiPickersDate>(moment());
 
    const onChange = (date: MaterialUiPickersDate) => {
       handleDateChange(date);
@@ -23,12 +23,11 @@ const DateComponent: FunctionComponent<DateProps> = ({ onChange: onChange_, plac
 
    return (
       <Box paddingY="10px" width="100%">
-         <MuiPickersUtilsProvider utils={MomentUtils}>
+         <MuiPickersUtilsProvider utils={MomentUtils} locale="fr">
             <KeyboardDatePicker
-               autoOk
-               format="LL"
                disableToolbar
-               variant="inline"
+               variant="dialog"
+               format="DD/MM/YYYY"
                margin="normal"
                label={placeholder}
                value={selectedDate}
