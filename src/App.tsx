@@ -1,12 +1,26 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import { AppBar, Toolbar, makeStyles, Theme, createStyles } from "@material-ui/core";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { makeStyles, Theme, createStyles, Box, Grid } from "@material-ui/core";
 import * as firebase from "firebase/app";
 import "firebase/database";
 import ReservationPage from "pages/ReservationPage";
 import CalendarPage from "pages/CalendarPage";
 import HomePage from "pages/HomePage";
+import SideBar from "components/Sidebar";
+import AddButton from "components/AddButton";
 
+const useStyles = makeStyles((theme: Theme) =>
+   createStyles({
+      menu: {
+         height: "5vh",
+      },
+      content: {
+         minHeight: "95vh",
+      },
+   })
+);
+
+// #region Firebase
 const firebaseConfig = {
    apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
    authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -19,68 +33,33 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-const useStyles = makeStyles((theme: Theme) =>
-   createStyles({
-      links: {
-         flexGrow: 1,
-         flexDirection: "row",
-         alignContent: "end",
-      },
-      link: {
-         "color": "black",
-         "padding": "25px",
-         "font": "Roboto",
-         "fontSize": "20px",
-         "textDecoration": "none",
-         "&:hover": {
-            color: "grey",
-            transition: "0.2s",
-         },
-      },
-      logo: {
-         "color": "black",
-         "fontWeight": "bold",
-         "padding": "25px",
-         "font": "Roboto",
-         "fontSize": "20px",
-         "textDecoration": "none",
-         "&:hover": {
-            color: "grey",
-            transition: "0.2s",
-         },
-      },
-   })
-);
+// #endregion
 
 const App: React.FC = () => {
    const classes = useStyles();
 
    return (
       <Router>
-         <AppBar position="static" color="inherit">
-            <Toolbar>
-               <Link to="/" className={classes.logo}>
-                  Antoine SPRL
-               </Link>
-               <Link to="/calendrier" className={classes.link}>
-                  Calendrier
-               </Link>
-               <Link to="/reservation" className={classes.link}>
-                  Reservation
-               </Link>
-            </Toolbar>
-         </AppBar>
-         <Switch>
-            <Route path="/reservation">
-               <ReservationPage />
-            </Route>
-            <Route path="/calendrier">
-               <CalendarPage />
-            </Route>
-            <Route path="/">
-               <HomePage />
-            </Route>
-         </Switch>
+         <Grid container xs={12}>
+            <Grid item xs={12} className={classes.menu}>
+               <SideBar />
+            </Grid>
+            <Grid item xs={12} className={classes.content}>
+               <AddButton>
+                  <Switch>
+                     <Route path="/reservation">
+                        <ReservationPage />
+                     </Route>
+                     <Route path="/calendrier">
+                        <CalendarPage />
+                     </Route>
+                     <Route path="/">
+                        <HomePage />
+                     </Route>
+                  </Switch>
+               </AddButton>
+            </Grid>
+         </Grid>
       </Router>
    );
 };
