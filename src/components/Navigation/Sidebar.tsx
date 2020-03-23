@@ -13,13 +13,15 @@ import {
    Toolbar,
    IconButton,
 } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useState, ReactElement } from "react";
 import { Link } from "react-router-dom";
 import EventNoteIcon from "@material-ui/icons/EventNote";
 import AddIcon from "@material-ui/icons/Add";
 import MenuIcon from "@material-ui/icons/Menu";
 import CloseIcon from "@material-ui/icons/Close";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import Authentification from "components/Navigation/Authentification";
+import useUserContext from "Contexts/UserContext";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -57,11 +59,33 @@ const useStyles = makeStyles((theme: Theme) =>
 const SideBar: React.FC = () => {
    const classes = useStyles();
 
-   const [isOpen, setIsOpen] = useState<boolean>(false);
+   const { user } = useUserContext();
+
+   const [isOpenDrawer, setIsOpenDrawer] = useState<boolean>(false);
+   const [isOpenAuth, setIsOpenAuth] = useState<boolean>(false);
 
    const toggleDrawer = (value: boolean) => {
-      setIsOpen(value);
+      setIsOpenDrawer(value);
    };
+
+   const toggleAuth = (value: boolean) => {
+      setIsOpenAuth(value);
+   };
+
+   const loginRender: ReactElement = user ? (
+      <Typography variant="h6">{user.email}</Typography>
+   ) : (
+      <Button
+         color="inherit"
+         onClick={() => {
+            toggleAuth(true);
+            console.log(user);
+         }}
+      >
+         Se Connecter
+      </Button>
+   );
+
    return (
       <>
          <AppBar position="sticky" className={classes.nav}>
@@ -78,10 +102,10 @@ const SideBar: React.FC = () => {
                <Typography variant="h6" className={classes.title}>
                   Calendrier Antoine SPRL
                </Typography>
-               <Button color="inherit">Login</Button>
+               {loginRender}
             </Toolbar>
          </AppBar>
-         <Drawer anchor="left" open={isOpen} onClose={() => toggleDrawer(false)}>
+         <Drawer anchor="left" open={isOpenDrawer} onClose={() => toggleDrawer(false)}>
             <Button onClick={() => toggleDrawer(false)}>
                <CloseIcon fontSize="large" />
                <Typography variant="h6" className={classes.buttonText}>
@@ -121,6 +145,7 @@ const SideBar: React.FC = () => {
                </Link>
             </List>
          </Drawer>
+         <Authentification onToggle={toggleAuth} open={isOpenAuth} />
       </>
    );
 };
