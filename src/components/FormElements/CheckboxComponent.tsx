@@ -18,7 +18,7 @@ const CheckBoxComponent: FunctionComponent<EuroProps> = ({ placeholder, onChange
    return (
       <Box width="100%">
          <FormControlLabel
-            control={<Switch checked={checked} onChange={onCheck} name="Bancontact" color="secondary" />}
+            control={<Switch checked={checked} onChange={onCheck} name="Bancontact" color="primary" />}
             label={<Typography variant="h6">{placeholder}</Typography>}
             labelPlacement="start"
          />
