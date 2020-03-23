@@ -2,6 +2,7 @@ import * as firebase from "firebase/app";
 import "firebase/database";
 import { Nullable } from "Interfaces/Common";
 
+// #region Realtime Database
 export const getFirebaseElementAsync = async (url: string): Promise<string> => {
    let res: string = "";
    await firebase
@@ -55,4 +56,24 @@ export const getFirebaseKey = (value: any): Nullable<string> => {
    const keys = Object.keys(value);
    if (keys.length === 1) return keys[0];
    return null;
+};
+
+// #endregion
+
+export const signInFirebase = (
+   email: React.MutableRefObject<string>,
+   password: React.MutableRefObject<string>
+): void => {
+   firebase
+      .auth()
+      .setPersistence(firebase.auth.Auth.Persistence.SESSION)
+      .then(() => {
+         return firebase.auth().signInWithEmailAndPassword(email.current, password.current);
+      })
+      .catch(function(error) {
+         // Handle Errors here.
+         //  var errorCode = error.code;
+         var errorMessage = error.message;
+         console.error(errorMessage);
+      });
 };
