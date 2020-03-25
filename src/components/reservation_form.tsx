@@ -63,7 +63,7 @@ const ReservationForm = (props: FormProps) => {
    };
 
    return (
-      <Grid container xs={10} className={classes.container}>
+      <Grid item xs={10} className={classes.container}>
          <Grid item xs={6}>
             <Typography variant="h4">Machine</Typography>
          </Grid>
