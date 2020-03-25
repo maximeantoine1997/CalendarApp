@@ -13,7 +13,7 @@ const useStyles = makeStyles(() =>
 const HomePage = () => {
    const classes = useStyles();
    return (
-      <Grid container xs={12} justify="center" alignContent="center" alignItems="center" className={classes.grid}>
+      <Grid container justify="center" alignContent="center" alignItems="center" className={classes.grid}>
          <h1> Home Page </h1>
       </Grid>
    );

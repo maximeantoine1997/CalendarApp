@@ -1,48 +1,34 @@
 {
-  "compileOnSave": true,
-  "compilerOptions": {
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "target": "ES6",
-    "sourceMap": true,
-    "noImplicitAny": true,
-    "jsx": "react",
-    "outDir": "./dist/",
-    "allowJs": true,
-    "charset": "utf-8",
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "lib": [
-      "es2018",
-      "dom"
-    ],
-    "types": [
-      "jest",
-      "node"
-    ],
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "baseUrl": "./src",
-    "typeRoots": [
-      "./node_modules/@types"
-    ],
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "noStrictGenericChecks": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true
-  },
-  "include": [
-    "./src/**/*",
-    "node_modules/eslint-plugin-react/lib/types.d.ts",
-    "webpack.config.js"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+   "compileOnSave": true,
+   "compilerOptions": {
+      "module": "ESNext",
+      "moduleResolution": "node",
+      "target": "ES6",
+      "sourceMap": true,
+      "noImplicitAny": true,
+      "jsx": "react",
+      "outDir": "./dist/",
+      "allowJs": true,
+      "charset": "utf-8",
+      "skipLibCheck": true,
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
+      "lib": ["es2018", "dom"],
+      "types": ["jest", "node"],
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
+      "baseUrl": "./src",
+      "typeRoots": ["./node_modules/@types"],
+      "strictNullChecks": true,
+      "strictFunctionTypes": true,
+      "strictBindCallApply": true,
+      "noStrictGenericChecks": true,
+      "strict": true,
+      "forceConsistentCasingInFileNames": true,
+      "resolveJsonModule": true,
+      "isolatedModules": true,
+      "noEmit": true
+   },
+   "include": ["./src/**/*", "node_modules/eslint-plugin-react/lib/types.d.ts"],
+   "exclude": ["node_modules"]
 }

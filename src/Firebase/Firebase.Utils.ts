@@ -1,7 +1,9 @@
 import * as firebase from "firebase/app";
 import "firebase/database";
+import "firebase/auth";
 import { Nullable } from "Interfaces/Common";
 
+// #region Realtime Database
 export const getFirebaseElementAsync = async (url: string): Promise<string> => {
    let res: string = "";
    await firebase
@@ -56,3 +58,5 @@ export const getFirebaseKey = (value: any): Nullable<string> => {
    if (keys.length === 1) return keys[0];
    return null;
 };
+
+// #endregion

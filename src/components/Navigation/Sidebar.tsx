@@ -20,6 +20,7 @@ import AddIcon from "@material-ui/icons/Add";
 import MenuIcon from "@material-ui/icons/Menu";
 import CloseIcon from "@material-ui/icons/Close";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import Authentification from "components/Navigation/Authentification";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -51,17 +52,22 @@ const useStyles = makeStyles((theme: Theme) =>
          background: "linear-gradient(to right, #606c88, #3f4c6b)",
          color: "white",
       },
+      profileMenu: {
+         marginTop: "50px",
+      },
    })
 );
 
 const SideBar: React.FC = () => {
    const classes = useStyles();
+   console.log("Sidebar component rendering");
 
-   const [isOpen, setIsOpen] = useState<boolean>(false);
+   const [isOpenDrawer, setIsOpenDrawer] = useState<boolean>(false);
 
    const toggleDrawer = (value: boolean) => {
-      setIsOpen(value);
+      setIsOpenDrawer(value);
    };
+
    return (
       <>
          <AppBar position="sticky" className={classes.nav}>
@@ -78,10 +84,10 @@ const SideBar: React.FC = () => {
                <Typography variant="h6" className={classes.title}>
                   Calendrier Antoine SPRL
                </Typography>
-               <Button color="inherit">Login</Button>
+               <Authentification />
             </Toolbar>
          </AppBar>
-         <Drawer anchor="left" open={isOpen} onClose={() => toggleDrawer(false)}>
+         <Drawer anchor="left" open={isOpenDrawer} onClose={() => toggleDrawer(false)}>
             <Button onClick={() => toggleDrawer(false)}>
                <CloseIcon fontSize="large" />
                <Typography variant="h6" className={classes.buttonText}>
