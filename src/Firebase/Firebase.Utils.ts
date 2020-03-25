@@ -1,5 +1,6 @@
 import * as firebase from "firebase/app";
 import "firebase/database";
+import "firebase/auth";
 import { Nullable } from "Interfaces/Common";
 
 // #region Realtime Database
@@ -59,21 +60,3 @@ export const getFirebaseKey = (value: any): Nullable<string> => {
 };
 
 // #endregion
-
-export const signInFirebase = (
-   email: React.MutableRefObject<string>,
-   password: React.MutableRefObject<string>
-): void => {
-   firebase
-      .auth()
-      .setPersistence(firebase.auth.Auth.Persistence.SESSION)
-      .then(() => {
-         return firebase.auth().signInWithEmailAndPassword(email.current, password.current);
-      })
-      .catch(function(error) {
-         // Handle Errors here.
-         //  var errorCode = error.code;
-         var errorMessage = error.message;
-         console.error(errorMessage);
-      });
-};
