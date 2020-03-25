@@ -11,13 +11,11 @@ import {
    Avatar,
    Menu,
    MenuItem,
-   Fade,
 } from "@material-ui/core";
 import React, { useRef, useState, useEffect } from "react";
 import * as firebase from "firebase/app";
 import "firebase/auth";
 import useUserContext from "Contexts/UserContext";
-import Transition from "components/Transitions/Transition";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
