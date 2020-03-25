@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const ReservationPage = () => {
    const classes = useStyles();
    return (
-      <Grid container xs={12} justify="center" alignContent="center" alignItems="center" className={classes.grid}>
+      <Grid container justify="center" alignContent="center" alignItems="center" className={classes.grid}>
          <ReservationForm />
       </Grid>
    );
