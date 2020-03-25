@@ -3,12 +3,14 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { makeStyles, Theme, createStyles, Grid } from "@material-ui/core";
 import * as firebase from "firebase/app";
 import "firebase/database";
+import "firebase/auth";
 import ReservationPage from "pages/ReservationPage";
 import CalendarPage from "pages/CalendarPage";
 import HomePage from "pages/HomePage";
 import SideBar from "components/Navigation/Sidebar";
 import AddButton from "components/AddButton";
-import { UserContextProvider } from "Contexts/UserContext";
+import useUserContext, { UserContextProvider } from "Contexts/UserContext";
+import { isFunction } from "Utils";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -22,6 +24,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 // #region Firebase
+
 const firebaseConfig = {
    apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
    authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -36,13 +39,24 @@ firebase.initializeApp(firebaseConfig);
 
 // #endregion
 
+// #region react-redux-firebase
+
 const App: React.FC = () => {
    const classes = useStyles();
+   const { setUser } = useUserContext();
+   firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+         console.log("user is signed in");
+         if (isFunction(setUser)) setUser(user);
+      } else {
+         console.log("No User is signed in");
+      }
+   });
 
    return (
       <UserContextProvider>
          <Router>
-            <Grid container xs={12}>
+            <Grid container>
                <Grid item xs={12} className={classes.menu}>
                   <SideBar />
                </Grid>
