@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import React from "react";
-import { Fab, Box, makeStyles, Theme, createStyles, Typography } from "@material-ui/core";
+import { Fab, Box, makeStyles, Theme, createStyles } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import { Link, useLocation } from "react-router-dom";
 
@@ -29,10 +29,10 @@ const AddButton: React.FC<AddProps> = ({ children }) => {
       return (
          <Box position="relative">
             {children}
+
             <Link to="/reservation">
-               <Fab variant="extended" className={classes.addButton} onClick={() => console.log(pathname)}>
+               <Fab variant="round" className={classes.addButton} onClick={() => console.log(pathname)}>
                   <AddIcon fontSize="large" />
-                  <Typography variant="h6">Reservation</Typography>
                </Fab>
             </Link>
          </Box>
