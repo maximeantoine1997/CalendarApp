@@ -21,6 +21,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import CloseIcon from "@material-ui/icons/Close";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import Authentification from "components/Navigation/Authentification";
+import { AnimatePresence } from "framer-motion";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -60,7 +61,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const SideBar: React.FC = () => {
    const classes = useStyles();
-   console.log("Sidebar component rendering");
 
    const [isOpenDrawer, setIsOpenDrawer] = useState<boolean>(false);
 
@@ -69,7 +69,7 @@ const SideBar: React.FC = () => {
    };
 
    return (
-      <>
+      <AnimatePresence>
          <AppBar position="sticky" className={classes.nav}>
             <Toolbar>
                <IconButton
@@ -127,7 +127,7 @@ const SideBar: React.FC = () => {
                </Link>
             </List>
          </Drawer>
-      </>
+      </AnimatePresence>
    );
 };
 
