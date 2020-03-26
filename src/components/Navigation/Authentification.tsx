@@ -1,21 +1,12 @@
-import {
-   makeStyles,
-   Theme,
-   createStyles,
-   Dialog,
-   DialogTitle,
-   DialogContent,
-   Typography,
-   TextField,
-   Button,
-   Avatar,
-   Menu,
-   MenuItem,
-} from "@material-ui/core";
-import React, { useRef, useState, useEffect } from "react";
-import * as firebase from "firebase/app";
-import "firebase/auth";
+import { makeStyles, Theme, createStyles, Button, Avatar, Menu, MenuItem, Dialog } from "@material-ui/core";
+import React, { useState } from "react";
 import useUserContext from "Contexts/UserContext";
+import SignIn from "components/Navigation/SignIn";
+import SignUp from "components/Navigation/SignUp";
+import firebase from "firebase";
+import { isFunction } from "Utils";
+import { motion } from "framer-motion";
+import FadeIn from "components/Transitions/FadeIn";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -39,6 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
       },
       menuButton: {
          marginRight: theme.spacing(2),
+         color: "white",
       },
       title: {
          flexGrow: 1,
@@ -56,52 +48,16 @@ const useStyles = makeStyles((theme: Theme) =>
 interface AuthProps {}
 
 const Authentification: React.FC<AuthProps> = () => {
-   console.log("Auth component rendering");
-
    const classes = useStyles();
 
-   const email = useRef("florian@antoinesprl.be");
-   const password = useRef("123456");
-   const userName = useRef("");
+   const { user, setUser } = useUserContext();
+
+   const initial = user?.displayName?.charAt(0).toUpperCase();
+
+   const [openSignUp, setOpenSignUp] = useState<boolean>(false);
 
    const [isOpenAuth, setIsOpenAuth] = useState<boolean>(false);
    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-   const onSignUp = (): void => {
-      console.log(`Sign Up => email is: ${email.current} & password is: ${password.current}`);
-      firebase
-         .auth()
-         .createUserWithEmailAndPassword(email.current, password.current)
-         .then(value => {
-            value.user
-               ?.updateProfile({
-                  displayName: userName.current,
-               })
-               .then(() => console.log("it worked"))
-               .catch(error => console.error(error));
-         })
-         .catch(error => {
-            const errorMessage = error.message;
-            console.error(errorMessage);
-         });
-      setIsOpenAuth(false);
-   };
-
-   const onSignIn = (): void => {
-      console.log(`Sign In => email is: ${email.current} & password is: ${password.current}`);
-      firebase
-         .auth()
-         .setPersistence(firebase.auth.Auth.Persistence.SESSION)
-         .then(async () => {
-            await firebase.auth().signInWithEmailAndPassword(email.current, password.current);
-            console.log("signed in");
-            setIsOpenAuth(false);
-         })
-         .catch(error => {
-            var errorMessage = error.message;
-            console.error(errorMessage);
-         });
-   };
 
    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
       setAnchorEl(event.currentTarget);
@@ -111,70 +67,63 @@ const Authentification: React.FC<AuthProps> = () => {
       setAnchorEl(null);
    };
 
+   const signOut = () => {
+      firebase.auth().signOut();
+      if (isFunction(setUser)) setUser(null);
+   };
+
    const toggleAuth = (value: boolean) => {
       setIsOpenAuth(value);
    };
 
-   const onBlur = (event: any, ref: React.MutableRefObject<string>): void => {
-      ref.current = event.target.value;
-   };
-
-   useEffect(() => {
-      console.log("render");
-   }, []);
-
-   const { user } = useUserContext();
-   const initial = user?.displayName?.charAt(0).toUpperCase();
    if (user && initial) {
       return (
          <>
-            <Button variant="text" aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
-               <Avatar alt="User Avatar">{initial}</Avatar>
-            </Button>
-            <Menu
-               id="simple-menu"
-               anchorEl={anchorEl}
-               keepMounted
-               open={Boolean(anchorEl)}
-               onClose={handleClose}
-               className={classes.profileMenu}
-            >
-               <MenuItem onClick={handleClose}>Profile</MenuItem>
-               <MenuItem onClick={handleClose}>Se Déconnecter</MenuItem>
-            </Menu>
+            <FadeIn open={Boolean(user)}>
+               <Button variant="text" aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+                  <Avatar alt="User Avatar">{initial}</Avatar>
+               </Button>
+               <Menu
+                  id="simple-menu"
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                  className={classes.profileMenu}
+               >
+                  <MenuItem onClick={handleClose}>Profile</MenuItem>
+                  <MenuItem onClick={signOut}>Se Déconnecter</MenuItem>
+               </Menu>
+            </FadeIn>
          </>
       );
    }
    if (isOpenAuth) {
+      if (openSignUp) {
+         return (
+            <Dialog open={isOpenAuth} fullWidth onClose={() => setIsOpenAuth(false)}>
+               <SignUp onSignIn={() => setOpenSignUp(false)} onClose={() => setIsOpenAuth(false)} />
+            </Dialog>
+         );
+      }
       return (
          <Dialog open={isOpenAuth} fullWidth onClose={() => setIsOpenAuth(false)}>
-            <DialogTitle id="simple-dialog-title">Se Connecter</DialogTitle>
-            <DialogContent>
-               <Typography variant="h6">Sign In</Typography>
-               <TextField variant="outlined" label="email" onBlur={e => onBlur(e, email)} />
-               <TextField variant="outlined" label="password" onBlur={e => onBlur(e, password)} />
-               <TextField variant="outlined" label="username" onBlur={e => onBlur(e, userName)} />
-               <Button variant="contained" onClick={() => onSignUp()}>
-                  Sign up
-               </Button>
-               <Button variant="contained" onClick={() => onSignIn()}>
-                  Sign In
-               </Button>
-            </DialogContent>
+            <SignIn onSignUp={() => setOpenSignUp(true)} onClose={() => setIsOpenAuth(false)} />
          </Dialog>
       );
    }
 
    if (user === null) {
       return (
-         <Button
-            color="inherit"
-            onClick={() => {
-               toggleAuth(true);
-            }}
-         >
-            Se Connecter
-         </Button>
+         <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 1 }}>
+            <Button
+               onClick={() => {
+                  toggleAuth(true);
+               }}
+               className={classes.menuButton}
+            >
+               Se Connecter
+            </Button>
+         </motion.div>
       );
    }
 
