@@ -5,7 +5,6 @@ import {
    ListItemIcon,
    ListItemText,
    Typography,
-   Button,
    makeStyles,
    Theme,
    createStyles,
@@ -18,7 +17,6 @@ import { Link } from "react-router-dom";
 import EventNoteIcon from "@material-ui/icons/EventNote";
 import AddIcon from "@material-ui/icons/Add";
 import MenuIcon from "@material-ui/icons/Menu";
-import CloseIcon from "@material-ui/icons/Close";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import Authentification from "components/Navigation/Authentification";
 import { AnimatePresence } from "framer-motion";
@@ -48,6 +46,8 @@ const useStyles = makeStyles((theme: Theme) =>
       },
       title: {
          flexGrow: 1,
+         textDecoration: "none",
+         color: "white",
       },
       nav: {
          background: "linear-gradient(to right, #606c88, #3f4c6b)",
@@ -82,18 +82,14 @@ const SideBar: React.FC = () => {
                   <MenuIcon />
                </IconButton>
                <Typography variant="h6" className={classes.title}>
-                  Calendrier Antoine SPRL
+                  <Link to="/" className={classes.title}>
+                     Calendrier Antoine SPRL
+                  </Link>
                </Typography>
                <Authentification />
             </Toolbar>
          </AppBar>
          <Drawer anchor="left" open={isOpenDrawer} onClose={() => toggleDrawer(false)}>
-            <Button onClick={() => toggleDrawer(false)}>
-               <CloseIcon fontSize="large" />
-               <Typography variant="h6" className={classes.buttonText}>
-                  Fermer
-               </Typography>
-            </Button>
             <List component="nav" aria-label="navigation menu" className={classes.list}>
                <Link to="/account" className={classes.link} onClick={() => toggleDrawer(false)}>
                   <ListItem button dense className={classes.listItem}>
