@@ -20,7 +20,7 @@ const AccountPage = () => {
    if (user) {
       return (
          <Grid container justify="center" alignContent="center" alignItems="center" className={classes.grid}>
-            <h1> Profil </h1>
+            <h1> Profil Page </h1>
          </Grid>
       );
    }
