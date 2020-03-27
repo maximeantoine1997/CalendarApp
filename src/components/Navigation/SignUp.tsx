@@ -87,17 +87,22 @@ const SignUp: React.FC<SignUpProps> = ({ onSignIn, onClose }) => {
                </FadeIn>
                <Grid item xs={12}>
                   <FadeIn transitionDelay={0.5}>
-                     <TextField variant="outlined" label="username" onBlur={e => onBlur(e, userName)} />
+                     <TextField variant="outlined" label="Nom d'utilisateur" onBlur={e => onBlur(e, userName)} />
                   </FadeIn>
                </Grid>
                <Grid item xs={12}>
                   <FadeIn transitionDelay={0.6}>
-                     <TextField variant="outlined" label="email" onBlur={e => onBlur(e, email)} />
+                     <TextField variant="outlined" label="Adresse e-mail" onBlur={e => onBlur(e, email)} />
                   </FadeIn>
                </Grid>
                <Grid item xs={12}>
                   <FadeIn transitionDelay={0.7}>
-                     <TextField variant="outlined" type="password" label="password" onBlur={e => onBlur(e, password)} />
+                     <TextField
+                        variant="outlined"
+                        type="password"
+                        label="Mot de passe"
+                        onBlur={e => onBlur(e, password)}
+                     />
                   </FadeIn>
                </Grid>
                <Grid item xs={12}>
@@ -105,7 +110,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignIn, onClose }) => {
                      <TextField
                         variant="outlined"
                         type="password"
-                        label="Confirm Password"
+                        label="Confirmer mot de passe"
                         onBlur={e => onBlur(e, confirmPassword)}
                      />
                   </FadeIn>
