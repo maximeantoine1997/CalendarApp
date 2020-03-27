@@ -1,4 +1,4 @@
-import React, { useRef, MutableRefObject } from "react";
+import React, { useRef, MutableRefObject, useState } from "react";
 import { Grid, Typography, makeStyles, Theme, createStyles, Button } from "@material-ui/core";
 import TextComponent from "./FormElements/TextComponent";
 import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
@@ -14,10 +14,16 @@ const useStyles = makeStyles((theme: Theme) =>
    createStyles({
       container: {
          height: "100%",
+         width: "80%",
+         paddingTop: "0%",
       },
       submit: {
-         width: "95%",
-         height: "6vh",
+         width: "80%",
+         marginLeft: "10%",
+         marginRight: "10%",
+         marginTop: "2%",
+         marginBottom: "2%",
+         height: "7vh",
          borderRadius: "25px",
          background: "linear-gradient(to right, #606c88, #3f4c6b)",
          color: "white",
@@ -58,17 +64,30 @@ const ReservationForm = (props: FormProps) => {
    const isReceived = useRef<boolean>(false);
    // #endregion
 
+   const [hasEndDate, setHasEndDate] = useState<boolean>(false);
    const onChange = (ref: MutableRefObject<any>, newValue: any) => {
       ref.current = newValue;
    };
 
    return (
-      <Grid item xs={10} className={classes.container}>
+      <Grid
+         container
+         className={classes.container}
+         spacing={0}
+         direction="row"
+         alignItems="center"
+         justify="center"
+         alignContent="center"
+      >
          <Grid item xs={6}>
-            <Typography variant="h4">Machine</Typography>
+            <Typography variant="h4" align="center">
+               Machine
+            </Typography>
          </Grid>
          <Grid item xs={6}>
-            <Typography variant="h4">Info</Typography>
+            <Typography variant="h4" align="center">
+               Info
+            </Typography>
          </Grid>
          <Grid item xs={6}>
             <TextComponent placeholder="Modèle" onChange={e => onChange(modele, e)} />
@@ -84,7 +103,9 @@ const ReservationForm = (props: FormProps) => {
             <CheckBoxComponent placeholder="Reçu" onChange={e => onChange(isReceived, e)} />
          </Grid>
          <Grid item xs={12}>
-            <Typography variant="h4">Chantier</Typography>
+            <Typography variant="h4" align="center">
+               Chantier
+            </Typography>
          </Grid>
          <Grid item xs={6}>
             <TextComponent placeholder="Société" onChange={e => onChange(societe, e)} url="Companies" sortBy="Name" />
@@ -92,15 +113,25 @@ const ReservationForm = (props: FormProps) => {
          <Grid item xs={12}>
             <TextComponent placeholder="Adresse" onChange={e => onChange(address, e)} />
          </Grid>
-         <Grid item xs={6}>
+         <Grid item xs={6} style={{ minHeight: "10vh" }}>
             <DateComponent placeholder="Début" onChange={e => onChange(startDate, e)} />
          </Grid>
          <Grid item xs={6}>
-            <DateComponent placeholder="Fin" onChange={e => onChange(endDate, e)} />
+            <Grid container justify="center" style={{ minHeight: "10vh" }}>
+               {hasEndDate && (
+                  <Grid item xs={6}>
+                     <DateComponent placeholder="Fin" onChange={e => onChange(endDate, e)} />
+                  </Grid>
+               )}
+               <Grid item xs={hasEndDate ? 6 : 12}>
+                  <CheckBoxComponent placeholder="Date de fin" onChange={e => setHasEndDate(e)} />
+               </Grid>
+            </Grid>
          </Grid>
-
          <Grid item xs={12}>
-            <Typography variant="h4">Client</Typography>
+            <Typography variant="h4" align="center">
+               Client
+            </Typography>
          </Grid>
          <Grid item xs={6}>
             <TextComponent placeholder="Nom" onChange={e => onChange(nom, e)} />

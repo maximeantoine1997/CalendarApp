@@ -10,7 +10,9 @@ const useStyles = makeStyles(() =>
          backgroundColor: "#E7EAED",
       },
       autocomplete: {
-         width: "90%",
+         paddingLeft: "10%",
+         paddingRight: "10%",
+         width: "80%",
       },
       grid: {},
    })
