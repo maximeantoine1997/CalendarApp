@@ -7,6 +7,7 @@ import firebase from "firebase";
 import { isFunction } from "Utils";
 import { motion } from "framer-motion";
 import FadeIn from "components/Transitions/FadeIn";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -14,6 +15,12 @@ const useStyles = makeStyles((theme: Theme) =>
          color: "black",
          font: "Roboto",
          fontSize: "20px",
+         textDecoration: "none",
+      },
+      menuLink: {
+         color: "black",
+         font: "Roboto",
+         fontSize: "16px",
          textDecoration: "none",
       },
       list: {
@@ -90,8 +97,14 @@ const Authentification: React.FC<AuthProps> = () => {
                   onClose={handleClose}
                   className={classes.profileMenu}
                >
-                  <MenuItem onClick={handleClose}>Profile</MenuItem>
-                  <MenuItem onClick={signOut}>Se Déconnecter</MenuItem>
+                  <MenuItem onClick={handleClose}>
+                     <Link to="/account" className={classes.menuLink}>
+                        Mon Profil
+                     </Link>
+                  </MenuItem>
+                  <MenuItem onClick={signOut} className={classes.menuLink}>
+                     Se Déconnecter
+                  </MenuItem>
                </Menu>
             </FadeIn>
          </>
