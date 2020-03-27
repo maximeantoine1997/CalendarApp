@@ -11,6 +11,7 @@ import SideBar from "components/Navigation/Sidebar";
 import AddButton from "components/AddButton";
 import useUserContext, { UserContextProvider } from "Contexts/UserContext";
 import { isFunction } from "Utils";
+import AccountPage from "pages/AccountPage";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -69,7 +70,10 @@ const App: React.FC = () => {
                         <Route path="/calendrier">
                            <CalendarPage />
                         </Route>
-                        <Route path="/">
+                        <Route path="/account">
+                           <AccountPage />
+                        </Route>
+                        <Route exact path="/">
                            <HomePage />
                         </Route>
                      </Switch>
