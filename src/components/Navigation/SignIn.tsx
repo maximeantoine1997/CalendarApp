@@ -91,18 +91,23 @@ const SignIn: React.FC<SignInProps> = ({ onSignUp, onClose }) => {
                </FadeIn>
                <Grid item xs={12}>
                   <FadeIn transitionDelay={0.5}>
-                     <TextField variant="outlined" label="email" onBlur={e => onBlur(e, email)} />
+                     <TextField variant="outlined" label="Adresse e-mail" onBlur={e => onBlur(e, email)} />
                   </FadeIn>
                </Grid>
                <Grid item xs={12}>
                   <FadeIn transitionDelay={0.6}>
-                     <TextField variant="outlined" label="password" onBlur={e => onBlur(e, password)} type="password" />
+                     <TextField
+                        variant="outlined"
+                        label="Mot de passe"
+                        onBlur={e => onBlur(e, password)}
+                        type="password"
+                     />
                   </FadeIn>
                </Grid>
                <Grid item xs={12}>
                   <FadeIn transitionDelay={0.7}>
                      <Button variant="outlined" onClick={() => onSignIn()}>
-                        Sign In
+                        Connexion
                      </Button>
                   </FadeIn>
                </Grid>
