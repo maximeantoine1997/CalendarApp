@@ -1,5 +1,7 @@
 import React from "react";
 import { makeStyles, createStyles, Grid } from "@material-ui/core";
+import useUserContext from "Contexts/UserContext";
+import { Redirect } from "react-router-dom";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -12,11 +14,18 @@ const useStyles = makeStyles(() =>
 
 const AccountPage = () => {
    const classes = useStyles();
-   return (
-      <Grid container justify="center" alignContent="center" alignItems="center" className={classes.grid}>
-         <h1> Profil </h1>
-      </Grid>
-   );
+
+   const { user } = useUserContext();
+
+   if (user) {
+      return (
+         <Grid container justify="center" alignContent="center" alignItems="center" className={classes.grid}>
+            <h1> Profil </h1>
+         </Grid>
+      );
+   }
+
+   return <Redirect to="/" />;
 };
 
 export default AccountPage;
