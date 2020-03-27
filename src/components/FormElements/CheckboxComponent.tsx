@@ -1,5 +1,17 @@
 import React, { FunctionComponent, ReactElement, useState } from "react";
-import { FormControlLabel, Typography, Switch, Box } from "@material-ui/core";
+import { FormControlLabel, Typography, Box, Checkbox, makeStyles, createStyles } from "@material-ui/core";
+
+const useStyles = makeStyles(() =>
+   createStyles({
+      checkboxComponent: {
+         paddingLeft: "20%",
+         paddingRight: "20%",
+         width: "60%",
+         height: "100%",
+         alignItems: "center",
+      },
+   })
+);
 
 interface EuroProps {
    placeholder: string;
@@ -7,6 +19,8 @@ interface EuroProps {
 }
 
 const CheckBoxComponent: FunctionComponent<EuroProps> = ({ placeholder, onChange }): ReactElement => {
+   const classes = useStyles();
+
    const [checked, setChecked] = useState<boolean>(false);
 
    const onCheck = (event: any, newCheck: boolean) => {
@@ -16,11 +30,11 @@ const CheckBoxComponent: FunctionComponent<EuroProps> = ({ placeholder, onChange
    };
 
    return (
-      <Box width="100%">
+      <Box className={classes.checkboxComponent}>
          <FormControlLabel
-            control={<Switch checked={checked} onChange={onCheck} name="Bancontact" color="primary" />}
+            style={{ width: "100%", height: "100%" }}
+            control={<Checkbox checked={checked} onChange={onCheck} name="Bancontact" color="primary" />}
             label={<Typography variant="h6">{placeholder}</Typography>}
-            labelPlacement="start"
          />
       </Box>
    );
