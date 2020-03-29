@@ -1,5 +1,5 @@
 import React from "react";
-import { makeStyles, createStyles, Grid } from "@material-ui/core";
+import { makeStyles, createStyles, Grid, Typography } from "@material-ui/core";
 import useUserContext from "Contexts/UserContext";
 import { Redirect } from "react-router-dom";
 
@@ -20,7 +20,11 @@ const AccountPage = () => {
    if (user) {
       return (
          <Grid container justify="center" alignContent="center" alignItems="center" className={classes.grid}>
-            <h1> Profil Page </h1>
+            <h1> {user.displayName} </h1>
+            <br />
+            <Typography>IDK</Typography>
+            <br />
+            <h1> {user.email} </h1>
          </Grid>
       );
    }
