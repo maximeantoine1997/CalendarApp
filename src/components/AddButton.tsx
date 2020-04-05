@@ -3,8 +3,8 @@ import React from "react";
 import { Fab, Box, makeStyles, Theme, createStyles } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import { Link, useLocation } from "react-router-dom";
-import useUserContext from "Contexts/UserContext";
-import { checkIfConnected } from "Utils";
+import useUserContext from "../Contexts/UserContext";
+import { checkIfConnected } from "../Utils";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme: Theme) =>
          position: "absolute",
          bottom: "2vh",
          right: "2vw",
-         background: "linear-gradient(to right, #606c88, #3f4c6b)",
+         background: "#EB4969",
          color: "white",
       },
    })
@@ -35,7 +35,7 @@ const AddButton: React.FC<AddProps> = ({ children }) => {
             {children}
 
             <Link to={checkIfConnected(user, "/reservation")}>
-               <Fab variant="round" className={classes.addButton} onClick={() => console.log(pathname)}>
+               <Fab variant="round" className={classes.addButton}>
                   <AddIcon fontSize="large" />
                </Fab>
             </Link>
