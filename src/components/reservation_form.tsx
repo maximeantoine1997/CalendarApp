@@ -1,14 +1,12 @@
-import React, { useRef, MutableRefObject, useState } from "react";
-import { Grid, Typography, makeStyles, Theme, createStyles, Button } from "@material-ui/core";
-import TextComponent from "./FormElements/TextComponent";
-import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
-import DateComponent from "components/FormElements/DateComponent";
-import EuroComponent from "components/FormElements/EuroComponent";
-import CheckBoxComponent from "components/FormElements/CheckboxComponent";
+import { Button, createStyles, Grid, makeStyles, Theme, Typography } from "@material-ui/core";
 
-export interface FormProps {
-   id?: string;
-}
+import moment, { Moment } from "moment";
+import React, { MutableRefObject, useRef, useState } from "react";
+import TextComponent from "./FormElements/TextComponent";
+import EuroComponent from "./FormElements/EuroComponent";
+import CheckBoxComponent from "./FormElements/CheckboxComponent";
+import DateComponent from "./FormElements/DateComponent";
+import { addReservationAsync } from "../Firebase/Firebase.Utils";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -18,55 +16,255 @@ const useStyles = makeStyles((theme: Theme) =>
          paddingTop: "0%",
       },
       submit: {
-         width: "80%",
-         marginLeft: "10%",
-         marginRight: "10%",
+         width: "60%",
+         marginLeft: "20%",
+         marginRight: "20%",
          marginTop: "2%",
          marginBottom: "2%",
          height: "7vh",
          borderRadius: "25px",
-         background: "linear-gradient(to right, #606c88, #3f4c6b)",
+         background: "#EB4969",
          color: "white",
+      },
+      errorText: {
+         paddingLeft: "10%",
+         paddingRight: "10%",
+         width: "80%",
+         color: "red",
       },
    })
 );
 
-interface Reservation {
+const initValidForm = {
+   societe: {
+      hasError: false,
+      errorMessage: "",
+   },
+   modele: {
+      hasError: false,
+      errorMessage: "",
+   },
+   accessoires: {
+      hasError: false,
+      errorMessage: "",
+   },
+   gsm: {
+      hasError: false,
+      errorMessage: "",
+   },
+   email: {
+      hasError: false,
+      errorMessage: "",
+   },
+   prenom: {
+      hasError: false,
+      errorMessage: "",
+   },
+   nom: {
+      hasError: false,
+      errorMessage: "",
+   },
+   address: {
+      hasError: false,
+      errorMessage: "",
+   },
+   startDate: {
+      hasError: false,
+      errorMessage: "",
+   },
+   endDate: {
+      hasError: false,
+      errorMessage: "",
+   },
+   montant: {
+      hasError: false,
+      errorMessage: "",
+   },
+};
+
+export interface FormProps {
+   id?: string;
+   onChange?: (newValue: any) => void;
+}
+
+interface ValidReservation {
+   [key: string]: {
+      hasError: boolean;
+      errorMessage: string;
+   };
+}
+
+export interface Reservation {
+   id?: string;
+   prenom: string;
+   nom: string;
    societe: string;
    modele: string;
    accessoires: Array<string>;
    gsm: string;
    email: string;
-   prenom: string;
-   nom: string;
    address: string;
-   duree: string;
-   montant?: number;
-   isBancontact?: boolean;
+   startDate: Moment;
+   endDate?: Moment;
+   montant: number;
+   isBancontact: boolean;
+   isReceived: boolean;
 }
 
-const ReservationForm = (props: FormProps) => {
+const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    const classes = useStyles();
 
    // #region  useRef
-   const prenom = useRef<string>("");
-   const nom = useRef<string>("");
-   const societe = useRef<string>("");
-   const modele = useRef<string>("");
+   const prenom = useRef<string>("a");
+   const nom = useRef<string>("a");
+   const societe = useRef<string>("a");
+   const modele = useRef<string>("a");
    const accessoires = useRef<Array<string>>([]);
-   const gsm = useRef<string>("");
-   const email = useRef<string>("");
-   const address = useRef<string>("");
-   const startDate = useRef<MaterialUiPickersDate>();
-   const endDate = useRef<MaterialUiPickersDate>();
-   const montant = useRef<number>();
+   const gsm = useRef<string>("a");
+   const email = useRef<string>("a");
+   const address = useRef<string>("a");
+   const startDate = useRef<Moment>(moment());
+   const endDate = useRef<Moment>();
+   const montant = useRef<number>(0);
    const isBancontact = useRef<boolean>(false);
    const isReceived = useRef<boolean>(false);
    // #endregion
 
+   const [validForm, setValidForm] = useState<ValidReservation>(initValidForm);
+
    const [hasEndDate, setHasEndDate] = useState<boolean>(false);
    const onChange = (ref: MutableRefObject<any>, newValue: any) => {
       ref.current = newValue;
+   };
+
+   const addReservation = (reservation: Reservation): void => {
+      console.log("congrats, Reservation was made :D !");
+
+      addReservationAsync(reservation);
+   };
+
+   /**
+    * Checks if the form is valid. Validation logic is here.
+    */
+   const onSubmit = () => {
+      let newValidForm: ValidReservation = {
+         societe: {
+            hasError: false,
+            errorMessage: "",
+         },
+         modele: {
+            hasError: false,
+            errorMessage: "",
+         },
+         accessoires: {
+            hasError: false,
+            errorMessage: "",
+         },
+         gsm: {
+            hasError: false,
+            errorMessage: "",
+         },
+         email: {
+            hasError: false,
+            errorMessage: "",
+         },
+         prenom: {
+            hasError: false,
+            errorMessage: "",
+         },
+         nom: {
+            hasError: false,
+            errorMessage: "",
+         },
+         address: {
+            hasError: false,
+            errorMessage: "",
+         },
+         startDate: {
+            hasError: false,
+            errorMessage: "",
+         },
+         endDate: {
+            hasError: false,
+            errorMessage: "",
+         },
+         montant: {
+            hasError: false,
+            errorMessage: "",
+         },
+      };
+
+      const updateForm = (type: string, hasError: boolean, errorMessage: string) => {
+         newValidForm[type].hasError = hasError;
+         newValidForm[type].errorMessage = errorMessage;
+      };
+
+      // #region errors
+      // Prenom
+      if (prenom.current.length < 1) {
+         updateForm("prenom", true, "Au moins un caractère");
+      }
+      // Nom;
+      if (nom.current.length < 1) {
+         updateForm("nom", true, "Au moins un caractère");
+      }
+      // Societe
+      if (societe.current.length < 1) {
+         updateForm("societe", true, "Au moins un caractère");
+      }
+      // Modele
+      if (modele.current.length < 1) {
+         updateForm("modele", true, "Veuillez rentrer un modèle");
+      }
+      // Accessoires
+      //   if (accessoires.current.length < 1) {
+      //      console.log(accessoires.current);
+      //      updateForm("accessoires", true, "Au moins un accessoire");
+      //   }
+      // Gsm
+      if (gsm.current.length < 1) {
+         updateForm("gsm", true, "Au moins un numéro");
+      }
+      // Email
+      if (email.current.length < 1) {
+         updateForm("email", true, "Veuillez rentrer un email valide");
+      }
+      // Address
+      if (address.current.length < 1) {
+         updateForm("address", true, "Au moins un caractère");
+      }
+      // startDate & endDate
+      if (endDate.current && !startDate.current?.isBefore(endDate.current)) {
+         updateForm(
+            "startDate",
+            true,
+            "la date de fin ne peut pas être avant celle du début, veuillez ajuster en conséquence"
+         );
+      }
+      // #endregion
+
+      const hasError = Object.values(newValidForm).find(value => {
+         return value.hasError === true;
+      });
+
+      if (!hasError) {
+         addReservation({
+            prenom: prenom.current,
+            nom: nom.current,
+            societe: societe.current,
+            modele: modele.current,
+            accessoires: accessoires.current,
+            gsm: gsm.current,
+            email: email.current,
+            address: address.current,
+            startDate: startDate.current,
+            endDate: endDate.current,
+            montant: montant.current,
+            isBancontact: isBancontact.current,
+            isReceived: isReceived.current,
+         });
+      }
+      setValidForm(newValidForm);
    };
 
    return (
@@ -90,17 +288,36 @@ const ReservationForm = (props: FormProps) => {
             </Typography>
          </Grid>
          <Grid item xs={6}>
-            <TextComponent placeholder="Modèle" onChange={e => onChange(modele, e)} />
+            <TextComponent
+               hasError={validForm["modele"].hasError}
+               errorText={validForm["modele"].errorMessage}
+               placeholder="Modèle"
+               onChange={e => onChange(modele, e)}
+            />
          </Grid>
          <Grid item xs={6}>
-            <EuroComponent placeholder="Montant" onChange={e => onChange(montant, e)} />
+            <EuroComponent placeholder="Montant" onChange={(e: any) => onChange(montant, e)} />
          </Grid>
          <Grid item xs={6}>
-            <TextComponent placeholder="Accessoires" onChange={e => onChange(accessoires, e)} multiple />
+            <TextComponent
+               hasError={validForm["accessoires"].hasError}
+               errorText={validForm["accessoires"].errorMessage}
+               placeholder="Accessoires"
+               onChange={e => onChange(accessoires, e)}
+               multiple
+            />
          </Grid>
          <Grid item xs={6}>
-            <CheckBoxComponent placeholder="Par Bancontact" onChange={e => onChange(isBancontact, e)} />
-            <CheckBoxComponent placeholder="Reçu" onChange={e => onChange(isReceived, e)} />
+            <CheckBoxComponent
+               value={isBancontact.current}
+               placeholder="Par Bancontact"
+               onChange={(e: any) => onChange(isBancontact, e)}
+            />
+            <CheckBoxComponent
+               value={isReceived.current}
+               placeholder="Reçu"
+               onChange={(e: any) => onChange(isReceived, e)}
+            />
          </Grid>
          <Grid item xs={12}>
             <Typography variant="h4" align="center">
@@ -108,25 +325,48 @@ const ReservationForm = (props: FormProps) => {
             </Typography>
          </Grid>
          <Grid item xs={6}>
-            <TextComponent placeholder="Société" onChange={e => onChange(societe, e)} url="Companies" sortBy="Name" />
+            <TextComponent
+               hasError={validForm["societe"].hasError}
+               errorText={validForm["societe"].errorMessage}
+               placeholder="Société"
+               onChange={e => onChange(societe, e)}
+               url="Companies"
+               sortBy="Name"
+            />
          </Grid>
          <Grid item xs={12}>
-            <TextComponent placeholder="Adresse" onChange={e => onChange(address, e)} />
+            <TextComponent
+               hasError={validForm["address"].hasError}
+               errorText={validForm["address"].errorMessage}
+               placeholder="Adresse"
+               onChange={e => onChange(address, e)}
+            />
          </Grid>
          <Grid item xs={6} style={{ minHeight: "10vh" }}>
-            <DateComponent placeholder="Début" onChange={e => onChange(startDate, e)} />
+            <DateComponent placeholder="Début" onChange={(e: any) => onChange(startDate, e)} />
          </Grid>
          <Grid item xs={6}>
             <Grid container justify="center" style={{ minHeight: "10vh" }}>
                {hasEndDate && (
                   <Grid item xs={6}>
-                     <DateComponent placeholder="Fin" onChange={e => onChange(endDate, e)} />
+                     <DateComponent placeholder="Fin" onChange={(e: any) => onChange(endDate, e)} />
                   </Grid>
                )}
                <Grid item xs={hasEndDate ? 6 : 12}>
-                  <CheckBoxComponent placeholder="Date de fin" onChange={e => setHasEndDate(e)} />
+                  <CheckBoxComponent
+                     value={hasEndDate}
+                     placeholder="Date de fin"
+                     onChange={(e: any) => setHasEndDate(e)}
+                  />
                </Grid>
             </Grid>
+         </Grid>
+         <Grid item xs={12}>
+            {validForm["startDate"].hasError && (
+               <Typography className={classes.errorText} align="center">
+                  {validForm["startDate"].errorMessage}
+               </Typography>
+            )}
          </Grid>
          <Grid item xs={12}>
             <Typography variant="h4" align="center">
@@ -134,19 +374,39 @@ const ReservationForm = (props: FormProps) => {
             </Typography>
          </Grid>
          <Grid item xs={6}>
-            <TextComponent placeholder="Nom" onChange={e => onChange(nom, e)} />
+            <TextComponent
+               hasError={validForm["nom"].hasError}
+               errorText={validForm["nom"].errorMessage}
+               placeholder="Nom"
+               onChange={e => onChange(nom, e)}
+            />
          </Grid>
          <Grid item xs={6}>
-            <TextComponent placeholder="Prénom" onChange={e => onChange(prenom, e)} />
+            <TextComponent
+               hasError={validForm["prenom"].hasError}
+               errorText={validForm["prenom"].errorMessage}
+               placeholder="Prénom"
+               onChange={e => onChange(prenom, e)}
+            />
          </Grid>
          <Grid item xs={6}>
-            <TextComponent placeholder="Téléphone" onChange={e => onChange(gsm, e)} />
+            <TextComponent
+               hasError={validForm["gsm"].hasError}
+               errorText={validForm["gsm"].errorMessage}
+               placeholder="Téléphone"
+               onChange={e => onChange(gsm, e)}
+            />
          </Grid>
          <Grid item xs={6}>
-            <TextComponent placeholder="Email" onChange={e => onChange(email, e)} />
+            <TextComponent
+               hasError={validForm["email"].hasError}
+               errorText={validForm["email"].errorMessage}
+               placeholder="Email"
+               onChange={e => onChange(email, e)}
+            />
          </Grid>
          <Grid item xs={12}>
-            <Button variant="contained" className={classes.submit}>
+            <Button variant="contained" type="button" className={classes.submit} onClick={e => onSubmit()}>
                <Typography variant="h6">Reserver</Typography>
             </Button>
          </Grid>
