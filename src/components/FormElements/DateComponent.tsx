@@ -1,10 +1,10 @@
-import React, { useState, FunctionComponent } from "react";
 import MomentUtils from "@date-io/moment";
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
+import { Box } from "@material-ui/core";
+import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
 import moment from "moment";
 import "moment/locale/fr";
-import { Box } from "@material-ui/core";
+import React, { FunctionComponent, useState } from "react";
 
 moment.locale("fr");
 
