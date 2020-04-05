@@ -1,9 +1,9 @@
 import React, { useRef } from "react";
 import { Grid, DialogTitle, TextField, Button, makeStyles, Theme, createStyles } from "@material-ui/core";
-import * as firebase from "firebase";
+import * as firebase from "firebase/app";
 import "firebase/auth";
 import { motion } from "framer-motion";
-import FadeIn from "components/Transitions/FadeIn";
+import FadeIn from "../Transitions/FadeIn";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -53,7 +53,6 @@ const SignUp: React.FC<SignUpProps> = ({ onSignIn, onClose }) => {
    };
 
    const onSignUp = (): void => {
-      console.log(`Sign Up => email is: ${email.current} & password is: ${password.current}`);
       firebase
          .auth()
          .createUserWithEmailAndPassword(email.current, password.current)
@@ -62,7 +61,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignIn, onClose }) => {
                ?.updateProfile({
                   displayName: userName.current,
                })
-               .then(() => console.log("it worked"))
+               .then()
                .catch(error => console.error(error));
          })
          .catch(error => {
