@@ -1,13 +1,14 @@
 import { makeStyles, Theme, createStyles, Button, Avatar, Menu, MenuItem, Dialog } from "@material-ui/core";
 import React, { useState } from "react";
-import useUserContext from "Contexts/UserContext";
-import SignIn from "components/Navigation/SignIn";
-import SignUp from "components/Navigation/SignUp";
-import firebase from "firebase";
-import { isFunction } from "Utils";
-import { motion } from "framer-motion";
-import FadeIn from "components/Transitions/FadeIn";
+
 import { Link } from "react-router-dom";
+import useUserContext from "../../Contexts/UserContext";
+import firebase from "firebase";
+import { isFunction } from "../../Utils";
+import FadeIn from "../Transitions/FadeIn";
+import SignUp from "./SignUp";
+import SignIn from "./SignIn";
+import { motion } from "framer-motion";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -49,6 +50,9 @@ const useStyles = makeStyles((theme: Theme) =>
       profileMenu: {
          marginTop: "50px",
       },
+      avatar: {
+         background: "#EB4969",
+      },
    })
 );
 
@@ -88,7 +92,9 @@ const Authentification: React.FC<AuthProps> = () => {
          <>
             <FadeIn open={Boolean(user)}>
                <Button variant="text" aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
-                  <Avatar alt="User Avatar">{initial}</Avatar>
+                  <Avatar alt="User Avatar" className={classes.avatar}>
+                     {initial}
+                  </Avatar>
                </Button>
                <Menu
                   id="simple-menu"
