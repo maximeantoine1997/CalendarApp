@@ -1,9 +1,9 @@
 import React, { useRef } from "react";
 import { Grid, DialogTitle, TextField, Button, makeStyles, Theme, createStyles } from "@material-ui/core";
-import * as firebase from "firebase";
+import * as firebase from "firebase/app";
 import "firebase/auth";
 import { motion } from "framer-motion";
-import FadeIn from "components/Transitions/FadeIn";
+import FadeIn from "../Transitions/FadeIn";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -51,13 +51,12 @@ const SignIn: React.FC<SignInProps> = ({ onSignUp, onClose }) => {
    };
 
    const onSignIn = (): void => {
-      console.log(`Sign In => email is: ${email.current} & password is: ${password.current}`);
       firebase
          .auth()
          .setPersistence(firebase.auth.Auth.Persistence.SESSION)
          .then(async () => {
             await firebase.auth().signInWithEmailAndPassword(email.current, password.current);
-            console.log("signed in");
+
             onClose(false);
          })
          .catch(error => {
