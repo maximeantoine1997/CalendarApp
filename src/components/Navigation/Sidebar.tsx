@@ -1,25 +1,24 @@
 import {
+   AppBar,
+   createStyles,
    Drawer,
+   IconButton,
    List,
    ListItem,
    ListItemIcon,
    ListItemText,
-   Typography,
    makeStyles,
    Theme,
-   createStyles,
-   AppBar,
    Toolbar,
-   IconButton,
+   Typography,
 } from "@material-ui/core";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import AddIcon from "@material-ui/icons/Add";
+import EventNoteIcon from "@material-ui/icons/EventNote";
+import MenuIcon from "@material-ui/icons/Menu";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import EventNoteIcon from "@material-ui/icons/EventNote";
-import AddIcon from "@material-ui/icons/Add";
-import MenuIcon from "@material-ui/icons/Menu";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import Authentification from "components/Navigation/Authentification";
-import { AnimatePresence } from "framer-motion";
+import Authentification from "./Authentification";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -50,7 +49,7 @@ const useStyles = makeStyles((theme: Theme) =>
          color: "white",
       },
       nav: {
-         background: "linear-gradient(to right, #606c88, #3f4c6b)",
+         background: "#16181F",
          color: "white",
       },
       profileMenu: {
@@ -69,7 +68,7 @@ const SideBar: React.FC = () => {
    };
 
    return (
-      <AnimatePresence>
+      <>
          <AppBar position="sticky" className={classes.nav}>
             <Toolbar>
                <IconButton
@@ -123,7 +122,7 @@ const SideBar: React.FC = () => {
                </Link>
             </List>
          </Drawer>
-      </AnimatePresence>
+      </>
    );
 };
 
