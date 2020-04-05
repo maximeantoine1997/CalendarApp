@@ -16,16 +16,16 @@ const useStyles = makeStyles(() =>
 interface EuroProps {
    placeholder: string;
    onChange: (e: boolean) => void;
+   value: boolean;
 }
 
-const CheckBoxComponent: FunctionComponent<EuroProps> = ({ placeholder, onChange }): ReactElement => {
+const CheckBoxComponent: FunctionComponent<EuroProps> = ({ value, placeholder, onChange }): ReactElement => {
    const classes = useStyles();
 
-   const [checked, setChecked] = useState<boolean>(false);
+   const [checked, setChecked] = useState<boolean>(value);
 
    const onCheck = (event: any, newCheck: boolean) => {
       onChange(newCheck);
-      console.log(newCheck);
       setChecked(newCheck);
    };
 
