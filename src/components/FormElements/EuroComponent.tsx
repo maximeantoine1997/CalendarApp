@@ -27,7 +27,6 @@ const EuroComponent: FunctionComponent<EuroProps> = ({ placeholder, onChange }):
       if (event) {
          const newValue = event.target.value;
          onChange(newValue);
-         console.log(newValue);
       }
    };
 
