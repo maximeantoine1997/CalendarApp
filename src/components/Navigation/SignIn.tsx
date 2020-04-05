@@ -56,7 +56,6 @@ const SignIn: React.FC<SignInProps> = ({ onSignUp, onClose }) => {
          .setPersistence(firebase.auth.Auth.Persistence.SESSION)
          .then(async () => {
             await firebase.auth().signInWithEmailAndPassword(email.current, password.current);
-
             onClose(false);
          })
          .catch(error => {
