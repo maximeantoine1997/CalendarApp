@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Grid, Typography, Dialog, makeStyles, createStyles } from "@material-ui/core";
 import { Reservation } from "../reservation_form";
+import CalendarModal from "./CalendarModal";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -33,22 +34,7 @@ const CalendarReservation: React.FC<CalendarReservationProps> = ({ reservation }
                <Typography variant="body1">{reservation.address}</Typography>
             </Grid>
          </Grid>
-         <Dialog open={expand} onClose={() => setExpand(false)} fullWidth>
-            <Grid container className={classes.dialog}>
-               <Grid item xs={12}>
-                  <Typography variant="h5">{reservation.societe}</Typography>
-               </Grid>
-               <Grid item xs={12}>
-                  <Typography variant="body1">{reservation.modele}</Typography>
-               </Grid>
-               <Grid item xs={12}>
-                  <Typography variant="body1">{reservation.accessoires[0]}</Typography>
-               </Grid>
-               <Grid item xs={12}>
-                  <Typography variant="body1">{reservation.address}</Typography>
-               </Grid>
-            </Grid>
-         </Dialog>
+         <CalendarModal reservation={reservation} open={expand} onClose={() => setExpand(false)} />
       </>
    );
 };

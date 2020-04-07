@@ -292,6 +292,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                hasError={validForm["modele"].hasError}
                errorText={validForm["modele"].errorMessage}
                placeholder="Modèle"
+               url="Reservation/Modele"
                onChange={e => onChange(modele, e)}
             />
          </Grid>
@@ -303,6 +304,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                hasError={validForm["accessoires"].hasError}
                errorText={validForm["accessoires"].errorMessage}
                placeholder="Accessoires"
+               url="Reservation/Accessoires"
                onChange={e => onChange(accessoires, e)}
                multiple
             />
@@ -330,8 +332,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                errorText={validForm["societe"].errorMessage}
                placeholder="Société"
                onChange={e => onChange(societe, e)}
-               url="Companies"
-               sortBy="Name"
+               url="Reservation/Societe"
             />
          </Grid>
          <Grid item xs={12}>
@@ -339,6 +340,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                hasError={validForm["address"].hasError}
                errorText={validForm["address"].errorMessage}
                placeholder="Adresse"
+               url="Reservation/Address"
                onChange={e => onChange(address, e)}
             />
          </Grid>
@@ -378,6 +380,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                hasError={validForm["nom"].hasError}
                errorText={validForm["nom"].errorMessage}
                placeholder="Nom"
+               url="Reservation/Nom"
                onChange={e => onChange(nom, e)}
             />
          </Grid>
@@ -386,6 +389,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                hasError={validForm["prenom"].hasError}
                errorText={validForm["prenom"].errorMessage}
                placeholder="Prénom"
+               url="Reservation/Prenom"
                onChange={e => onChange(prenom, e)}
             />
          </Grid>
@@ -394,6 +398,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                hasError={validForm["gsm"].hasError}
                errorText={validForm["gsm"].errorMessage}
                placeholder="Téléphone"
+               url="Reservation/Telephone"
                onChange={e => onChange(gsm, e)}
             />
          </Grid>
@@ -402,6 +407,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                hasError={validForm["email"].hasError}
                errorText={validForm["email"].errorMessage}
                placeholder="Email"
+               url="Reservation/Email"
                onChange={e => onChange(email, e)}
             />
          </Grid>

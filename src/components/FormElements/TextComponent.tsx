@@ -29,7 +29,6 @@ interface TextProps {
    onChange: (e: string | Array<string>) => void;
    options?: Array<string>;
    url?: string;
-   sortBy?: string;
    multiple?: boolean;
    hasError?: boolean;
    errorText?: string;
@@ -40,7 +39,6 @@ const TextComponent: FunctionComponent<TextProps> = ({
    options: options_ = [],
    url,
    onChange,
-   sortBy,
    multiple = false,
    hasError,
    errorText,
@@ -51,6 +49,7 @@ const TextComponent: FunctionComponent<TextProps> = ({
    const onBlur = (event: any) => {
       if (event) {
          const newValue = event.target.value;
+
          onChange(newValue);
       }
    };
@@ -66,19 +65,11 @@ const TextComponent: FunctionComponent<TextProps> = ({
       const getData = async () => {
          if (!options.length && url) {
             const elements = await getFirebaseElementsAsync(url);
-            if (sortBy) {
-               const sorted: Array<string> = [];
-
-               elements.forEach(element => {
-                  sorted.push(element[sortBy]);
-               });
-               return setOptions(sorted);
-            }
             return setOptions(elements as Array<string>);
          }
       };
       getData();
-   }, [options.length, options_, sortBy, url]);
+   }, [options.length, options_, url]);
 
    return (
       <>

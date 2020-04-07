@@ -1,8 +1,8 @@
+import { Reservation } from "./../components/reservation_form";
 import * as firebase from "firebase/app";
 import "firebase/database";
 import "firebase/auth";
 import { Nullable } from "../Interfaces/Common";
-import { Reservation } from "../components/reservation_form";
 
 // #region Realtime Database
 export const getFirebaseElementAsync = async (url: string): Promise<string> => {
@@ -64,6 +64,11 @@ export const getFirebaseKey = (value: any): Nullable<string> => {
    return null;
 };
 
+export const createFirebaseKeyAsync = async (url: string): Promise<Nullable<string>> => {
+   const id = await firebase.database().ref(url).push().key;
+   return id;
+};
+
 export const dateExistAsync = async (date: string): Promise<boolean> => {
    let exist = false;
    await firebase
@@ -84,14 +89,51 @@ export const dateExistAsync = async (date: string): Promise<boolean> => {
 
 export const addReservationAsync = async (reservation: Reservation): Promise<void> => {
    const dateKey = reservation.startDate.format("YYYY-MM-DD");
-   // const dateExist = await dateExistAsync(dateKey);
 
-   const reservationId = firebase.database().ref(`Calendar/${dateKey}`).push().key;
-   if (reservationId) {
+   let reservationPath = "";
+   if (!reservation.endDate) {
+      // Put reservation in NoEndDate category
+      reservationPath = "Calendar/NoEndDate";
+   } else {
+      reservationPath = `Calendar/${dateKey}`;
+   }
+
+   const reservationId = await createFirebaseKeyAsync(reservationPath);
+   const modeleId = await createFirebaseKeyAsync("Reservation/Modele");
+   const accessoiresId = await createFirebaseKeyAsync("Reservation/Accessoires");
+   const societeId = await createFirebaseKeyAsync("Reservation/Societe");
+   const addressId = await createFirebaseKeyAsync("Reservation/Address");
+   const prenomId = await createFirebaseKeyAsync("Reservation/Prenom");
+   const nomId = await createFirebaseKeyAsync("Reservation/Nom");
+   const telephoneId = await createFirebaseKeyAsync("Reservation/Telephone");
+   const emailId = await createFirebaseKeyAsync("Reservation/Email");
+   if (
+      reservationId &&
+      modeleId &&
+      accessoiresId &&
+      societeId &&
+      addressId &&
+      prenomId &&
+      nomId &&
+      telephoneId &&
+      emailId
+   ) {
       reservation.id = reservationId;
 
+      const reservationPath = reservation.endDate
+         ? `Calendar/${dateKey}/${reservationId}`
+         : `Calendar/NoEndDate/${reservationId}`;
+
       const updates: Record<string, string> = {};
-      updates[`Calendar/${dateKey}/${reservationId}`] = JSON.stringify(reservation);
+      updates[reservationPath] = JSON.stringify(reservation);
+      updates[`Reservation/Modele/${modeleId}`] = reservation.modele;
+      updates[`Reservation/Accessoires/${accessoiresId}`] = JSON.stringify(reservation.accessoires);
+      updates[`Reservation/Societe/${societeId}`] = reservation.societe;
+      updates[`Reservation/Address/${addressId}`] = reservation.address;
+      updates[`Reservation/Prenom/${prenomId}`] = reservation.prenom;
+      updates[`Reservation/Nom/${nomId}`] = reservation.nom;
+      updates[`Reservation/Telephone/${telephoneId}`] = reservation.gsm;
+      updates[`Reservation/Email/${emailId}`] = reservation.email;
 
       firebase.database().ref().update(updates);
    }
