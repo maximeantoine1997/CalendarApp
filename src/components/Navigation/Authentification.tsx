@@ -3,7 +3,8 @@ import React, { useState } from "react";
 
 import { Link } from "react-router-dom";
 import useUserContext from "../../Contexts/UserContext";
-import firebase from "firebase";
+import * as firebase from "firebase/app";
+import "firebase/auth";
 import { isFunction } from "../../Utils";
 import FadeIn from "../Transitions/FadeIn";
 import SignUp from "./SignUp";
