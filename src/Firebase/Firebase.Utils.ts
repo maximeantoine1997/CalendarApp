@@ -69,22 +69,24 @@ export const createFirebaseKeyAsync = async (url: string): Promise<Nullable<stri
    return id;
 };
 
-export const dateExistAsync = async (date: string): Promise<boolean> => {
-   let exist = false;
+export const isDuplicateFirebaseAsync = async (url: string, value: string): Promise<boolean> => {
+   let isDuplicate = false;
+
    await firebase
       .database()
-      .ref("Calendar")
-      .orderByKey()
-      .equalTo(date)
+      .ref(url)
       .once("value")
       .then(snapshot => {
-         if (snapshot.val()) {
-            exist = true;
+         if (snapshot) {
+            const items = Object.values(snapshot.val()) as Array<string>;
+            isDuplicate = items.some(item => {
+               return item === value;
+            });
          }
       })
       .catch(error => console.error(error));
 
-   return exist;
+   return isDuplicate;
 };
 
 export const addReservationAsync = async (reservation: Reservation): Promise<void> => {
@@ -99,25 +101,8 @@ export const addReservationAsync = async (reservation: Reservation): Promise<voi
    }
 
    const reservationId = await createFirebaseKeyAsync(reservationPath);
-   const modeleId = await createFirebaseKeyAsync("Reservation/Modele");
-   const accessoiresId = await createFirebaseKeyAsync("Reservation/Accessoires");
-   const societeId = await createFirebaseKeyAsync("Reservation/Societe");
-   const addressId = await createFirebaseKeyAsync("Reservation/Address");
-   const prenomId = await createFirebaseKeyAsync("Reservation/Prenom");
-   const nomId = await createFirebaseKeyAsync("Reservation/Nom");
-   const telephoneId = await createFirebaseKeyAsync("Reservation/Telephone");
-   const emailId = await createFirebaseKeyAsync("Reservation/Email");
-   if (
-      reservationId &&
-      modeleId &&
-      accessoiresId &&
-      societeId &&
-      addressId &&
-      prenomId &&
-      nomId &&
-      telephoneId &&
-      emailId
-   ) {
+
+   if (reservationId) {
       reservation.id = reservationId;
 
       const reservationPath = reservation.endDate
@@ -126,14 +111,39 @@ export const addReservationAsync = async (reservation: Reservation): Promise<voi
 
       const updates: Record<string, string> = {};
       updates[reservationPath] = JSON.stringify(reservation);
-      updates[`Reservation/Modele/${modeleId}`] = reservation.modele;
+
+      if (!isDuplicateFirebaseAsync("Reservation/Modele", reservation.modele)) {
+         const modeleId = await createFirebaseKeyAsync("Reservation/Modele");
+         updates[`Reservation/Modele/${modeleId}`] = reservation.modele;
+      }
+
+      const accessoiresId = await createFirebaseKeyAsync("Reservation/Accessoires");
       updates[`Reservation/Accessoires/${accessoiresId}`] = JSON.stringify(reservation.accessoires);
-      updates[`Reservation/Societe/${societeId}`] = reservation.societe;
-      updates[`Reservation/Address/${addressId}`] = reservation.address;
-      updates[`Reservation/Prenom/${prenomId}`] = reservation.prenom;
-      updates[`Reservation/Nom/${nomId}`] = reservation.nom;
-      updates[`Reservation/Telephone/${telephoneId}`] = reservation.gsm;
-      updates[`Reservation/Email/${emailId}`] = reservation.email;
+
+      if (!isDuplicateFirebaseAsync("Reservation/Societe", reservation.societe)) {
+         const societeId = await createFirebaseKeyAsync("Reservation/Societe");
+         updates[`Reservation/Societe/${societeId}`] = reservation.societe;
+      }
+      if (!isDuplicateFirebaseAsync("Reservation/Address", reservation.address)) {
+         const addressId = await createFirebaseKeyAsync("Reservation/Address");
+         updates[`Reservation/Address/${addressId}`] = reservation.address;
+      }
+      if (!isDuplicateFirebaseAsync("Reservation/Prenom", reservation.prenom)) {
+         const prenomId = await createFirebaseKeyAsync("Reservation/Prenom");
+         updates[`Reservation/Prenom/${prenomId}`] = reservation.prenom;
+      }
+      if (!isDuplicateFirebaseAsync("Reservation/Nom", reservation.nom)) {
+         const nomId = await createFirebaseKeyAsync("Reservation/Nom");
+         updates[`Reservation/Nom/${nomId}`] = reservation.nom;
+      }
+      if (!isDuplicateFirebaseAsync("Reservation/Telephone", reservation.gsm)) {
+         const telephoneId = await createFirebaseKeyAsync("Reservation/Telephone");
+         updates[`Reservation/Telephone/${telephoneId}`] = reservation.gsm;
+      }
+      if (!isDuplicateFirebaseAsync("Reservation/Email", reservation.email)) {
+         const emailId = await createFirebaseKeyAsync("Reservation/Email");
+         updates[`Reservation/Email/${emailId}`] = reservation.email;
+      }
 
       firebase.database().ref().update(updates);
    }
