@@ -32,6 +32,7 @@ interface TextProps {
    multiple?: boolean;
    hasError?: boolean;
    errorText?: string;
+   customClass?: any;
 }
 
 const TextComponent: FunctionComponent<TextProps> = ({
@@ -42,12 +43,13 @@ const TextComponent: FunctionComponent<TextProps> = ({
    multiple = false,
    hasError,
    errorText,
+   customClass,
 }): ReactElement => {
    const classes = useStyles();
    const [options, setOptions] = useState<Array<string>>(options_);
 
    const onBlur = (event: any) => {
-      if (event) {
+      if (event && !multiple) {
          const newValue = event.target.value;
 
          onChange(newValue);
@@ -57,7 +59,6 @@ const TextComponent: FunctionComponent<TextProps> = ({
    const onChangeMultiple = (value: any) => {
       if (multiple) {
          onChange(value);
-         console.log(value);
       }
    };
 
@@ -74,7 +75,8 @@ const TextComponent: FunctionComponent<TextProps> = ({
    return (
       <>
          <Autocomplete
-            className={classes.autocomplete}
+            className={customClass ? undefined : classes.autocomplete}
+            style={customClass}
             multiple={multiple}
             freeSolo
             disableClearable
