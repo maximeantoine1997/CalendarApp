@@ -4,6 +4,7 @@ import * as firebase from "firebase/app";
 import "firebase/auth";
 import { motion } from "framer-motion";
 import FadeIn from "../Transitions/FadeIn";
+import signIn from "../../images/signIn.jpg";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -16,6 +17,9 @@ const useStyles = makeStyles((theme: Theme) =>
          color: "white",
          height: "100%",
          width: "100%",
+         backgroundImage: `url(${signIn})`,
+         backgroundSize: "cover",
+         backgroundPosition: "center center",
       },
    })
 );
@@ -65,7 +69,7 @@ const SignIn: React.FC<SignInProps> = ({ onSignUp, onClose }) => {
    };
    return (
       <Grid container className={classes.root}>
-         <Grid item xs={4}>
+         <Grid item xs={5}>
             <motion.div
                animate={"show"}
                initial="hidden"
@@ -75,7 +79,7 @@ const SignIn: React.FC<SignInProps> = ({ onSignUp, onClose }) => {
             ></motion.div>
          </Grid>
 
-         <Grid item xs={8}>
+         <Grid item xs={7}>
             <Grid
                container
                direction="column"
