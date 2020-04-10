@@ -1,17 +1,17 @@
-import { Box, Button, createStyles, makeStyles, Typography, Grid } from "@material-ui/core";
+import { Box, Button, createStyles, Grid, makeStyles, Typography } from "@material-ui/core";
 import moment, { Moment } from "moment";
 import React, { useEffect, useState } from "react";
-import { Redirect } from "react-router-dom";
-import { Reservation } from "../components/reservation_form";
-import useUserContext from "../Contexts/UserContext";
-import { getReservationsAsync } from "../Firebase/Firebase.Utils";
+import { v4 as uuid } from "uuid";
 import CalendarReservation from "../components/Calendar/CalendarReservation";
+import { Reservation } from "../components/reservation_form";
+import { getWeekReservationsAsync } from "../Firebase/Firebase.Utils";
 
 const useStyles = makeStyles(() =>
    createStyles({
       grid: {
-         height: "95vh",
-         paddingTop: "5vh",
+         height: "92vh",
+         paddingTop: "3vh",
+         background: "#F5F6FA",
       },
    })
 );
@@ -19,23 +19,19 @@ const useStyles = makeStyles(() =>
 const CalendarPage: React.FC = () => {
    const classes = useStyles();
 
-   const { user } = useUserContext();
-
    const [date, setDate] = useState<Moment>(moment());
    const [weekPlanning, setWeekPlanning] = useState<Array<Array<Reservation>>>([]);
 
    useEffect(() => {
       const getReservations = async () => {
          const currentDay = date.clone();
-         const monday = await getReservationsAsync(currentDay.day(1).format("YYYY-MM-DD"));
-         const tuesday = await getReservationsAsync(currentDay.day(2).format("YYYY-MM-DD"));
-         const wednesday = await getReservationsAsync(currentDay.day(3).format("YYYY-MM-DD"));
-         const thursday = await getReservationsAsync(currentDay.day(4).format("YYYY-MM-DD"));
-         const friday = await getReservationsAsync(currentDay.day(5).format("YYYY-MM-DD"));
-         const saturday = await getReservationsAsync(currentDay.day(6).format("YYYY-MM-DD"));
-         const sunday = await getReservationsAsync(currentDay.day(7).format("YYYY-MM-DD"));
 
-         setWeekPlanning([monday, tuesday, wednesday, thursday, friday, saturday, sunday]);
+         console.log("current day: ", currentDay);
+         // Get the reservations from Monday to Sunday of that Week
+         const week = await getWeekReservationsAsync(currentDay);
+
+         console.log("week: ", week);
+         setWeekPlanning(week);
       };
 
       getReservations();
@@ -46,28 +42,18 @@ const CalendarPage: React.FC = () => {
       // Set to next week (+ 7 days) or previous week (- 7 days)
       const newDate = date.clone();
 
-      console.log("before: ", newDate.format("YYYY-MM-DD"));
       if (val === "add") {
          newDate.add(7, "days");
       } else {
          newDate.subtract(7, "days");
       }
 
-      console.log("after: ", newDate.format("YYYY-MM-DD"));
-
       setDate(newDate.clone());
 
-      // Set date to the Monday of that week (= 1)
-      const monday = await getReservationsAsync(newDate.day(1).format("YYYY-MM-DD"));
-      const tuesday = await getReservationsAsync(newDate.day(2).format("YYYY-MM-DD"));
-      const wednesday = await getReservationsAsync(newDate.day(3).format("YYYY-MM-DD"));
-      const thursday = await getReservationsAsync(newDate.day(4).format("YYYY-MM-DD"));
-      const friday = await getReservationsAsync(newDate.day(5).format("YYYY-MM-DD"));
-      const saturday = await getReservationsAsync(newDate.day(6).format("YYYY-MM-DD"));
-      const sunday = await getReservationsAsync(newDate.day(7).format("YYYY-MM-DD"));
-
       // Get the reservations from Monday to Sunday of that Week
-      setWeekPlanning([monday, tuesday, wednesday, thursday, friday, saturday, sunday]);
+      const week = await getWeekReservationsAsync(newDate);
+
+      setWeekPlanning(week);
    };
 
    if (weekPlanning.length === 0) {
@@ -75,25 +61,25 @@ const CalendarPage: React.FC = () => {
    }
 
    const renderMonday = weekPlanning[0].map(res => {
-      return <CalendarReservation reservation={res} key={res.id} />;
+      return <CalendarReservation reservation={res} key={uuid()} />;
    });
    const renderTuesday = weekPlanning[1].map(res => {
-      return <CalendarReservation reservation={res} key={res.id} />;
+      return <CalendarReservation reservation={res} key={uuid()} />;
    });
    const renderWednesday = weekPlanning[2].map(res => {
-      return <CalendarReservation reservation={res} key={res.id} />;
+      return <CalendarReservation reservation={res} key={uuid()} />;
    });
    const renderThursday = weekPlanning[3].map(res => {
-      return <CalendarReservation reservation={res} key={res.id} />;
+      return <CalendarReservation reservation={res} key={uuid()} />;
    });
    const renderFriday = weekPlanning[4].map(res => {
-      return <CalendarReservation reservation={res} key={res.id} />;
+      return <CalendarReservation reservation={res} key={uuid()} />;
    });
    const renderSaturday = weekPlanning[5].map(res => {
-      return <CalendarReservation reservation={res} key={res.id} />;
+      return <CalendarReservation reservation={res} key={uuid()} />;
    });
    const renderSunday = weekPlanning[6].map(res => {
-      return <CalendarReservation reservation={res} key={res.id} />;
+      return <CalendarReservation reservation={res} key={uuid()} />;
    });
 
    return (
@@ -139,10 +125,12 @@ const CalendarPage: React.FC = () => {
                {renderSunday}
             </Grid>
          </Grid>
+         <button onClick={() => console.log(weekPlanning)}>Show week</button>
+         <button onClick={() => console.log(renderSunday)}>Show sunday</button>
       </Box>
    );
 
-   return <Redirect to="/" />;
+   //    return <Redirect to="/" />;
 };
 
 export default CalendarPage;

@@ -20,8 +20,6 @@ const ReservationPage = () => {
 
    const { user } = useUserContext();
 
-   console.log("Reservation Page Rendering");
-
    if (user) {
       return (
          <Grid container justify="center" alignContent="center" alignItems="center" className={classes.grid}>
