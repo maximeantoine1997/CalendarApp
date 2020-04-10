@@ -35,8 +35,6 @@ const App: React.FC = () => {
       }
    });
 
-   console.log("App Rendering");
-
    return (
       <UserContextProvider>
          <Router>
