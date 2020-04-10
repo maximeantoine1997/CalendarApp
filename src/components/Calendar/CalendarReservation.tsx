@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Grid, Typography, Dialog, makeStyles, createStyles } from "@material-ui/core";
+import { Grid, Typography, makeStyles, createStyles } from "@material-ui/core";
 import { Reservation } from "../reservation_form";
 import CalendarModal from "./CalendarModal";
 

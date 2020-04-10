@@ -109,7 +109,7 @@ export const addReservationAsync = async (reservation: Reservation): Promise<voi
          ? `Calendar/${dateKey}/${reservationId}`
          : `Calendar/NoEndDate/${reservationId}`;
 
-      const updates: Record<string, string> = {};
+      const updates: Record<string, string | Array<string>> = {};
       updates[reservationPath] = JSON.stringify(reservation);
 
       if (!isDuplicateFirebaseAsync("Reservation/Modele", reservation.modele)) {
@@ -118,7 +118,7 @@ export const addReservationAsync = async (reservation: Reservation): Promise<voi
       }
 
       const accessoiresId = await createFirebaseKeyAsync("Reservation/Accessoires");
-      updates[`Reservation/Accessoires/${accessoiresId}`] = JSON.stringify(reservation.accessoires);
+      updates[`Reservation/Accessoires/${accessoiresId}`] = reservation.accessoires;
 
       if (!isDuplicateFirebaseAsync("Reservation/Societe", reservation.societe)) {
          const societeId = await createFirebaseKeyAsync("Reservation/Societe");
@@ -145,7 +145,11 @@ export const addReservationAsync = async (reservation: Reservation): Promise<voi
          updates[`Reservation/Email/${emailId}`] = reservation.email;
       }
 
-      firebase.database().ref().update(updates);
+      firebase
+         .database()
+         .ref()
+         .update(updates)
+         .catch(error => console.error(error));
    }
 };
 
@@ -161,8 +165,23 @@ export const getReservationsAsync = async (date: string): Promise<Array<Reservat
             const values = snapshot.val();
             if (values) {
                const raw = Object.values(values) as Array<string>;
-               console.log(raw);
-               reservations = raw.map(res => JSON.parse(res));
+
+               raw.forEach(res => reservations.push(JSON.parse(res)));
+            }
+         }
+      });
+
+   await firebase
+      .database()
+      .ref("Calendar/NoEndDate")
+      .once("value")
+      .then(snapshot => {
+         if (snapshot) {
+            const values = snapshot.val();
+            if (values) {
+               const raw = Object.values(values) as Array<string>;
+
+               raw.forEach(res => reservations.push(JSON.parse(res)));
             }
          }
       });

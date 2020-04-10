@@ -1,5 +1,14 @@
-import React, { useState } from "react";
-import { Grid, Typography, Dialog, makeStyles, createStyles, DialogContent, DialogTitle } from "@material-ui/core";
+import React, { ReactElement } from "react";
+import {
+   Grid,
+   Typography,
+   Dialog,
+   makeStyles,
+   createStyles,
+   DialogContent,
+   DialogTitle,
+   Chip,
+} from "@material-ui/core";
 import { Reservation } from "../reservation_form";
 
 const useStyles = makeStyles(() =>
@@ -18,6 +27,14 @@ interface CalendarModalProps {
 
 const CalendarModal: React.FC<CalendarModalProps> = ({ reservation, open, onClose: onClose_ }) => {
    const classes = useStyles();
+
+   console.log(reservation);
+   const renderAccessoires: Array<ReactElement> = reservation.accessoires
+      ? reservation.accessoires.map(accessoire => {
+           return <Chip label={accessoire} />;
+        })
+      : [];
+
    return (
       <>
          <Dialog open={open} onClose={onClose_} fullWidth scroll="paper">
@@ -31,7 +48,7 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation, open, onClos
                      <Typography variant="body1">{reservation.modele}</Typography>
                   </Grid>
                   <Grid item xs={12}>
-                     <Typography variant="body1">{reservation.accessoires[0]}</Typography>
+                     {renderAccessoires}
                   </Grid>
                   <Grid item xs={12}>
                      <Typography variant="body1">{reservation.address}</Typography>

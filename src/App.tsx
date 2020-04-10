@@ -53,7 +53,9 @@ const App: React.FC = () => {
                         <Route path="/calendrier">
                            <CalendarPage />
                         </Route>
-                        <Route path="/account">{/* <AccountPage /> */}</Route>
+                        <Route path="/account">
+                           <AccountPage />
+                        </Route>
                         <Route exact path="/">
                            <HomePage />
                         </Route>

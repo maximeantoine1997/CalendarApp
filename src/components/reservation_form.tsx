@@ -138,8 +138,6 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    };
 
    const addReservation = (reservation: Reservation): void => {
-      console.log("congrats, Reservation was made :D !");
-
       addReservationAsync(reservation);
    };
 
@@ -216,11 +214,6 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
       if (modele.current.length < 1) {
          updateForm("modele", true, "Veuillez rentrer un modèle");
       }
-      // Accessoires
-      //   if (accessoires.current.length < 1) {
-      //      console.log(accessoires.current);
-      //      updateForm("accessoires", true, "Au moins un accessoire");
-      //   }
       // Gsm
       if (gsm.current.length < 1) {
          updateForm("gsm", true, "Au moins un numéro");

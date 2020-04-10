@@ -99,7 +99,7 @@ const CalendarPage: React.FC = () => {
    return (
       <Box className={classes.grid}>
          <Grid container alignItems="center">
-            <Grid item xs={4} alignItems="flex-end">
+            <Grid item xs={4}>
                <Button onClick={() => onUpdate("substract")}>Previous Week</Button>
             </Grid>
             <Grid item xs={4}>
