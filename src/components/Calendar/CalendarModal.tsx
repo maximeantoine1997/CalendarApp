@@ -28,10 +28,9 @@ interface CalendarModalProps {
 const CalendarModal: React.FC<CalendarModalProps> = ({ reservation, open, onClose: onClose_ }) => {
    const classes = useStyles();
 
-   console.log(reservation);
    const renderAccessoires: Array<ReactElement> = reservation.accessoires
-      ? reservation.accessoires.map(accessoire => {
-           return <Chip label={accessoire} />;
+      ? reservation.accessoires.map((accessoire, index) => {
+           return <Chip label={accessoire} variant="outlined" color="secondary" size="medium" key={index} />;
         })
       : [];
 
