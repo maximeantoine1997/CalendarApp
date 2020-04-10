@@ -3,6 +3,7 @@ import * as firebase from "firebase/app";
 import "firebase/database";
 import "firebase/auth";
 import { Nullable } from "../Interfaces/Common";
+import moment, { Moment } from "moment";
 
 // #region Realtime Database
 export const getFirebaseElementAsync = async (url: string): Promise<string> => {
@@ -92,60 +93,80 @@ export const isDuplicateFirebaseAsync = async (url: string, value: string): Prom
 export const addReservationAsync = async (reservation: Reservation): Promise<void> => {
    const dateKey = reservation.startDate.format("YYYY-MM-DD");
 
-   let reservationPath = "";
+   let calendarPath = "";
    if (!reservation.endDate) {
       // Put reservation in NoEndDate category
-      reservationPath = "Calendar/NoEndDate";
+      calendarPath = "Calendar/NoEndDate";
    } else {
-      reservationPath = `Calendar/${dateKey}`;
+      calendarPath = `Calendar/${dateKey}`;
    }
 
-   const reservationId = await createFirebaseKeyAsync(reservationPath);
+   // This will store the reservation JSON
+   const reservationId = await createFirebaseKeyAsync("Reservations");
 
-   if (reservationId) {
+   // This will reference the JSON with its unique reservation ID (to avoid duplicate data)
+   const calendarId = await createFirebaseKeyAsync(calendarPath);
+
+   if (calendarId && reservationId) {
+      // Put reference of reservationId within JSON
       reservation.id = reservationId;
 
-      const reservationPath = reservation.endDate
-         ? `Calendar/${dateKey}/${reservationId}`
-         : `Calendar/NoEndDate/${reservationId}`;
-
       const updates: Record<string, string | Array<string>> = {};
-      updates[reservationPath] = JSON.stringify(reservation);
+      // Stores the reservation JSON
+      updates[`Reservations/${reservationId}`] = JSON.stringify(reservation);
 
-      if (!isDuplicateFirebaseAsync("Reservation/Modele", reservation.modele)) {
-         const modeleId = await createFirebaseKeyAsync("Reservation/Modele");
-         updates[`Reservation/Modele/${modeleId}`] = reservation.modele;
+      // Stores the reference of the reservation JSON
+      if (reservation.endDate) {
+         const currentDate = reservation.startDate.clone();
+         while (currentDate.format("YYYY-MM-DD") !== reservation.endDate.format("YYYY-MM-DD")) {
+            const currentDateKey = currentDate.format("YYYY-MM-DD");
+            updates[`Calendar/${currentDateKey}/${calendarId}`] = reservationId;
+            currentDate.add(1, "day");
+         }
+         const endDateKey = reservation.endDate.format("YYYY-MM-DD");
+         updates[`Calendar/${endDateKey}/${calendarId}`] = reservationId;
+      } else {
+         updates[`Calendar/NoEndDate/${calendarId}`] = reservationId;
       }
 
-      const accessoiresId = await createFirebaseKeyAsync("Reservation/Accessoires");
-      updates[`Reservation/Accessoires/${accessoiresId}`] = reservation.accessoires;
+      reservation.accessoires.forEach(async accessoire => {
+         if (!(await isDuplicateFirebaseAsync("Reservation/Accessoires", accessoire))) {
+            const accessoiresId = await createFirebaseKeyAsync("Reservation/Accessoires");
+            updates[`Reservation/Accessoires/${accessoiresId}`] = accessoire;
+         }
+      });
 
-      if (!isDuplicateFirebaseAsync("Reservation/Societe", reservation.societe)) {
+      if (!(await isDuplicateFirebaseAsync("Reservation/Societe", reservation.societe))) {
          const societeId = await createFirebaseKeyAsync("Reservation/Societe");
          updates[`Reservation/Societe/${societeId}`] = reservation.societe;
       }
-      if (!isDuplicateFirebaseAsync("Reservation/Address", reservation.address)) {
+      if (!(await isDuplicateFirebaseAsync("Reservation/Address", reservation.address))) {
          const addressId = await createFirebaseKeyAsync("Reservation/Address");
          updates[`Reservation/Address/${addressId}`] = reservation.address;
       }
-      if (!isDuplicateFirebaseAsync("Reservation/Prenom", reservation.prenom)) {
+      if (!(await isDuplicateFirebaseAsync("Reservation/Prenom", reservation.prenom))) {
          const prenomId = await createFirebaseKeyAsync("Reservation/Prenom");
          updates[`Reservation/Prenom/${prenomId}`] = reservation.prenom;
       }
-      if (!isDuplicateFirebaseAsync("Reservation/Nom", reservation.nom)) {
+      if (!(await isDuplicateFirebaseAsync("Reservation/Nom", reservation.nom))) {
          const nomId = await createFirebaseKeyAsync("Reservation/Nom");
          updates[`Reservation/Nom/${nomId}`] = reservation.nom;
       }
-      if (!isDuplicateFirebaseAsync("Reservation/Telephone", reservation.gsm)) {
+      if (!(await isDuplicateFirebaseAsync("Reservation/Telephone", reservation.gsm))) {
          const telephoneId = await createFirebaseKeyAsync("Reservation/Telephone");
          updates[`Reservation/Telephone/${telephoneId}`] = reservation.gsm;
       }
-      if (!isDuplicateFirebaseAsync("Reservation/Email", reservation.email)) {
+      if (!(await isDuplicateFirebaseAsync("Reservation/Email", reservation.email))) {
          const emailId = await createFirebaseKeyAsync("Reservation/Email");
          updates[`Reservation/Email/${emailId}`] = reservation.email;
       }
 
-      firebase
+      if (!(await isDuplicateFirebaseAsync("Reservation/Modele", reservation.modele))) {
+         const modeleId = await createFirebaseKeyAsync("Reservation/Modele");
+         updates[`Reservation/Modele/${modeleId}`] = reservation.modele;
+      }
+
+      await firebase
          .database()
          .ref()
          .update(updates)
@@ -156,6 +177,8 @@ export const addReservationAsync = async (reservation: Reservation): Promise<voi
 export const getReservationsAsync = async (date: string): Promise<Array<Reservation>> => {
    let reservations: Array<Reservation> = [];
 
+   console.log("date is: ", date);
+
    await firebase
       .database()
       .ref(`Calendar/${date}`)
@@ -164,9 +187,19 @@ export const getReservationsAsync = async (date: string): Promise<Array<Reservat
          if (snapshot) {
             const values = snapshot.val();
             if (values) {
-               const raw = Object.values(values) as Array<string>;
+               const reservationsIds = Object.values(values) as Array<string>;
 
-               raw.forEach(res => reservations.push(JSON.parse(res)));
+               reservationsIds.forEach(async id => {
+                  await firebase
+                     .database()
+                     .ref("Reservations")
+                     .child(id)
+                     .once("value")
+                     .then(snapshot => {
+                        const res = snapshot.val();
+                        reservations.push(JSON.parse(res));
+                     });
+               });
             }
          }
       });
@@ -179,14 +212,128 @@ export const getReservationsAsync = async (date: string): Promise<Array<Reservat
          if (snapshot) {
             const values = snapshot.val();
             if (values) {
-               const raw = Object.values(values) as Array<string>;
+               const reservationsIds = Object.values(values) as Array<string>;
 
-               raw.forEach(res => reservations.push(JSON.parse(res)));
+               reservationsIds.forEach(async id => {
+                  await firebase
+                     .database()
+                     .ref("Reservations")
+                     .child(id)
+                     .once("value")
+                     .then(snapshot => {
+                        const res = snapshot.val();
+                        reservations.push(JSON.parse(res));
+                     });
+               });
             }
          }
       });
 
+   console.log("reservations: ", reservations);
+   console.log("------------------ ");
    return reservations;
+};
+
+export const getWeekReservationsAsync = async (date: Moment): Promise<Array<Array<Reservation>>> => {
+   const weekReservations: Array<Array<Reservation>> = [[], [], [], [], [], [], []];
+
+   const cache: Array<Record<string, Reservation>> = [];
+
+   // 1) Get the Calendar reservations
+   //    let i = 1;
+   //    while (i < 8) {
+   //       const currentIndex = i;
+   //       const currentDate = date.clone().day(i);
+   //       await firebase
+   //          .database()
+   //          .ref("Calendar/")
+   //          .child(currentDate.format("YYYY-MM-DD"))
+   //          .once("value")
+
+   //          .then(snapshot => {
+   //             if (snapshot) {
+   //                const reservations = snapshot.val();
+
+   //                if (reservations) {
+   //                   const reservationIds: Array<string> = Object.values(reservations);
+
+   //                   reservationIds.forEach(async id => {
+   //                      let reservation = cache.find(record => {
+   //                         console.log("record is: ", record);
+   //                         return record[id];
+   //                      });
+   //                      if (!reservation) {
+   //                         await firebase
+   //                            .database()
+   //                            .ref("Reservations")
+   //                            .child(id)
+   //                            .once("value")
+   //                            .then(snapshot => {
+   //                               const res = snapshot.val();
+   //                               // put res in cache
+   //                               const cacheRes: Record<string, Reservation> = {};
+   //                               cacheRes[id] = JSON.parse(res);
+   //                               cache.push(cacheRes);
+   //                               reservation = cacheRes;
+   //                            });
+   //                      }
+
+   //                      if (reservation) {
+   //                         const finalReservation = Object.values(reservation)[0];
+   //                         weekReservations[currentIndex - 1].push(finalReservation);
+   //                      }
+   //                   });
+   //                }
+   //             }
+   //          });
+   //       i++;
+   //    }
+
+   // 2) Get the NoEndDate reservations
+   await firebase
+      .database()
+      .ref("Calendar/NoEndDate")
+      .once("value")
+      .then(snapshot => {
+         if (snapshot) {
+            const values = snapshot.val();
+            if (values) {
+               // All the ids of the NoEndDates reservations
+               const reservationsIds = Object.values(values) as Array<string>;
+
+               reservationsIds.forEach(id => {
+                  firebase
+                     .database()
+                     .ref("Reservations")
+                     .child(id)
+                     .once("value")
+                     .then(snapshot => {
+                        const res = snapshot.val();
+                        // put res in cache
+
+                        const noEndDate = JSON.parse(res);
+                        const start = moment(noEndDate.startDate);
+
+                        let i = 1;
+                        const currentDate = date.clone();
+
+                        while (i < 8) {
+                           if (currentDate.isSameOrAfter(start)) {
+                              weekReservations[i - 1].push(noEndDate);
+                           }
+                           i++;
+                        }
+                     });
+               });
+            }
+         }
+      });
+
+   // 2) When ids found, put in cache if not in there yet
+
+   // 3)
+
+   return weekReservations;
 };
 
 // #endregion
