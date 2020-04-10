@@ -115,14 +115,14 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    const classes = useStyles();
 
    // #region  useRef
-   const prenom = useRef<string>("a");
-   const nom = useRef<string>("a");
-   const societe = useRef<string>("a");
-   const modele = useRef<string>("a");
+   const prenom = useRef<string>("");
+   const nom = useRef<string>("");
+   const societe = useRef<string>("");
+   const modele = useRef<string>("");
    const accessoires = useRef<Array<string>>([]);
-   const gsm = useRef<string>("a");
-   const email = useRef<string>("a");
-   const address = useRef<string>("a");
+   const gsm = useRef<string>("");
+   const email = useRef<string>("");
+   const address = useRef<string>("");
    const startDate = useRef<Moment>(moment());
    const endDate = useRef<Moment>();
    const montant = useRef<number>(0);
@@ -227,7 +227,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
          updateForm("address", true, "Au moins un caractère");
       }
       // startDate & endDate
-      if (endDate.current && !startDate.current?.isBefore(endDate.current)) {
+      if (endDate.current && !startDate.current?.isSameOrBefore(endDate.current, "day")) {
          updateForm(
             "startDate",
             true,
@@ -328,6 +328,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                url="Reservation/Societe"
             />
          </Grid>
+         <Grid item xs={6}></Grid>
          <Grid item xs={12}>
             <TextComponent
                hasError={validForm["address"].hasError}
@@ -335,6 +336,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                placeholder="Adresse"
                url="Reservation/Address"
                onChange={e => onChange(address, e)}
+               customClass={{ paddingLeft: "5%", width: "85%", paddingRight: "10%" }}
             />
          </Grid>
          <Grid item xs={6} style={{ minHeight: "10vh" }}>
@@ -351,7 +353,14 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                   <CheckBoxComponent
                      value={hasEndDate}
                      placeholder="Date de fin"
-                     onChange={(e: any) => setHasEndDate(e)}
+                     onChange={(e: boolean) => {
+                        setHasEndDate(e);
+                        if (e) {
+                           onChange(endDate, moment());
+                        } else {
+                           onChange(endDate, undefined);
+                        }
+                     }}
                   />
                </Grid>
             </Grid>
