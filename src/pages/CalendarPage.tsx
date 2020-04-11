@@ -4,7 +4,8 @@ import React, { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
 import CalendarReservation from "../components/Calendar/CalendarReservation";
 import { Reservation } from "../components/reservation_form";
-import { getWeekReservationsAsync } from "../Firebase/Firebase.Utils";
+import * as firebase from "firebase/app";
+import "firebase/functions";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -22,19 +23,24 @@ const CalendarPage: React.FC = () => {
    const [date, setDate] = useState<Moment>(moment());
    const [weekPlanning, setWeekPlanning] = useState<Array<Array<Reservation>>>([]);
 
+   const getWeekReservationsAsync = firebase.functions().httpsCallable("getWeekReservationsAsync");
+
    useEffect(() => {
       const getReservations = async () => {
          const currentDay = date.clone();
 
-         console.log("current day: ", currentDay);
          // Get the reservations from Monday to Sunday of that Week
-         const week = await getWeekReservationsAsync(currentDay);
+         let week: Array<Array<Reservation>> = [];
 
-         console.log("week: ", week);
+         await getWeekReservationsAsync({ date: currentDay.format("YYYY-MM-DD") }).then(result => {
+            week = result.data;
+         });
+         console.log(week);
          setWeekPlanning(week);
       };
 
       getReservations();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
    }, []);
 
    const onUpdate = async (val: "add" | "substract") => {
@@ -51,8 +57,14 @@ const CalendarPage: React.FC = () => {
       setDate(newDate.clone());
 
       // Get the reservations from Monday to Sunday of that Week
-      const week = await getWeekReservationsAsync(newDate);
 
+      let week: Array<Array<Reservation>> = [];
+
+      await getWeekReservationsAsync({ date: newDate.format("YYYY-MM-DD") }).then(result => {
+         week = result.data;
+      });
+
+      console.log(week);
       setWeekPlanning(week);
    };
 
@@ -125,8 +137,6 @@ const CalendarPage: React.FC = () => {
                {renderSunday}
             </Grid>
          </Grid>
-         <button onClick={() => console.log(weekPlanning)}>Show week</button>
-         <button onClick={() => console.log(renderSunday)}>Show sunday</button>
       </Box>
    );
 
