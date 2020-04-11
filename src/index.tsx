@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App";
 import * as firebase from "firebase/app";
 import "firebase/database";
+import "firebase/functions";
 
 // #region Firebase
 
@@ -18,6 +19,9 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+
+// Initialize Cloud Functions through Firebase
+firebase.functions();
 
 // #endregion
 
