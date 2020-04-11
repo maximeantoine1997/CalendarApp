@@ -6,6 +6,7 @@ import CalendarReservation from "../components/Calendar/CalendarReservation";
 import { Reservation } from "../components/reservation_form";
 import * as firebase from "firebase/app";
 import "firebase/functions";
+import CalendarNavigation from "../components/Calendar/CalendarNavigation";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -35,7 +36,6 @@ const CalendarPage: React.FC = () => {
          await getWeekReservationsAsync({ date: currentDay.format("YYYY-MM-DD") }).then(result => {
             week = result.data;
          });
-         console.log(week);
          setWeekPlanning(week);
       };
 
@@ -43,29 +43,18 @@ const CalendarPage: React.FC = () => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, []);
 
-   const onUpdate = async (val: "add" | "substract") => {
-      // We need to clone the object so that the React see it as a new object
-      // Set to next week (+ 7 days) or previous week (- 7 days)
-      const newDate = date.clone();
-
-      if (val === "add") {
-         newDate.add(7, "days");
-      } else {
-         newDate.subtract(7, "days");
-      }
-
-      setDate(newDate.clone());
+   const onChangeDate = (newDate: Moment) => {
+      setDate(newDate);
 
       // Get the reservations from Monday to Sunday of that Week
 
-      let week: Array<Array<Reservation>> = [];
+      //   let week: Array<Array<Reservation>> = [];
 
-      await getWeekReservationsAsync({ date: newDate.format("YYYY-MM-DD") }).then(result => {
-         week = result.data;
-      });
+      //   await getWeekReservationsAsync({ date: newDate.format("YYYY-MM-DD") }).then(result => {
+      //      week = result.data;
+      //   });
 
-      console.log(week);
-      setWeekPlanning(week);
+      //   setWeekPlanning(week);
    };
 
    if (weekPlanning.length === 0) {
@@ -96,7 +85,7 @@ const CalendarPage: React.FC = () => {
 
    return (
       <Box className={classes.grid}>
-         <Grid container alignItems="center">
+         {/* <Grid container alignItems="center">
             <Grid item xs={4}>
                <Button onClick={() => onUpdate("substract")}>Previous Week</Button>
             </Grid>
@@ -106,7 +95,8 @@ const CalendarPage: React.FC = () => {
             <Grid item xs={4}>
                <Button onClick={() => onUpdate("add")}>Next Week</Button>
             </Grid>
-         </Grid>
+         </Grid> */}
+         <CalendarNavigation currentDate={date} onChangeDate={onChangeDate} />
          <Grid container>
             <Grid item style={{ width: "14vw" }}>
                <Typography align="center">Lundi</Typography>
