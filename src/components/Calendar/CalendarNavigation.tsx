@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { Moment } from "moment";
 import { Grid, Typography, Button, Dialog, makeStyles, createStyles } from "@material-ui/core";
 import InsertInvitationIcon from "@material-ui/icons/InsertInvitation";
-import { DatePicker, MuiPickersUtilsProvider, Calendar } from "@material-ui/pickers";
+import { MuiPickersUtilsProvider, Calendar } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
-import { isFunction } from "../../Utils";
+import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -52,6 +52,11 @@ const CalendarNavigation: React.FC<CalendarNavigationProps> = ({ currentDate, on
 
       onChangeDate(newDate);
    };
+
+   const onChangeCalendar = (newDate: MaterialUiPickersDate) => {
+      setCalendarOpen(false);
+      onChangeDate(newDate as Moment);
+   };
    return (
       <Grid container className={classes.root} direction="row">
          <Grid item xs={4}>
@@ -89,14 +94,7 @@ const CalendarNavigation: React.FC<CalendarNavigationProps> = ({ currentDate, on
          {calendarOpen && (
             <Dialog open={calendarOpen} className={classes.calendar}>
                <MuiPickersUtilsProvider utils={MomentUtils} locale="fr">
-                  <Calendar
-                     date={currentDate}
-                     allowKeyboardControl
-                     onChange={date => {
-                        console.log(date);
-                        setCalendarOpen(false);
-                     }}
-                  />
+                  <Calendar date={currentDate} allowKeyboardControl onChange={onChangeCalendar} />
                </MuiPickersUtilsProvider>
             </Dialog>
          )}
