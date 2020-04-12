@@ -16,6 +16,7 @@ const useStyles = makeStyles(() =>
          marginTop: "20px",
          paddingLeft: "10px",
          paddingRight: "10px",
+         cursor: "pointer",
       },
    })
 );
@@ -29,21 +30,16 @@ const CalendarReservation: React.FC<CalendarReservationProps> = ({ reservation }
 
    return (
       <>
-         <Grid container onClick={() => setExpand(true)} className={classes.container}>
-            <Box boxShadow={3} className={classes.calendar} style={{ borderLeft: "4px solid red" }}>
-               <Grid item xs={12}>
-                  <Typography variant="h5">{reservation.societe}</Typography>
-               </Grid>
-               <Grid item xs={12}>
-                  <Typography variant="body1">{reservation.startDate}</Typography>
-               </Grid>
-               <Grid item xs={12}>
-                  <Typography variant="body1">{reservation.accessoires[0]}</Typography>
-               </Grid>
-               <Grid item xs={12}>
-                  <Typography variant="body1">{reservation.address}</Typography>
-               </Grid>
-            </Box>
+         <Grid container onClick={() => setExpand(true)} className={classes.container} direction="column">
+            <Grid item>
+               <Typography>{reservation.societe}</Typography>
+            </Grid>
+            <Grid item>
+               <Typography>{reservation.modele}</Typography>
+            </Grid>
+            <Grid item>
+               <Typography>{reservation.address}</Typography>
+            </Grid>
          </Grid>
          <CalendarModal reservation={reservation} open={expand} onClose={() => setExpand(false)} />
       </>
