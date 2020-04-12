@@ -1,11 +1,7 @@
-import { Box, Button, createStyles, Grid, makeStyles, Typography } from "@material-ui/core";
-import moment, { Moment } from "moment";
-import React, { useEffect, useState } from "react";
-import { v4 as uuid } from "uuid";
-import CalendarReservation from "../components/Calendar/CalendarReservation";
-import { Reservation } from "../components/reservation_form";
-import * as firebase from "firebase/app";
+import { Box, createStyles, makeStyles } from "@material-ui/core";
 import "firebase/functions";
+import moment, { Moment } from "moment";
+import React, { useState } from "react";
 import CalendarNavigation from "../components/Calendar/CalendarNavigation";
 import CalendarWeekView from "../components/Calendar/CalendarWeekView";
 
