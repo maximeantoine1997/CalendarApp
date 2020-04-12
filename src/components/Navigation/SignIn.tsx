@@ -4,21 +4,21 @@ import * as firebase from "firebase/app";
 import "firebase/auth";
 import { motion } from "framer-motion";
 import FadeIn from "../Transitions/FadeIn";
-import signIn from "../../images/signIn.jpg";
+import signIn from "../../images/signIn.svg";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
       root: {
-         flexGrow: 1,
-         minHeight: "65vh",
+         minHeight: "70vh",
+         padding: "15px",
       },
       sideBar: {
          background: "linear-gradient(to right, #457fca, #5691c8)",
          color: "white",
          height: "100%",
-         width: "100%",
          backgroundImage: `url(${signIn})`,
-         backgroundSize: "cover",
+         backgroundSize: "contain",
+         backgroundRepeat: "no-repeat",
          backgroundPosition: "center center",
       },
    })
@@ -32,18 +32,17 @@ interface SignInProps {
 const SignIn: React.FC<SignInProps> = ({ onSignUp, onClose }) => {
    const classes = useStyles();
 
-   const email = useRef("florian@antoinesprl.be");
-   const password = useRef("123456");
+   const email = useRef("");
+   const password = useRef("");
 
    // #region Animation
 
    const sideBarVariants = {
-      hidden: { scaleX: 5, scaleY: 2, opacity: 1 },
+      hidden: { opacity: 0, x: -100 },
       show: {
          y: 0,
          x: 0,
-         scaleX: 1,
-         scaleY: 1,
+         opacity: 1,
          transition: { delay: 0.2, duration: 0.4, ease: "easeInOut" },
       },
    };
@@ -69,7 +68,7 @@ const SignIn: React.FC<SignInProps> = ({ onSignUp, onClose }) => {
    };
    return (
       <Grid container className={classes.root}>
-         <Grid item xs={5}>
+         <Grid item xs={4}>
             <motion.div
                animate={"show"}
                initial="hidden"
@@ -78,8 +77,7 @@ const SignIn: React.FC<SignInProps> = ({ onSignUp, onClose }) => {
                className={classes.sideBar}
             ></motion.div>
          </Grid>
-
-         <Grid item xs={7}>
+         <Grid item xs={8}>
             <Grid
                container
                direction="column"

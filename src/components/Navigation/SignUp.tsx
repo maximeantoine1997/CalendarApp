@@ -4,18 +4,22 @@ import * as firebase from "firebase/app";
 import "firebase/auth";
 import { motion } from "framer-motion";
 import FadeIn from "../Transitions/FadeIn";
+import signUp from "../../images/signup.svg";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
       root: {
-         flexGrow: 1,
-         minHeight: "65vh",
+         minHeight: "70vh",
+         padding: "15px",
       },
       sideBar: {
          background: "linear-gradient(to right, #457fca, #5691c8)",
          color: "white",
          height: "100%",
-         width: "100%",
+         backgroundImage: `url(${signUp})`,
+         backgroundSize: "contain",
+         backgroundRepeat: "no-repeat",
+         backgroundPosition: "center center",
       },
    })
 );
@@ -36,12 +40,11 @@ const SignUp: React.FC<SignUpProps> = ({ onSignIn, onClose }) => {
    // #region Animation
 
    const sideBarVariants = {
-      hidden: { scaleX: 6, scaleY: 2, opacity: 1 },
+      hidden: { opacity: 0, x: 100 },
       show: {
          y: 0,
          x: 0,
-         scaleX: 1,
-         scaleY: 1,
+         opacity: 1,
          transition: { delay: 0.2, duration: 0.4, ease: "easeInOut" },
       },
    };
@@ -72,7 +75,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignIn, onClose }) => {
    };
    return (
       <Grid container className={classes.root}>
-         <Grid item xs={8}>
+         <Grid item xs={7}>
             <Grid
                container
                direction="column"
@@ -130,7 +133,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignIn, onClose }) => {
                </Grid>
             </Grid>
          </Grid>
-         <Grid item xs={4}>
+         <Grid item xs={5}>
             <motion.div
                animate={"show"}
                initial="hidden"
