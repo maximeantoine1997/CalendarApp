@@ -15,7 +15,11 @@ const useStyles = makeStyles(() =>
    createStyles({
       dialog: {
          height: "50vh",
-         padding: "20px",
+      },
+      title: {
+         paddingTop: "20px",
+         fontFamily: "Arial",
+         fontSize: "1.5em",
       },
    })
 );
@@ -39,18 +43,22 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation, open, onClos
          <Dialog open={open} onClose={onClose_} fullWidth scroll="paper">
             <DialogTitle>Reservation</DialogTitle>
             <DialogContent>
-               <Grid container className={classes.dialog}>
-                  <Grid item xs={12}>
-                     <Typography variant="h5">{reservation.societe}</Typography>
+               <Grid container className={classes.dialog} direction="column">
+                  <Grid item>
+                     <Typography className={classes.title}>Societé:</Typography>
+                     <Typography>{reservation.societe}</Typography>
                   </Grid>
-                  <Grid item xs={12}>
-                     <Typography variant="body1">{reservation.modele}</Typography>
+                  <Grid item>
+                     <Typography className={classes.title}>Machine:</Typography>
+                     <Typography>{reservation.modele}</Typography>
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid item>
+                     <Typography className={classes.title}>Accessoires:</Typography>
                      {renderAccessoires}
                   </Grid>
-                  <Grid item xs={12}>
-                     <Typography variant="body1">{reservation.address}</Typography>
+                  <Grid item>
+                     <Typography className={classes.title}>Addresse:</Typography>
+                     <Typography>{reservation.address}</Typography>
                   </Grid>
                </Grid>
             </DialogContent>
