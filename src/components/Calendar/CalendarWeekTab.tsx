@@ -18,9 +18,13 @@ const useStyles = makeStyles(() =>
          padding: "20px",
          fontFamily: "Arial",
          fontWeight: "bold",
+         height: "100px",
       },
       dateNumber: {
          fontSize: "2em",
+      },
+      scroll: {
+         overflowY: "auto",
       },
    })
 );
@@ -37,15 +41,15 @@ const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day, data }) => {
    const dayDate = day.date();
 
    return (
-      <Grid container className={classes.calendar} direction="column">
+      <Grid container className={classes.calendar} direction="row">
          <Grid item style={{ color: day.isSame(moment(), "date") ? "red" : "black" }} className={classes.date}>
             {dayName}
             <br />
             <Box className={classes.dateNumber}>{dayDate}</Box>
          </Grid>
          <Grid item>
-            {data.map(reservation => {
-               return <CalendarReservation reservation={reservation} />;
+            {data.map((reservation, index) => {
+               return <CalendarReservation reservation={reservation} key={index} />;
             })}
          </Grid>
       </Grid>
