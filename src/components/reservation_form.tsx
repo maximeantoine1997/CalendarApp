@@ -109,6 +109,7 @@ export interface Reservation {
    montant: number;
    isBancontact: boolean;
    isReceived: boolean;
+   reservationNumber?: string;
 }
 
 const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
