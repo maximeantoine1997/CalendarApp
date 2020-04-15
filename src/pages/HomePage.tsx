@@ -3,7 +3,7 @@ import { makeStyles, createStyles, Grid, Typography } from "@material-ui/core";
 import { ReactComponent as Calendar } from "../images/calendar.svg";
 import { ReactComponent as Reservation } from "../images/reservation.svg";
 import { ReactComponent as Compte } from "../images/compte.svg";
-import { ReactComponent as Question } from "../images/question.svg";
+import { ReactComponent as Settings } from "../images/settings.svg";
 import { Link } from "react-router-dom";
 
 const useStyles = makeStyles(() =>
@@ -66,10 +66,10 @@ const HomePage = () => {
                </Link>
             </Grid>
             <Grid item direction="column" className={classes.card}>
-               <Link to="/" className={classes.link}>
-                  <Question width="25vw" height="25vh" title="Calendrier" className={classes.picture} />
+               <Link to="/settings" className={classes.link}>
+                  <Settings width="25vw" height="25vh" title="Admin" className={classes.picture} />
                   <Typography className={classes.title} align="center">
-                     Questions
+                     Admin
                   </Typography>
                </Link>
             </Grid>

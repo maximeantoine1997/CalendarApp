@@ -11,6 +11,7 @@ import ReservationPage from "./pages/ReservationPage";
 import CalendarPage from "./pages/CalendarPage";
 import AccountPage from "./pages/AccountPage";
 import HomePage from "./pages/HomePage";
+import SettingsPage from "./pages/SettingsPage";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -53,6 +54,9 @@ const App: React.FC = () => {
                         </Route>
                         <Route path="/account">
                            <AccountPage />
+                        </Route>
+                        <Route path="/settings">
+                           <SettingsPage />
                         </Route>
                         <Route exact path="/">
                            <HomePage />
