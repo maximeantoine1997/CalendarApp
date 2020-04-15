@@ -33,6 +33,8 @@ interface TextProps {
    hasError?: boolean;
    errorText?: string;
    customClass?: any;
+   value?: any;
+   variant?: "filled" | "outlined" | "standard";
 }
 
 const TextComponent: FunctionComponent<TextProps> = ({
@@ -44,6 +46,8 @@ const TextComponent: FunctionComponent<TextProps> = ({
    hasError,
    errorText,
    customClass,
+   value = "",
+   variant = "outlined",
 }): ReactElement => {
    const classes = useStyles();
    const [options, setOptions] = useState<Array<string>>(options_);
@@ -76,6 +80,7 @@ const TextComponent: FunctionComponent<TextProps> = ({
       <>
          <Autocomplete
             className={customClass ? undefined : classes.autocomplete}
+            value={value}
             style={customClass}
             multiple={multiple}
             freeSolo
@@ -89,9 +94,9 @@ const TextComponent: FunctionComponent<TextProps> = ({
                   label={placeholder}
                   fullWidth
                   margin="normal"
-                  variant="outlined"
+                  variant={variant}
                   InputProps={{ ...params.InputProps, type: "search" }}
-                  className={classes.textbox}
+                  className={variant === "outlined" ? classes.textbox : undefined}
                />
             )}
             onBlur={event => onBlur(event as any)}
