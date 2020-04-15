@@ -1,10 +1,11 @@
-import { makeStyles, createStyles, Grid } from "@material-ui/core";
-import { Moment } from "moment";
-import React, { ReactElement, useEffect, useState } from "react";
-import { Reservation } from "../reservation_form";
+import { createStyles, Grid, makeStyles } from "@material-ui/core";
 import * as firebase from "firebase/app";
 import "firebase/functions";
+import { Moment } from "moment";
+import React, { useEffect, useState } from "react";
+import { Reservation } from "../reservation_form";
 import CalendarWeekTab from "./CalendarWeekTab";
+import { CalendarType } from "../../Interfaces/Common";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -26,9 +27,10 @@ const useStyles = makeStyles(() =>
 
 interface CalendarWeekViewProps {
    currentDate: Moment;
+   calendarType: CalendarType;
 }
 
-const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({ currentDate }) => {
+const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({ currentDate, calendarType }) => {
    const classes = useStyles();
 
    const [weekPlanning, setWeekPlanning] = useState<Array<Array<Reservation>>>([]);
@@ -49,18 +51,22 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({ currentDate }) => {
    if (!weekPlanning.length) {
       return <></>;
    }
+   if (calendarType === CalendarType.preparation) {
+      return (
+         <Grid container justify="center" alignContent="space-around" direction="row">
+            {weekPlanning.map((dayData, index) => {
+               console.log("index: ", index, " - data: ", dayData);
+               return (
+                  <Grid item key={index}>
+                     <CalendarWeekTab data={dayData} day={currentDate.clone().day(index + 1)} key={index} />
+                  </Grid>
+               );
+            })}
+         </Grid>
+      );
+   }
 
-   return (
-      <Grid container justify="center" alignContent="space-around">
-         {weekPlanning.map((dayData, index) => {
-            return (
-               <Grid item>
-                  <CalendarWeekTab data={dayData} day={currentDate.clone().day(index + 1)} />
-               </Grid>
-            );
-         })}
-      </Grid>
-   );
+   return <>LIVRAISON</>;
 };
 
 export default CalendarWeekView;
