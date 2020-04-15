@@ -90,6 +90,7 @@ export const isDuplicateFirebaseAsync = async (url: string, value: string): Prom
    return isDuplicate;
 };
 
+// Reservation
 export const addReservationAsync = async (reservation: Reservation): Promise<void> => {
    const dateKey = reservation.startDate.format("YYYY-MM-DD");
 
@@ -232,6 +233,11 @@ export const getReservationsAsync = async (date: string): Promise<Array<Reservat
    console.log("reservations: ", reservations);
    console.log("------------------ ");
    return reservations;
+};
+
+export const updateReservationAsync = (id: string, newReservation: Reservation): void => {
+   const raw = JSON.stringify(newReservation);
+   firebase.database().ref("Reservations").child(id).set(raw);
 };
 
 export const getWeekReservationsAsync = async (date: Moment): Promise<Array<Array<Reservation>>> => {
