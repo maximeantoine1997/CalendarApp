@@ -6,6 +6,7 @@ import CalendarModal from "./CalendarModal";
 const useStyles = makeStyles(() =>
    createStyles({
       calendar: {
+         margin: "0px",
          width: "auto",
          paddingLeft: "10px",
          paddingRight: "10px",
@@ -31,6 +32,9 @@ const CalendarReservation: React.FC<CalendarReservationProps> = ({ reservation }
    return (
       <>
          <Grid container onClick={() => setExpand(true)} className={classes.container} direction="column">
+            <Grid item>
+               <Typography>{reservation.reservationNumber || "123"}</Typography>
+            </Grid>
             <Grid item>
                <Typography>{reservation.societe}</Typography>
             </Grid>
