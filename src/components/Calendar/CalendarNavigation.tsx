@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { Moment } from "moment";
-import { Grid, Typography, Button, Dialog, makeStyles, createStyles } from "@material-ui/core";
+import { Grid, Typography, Button, Dialog, makeStyles, createStyles, ButtonGroup } from "@material-ui/core";
 import InsertInvitationIcon from "@material-ui/icons/InsertInvitation";
 import { MuiPickersUtilsProvider, Calendar } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
+import { CalendarType } from "../../Interfaces/Common";
+import { isFunction } from "../../Utils";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -29,9 +31,10 @@ const useStyles = makeStyles(() =>
 interface CalendarNavigationProps {
    currentDate: Moment;
    onChangeDate: (newDate: Moment) => void;
+   onChangeCalendarType: (type: CalendarType) => void;
 }
 
-const CalendarNavigation: React.FC<CalendarNavigationProps> = ({ currentDate, onChangeDate }) => {
+const CalendarNavigation: React.FC<CalendarNavigationProps> = ({ currentDate, onChangeDate, onChangeCalendarType }) => {
    const classes = useStyles();
 
    const monday = currentDate.clone().day(1).date();
@@ -75,9 +78,24 @@ const CalendarNavigation: React.FC<CalendarNavigationProps> = ({ currentDate, on
             </Grid>
          </Grid>
          <Grid item xs={4}>
-            <Typography align="center" variant="h5">
-               Calendrier Antoine SPRL
-            </Typography>
+            <Grid container justify="center">
+               <ButtonGroup>
+                  <Button
+                     onClick={() => {
+                        onChangeCalendarType(CalendarType.preparation);
+                     }}
+                  >
+                     PREPARATION
+                  </Button>
+                  <Button
+                     onClick={() => {
+                        onChangeCalendarType(CalendarType.livraison);
+                     }}
+                  >
+                     LIVRAISON
+                  </Button>
+               </ButtonGroup>
+            </Grid>
          </Grid>
          <Grid item xs={4}>
             <Grid container justify="center">
