@@ -4,6 +4,7 @@ import moment, { Moment } from "moment";
 import React, { useState } from "react";
 import CalendarNavigation from "../components/Calendar/CalendarNavigation";
 import CalendarWeekView from "../components/Calendar/CalendarWeekView";
+import { CalendarType } from "../Interfaces/Common";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -18,15 +19,24 @@ const CalendarPage: React.FC = () => {
    const classes = useStyles();
 
    const [date, setDate] = useState<Moment>(moment());
+   const [calendarType, setCalendarType] = useState<CalendarType>(CalendarType.preparation);
 
    const onChangeDate = (newDate: Moment) => {
       setDate(newDate);
    };
 
+   const onChangeCalendarType = (type: CalendarType) => {
+      setCalendarType(type);
+   };
+
    return (
       <Box className={classes.grid}>
-         <CalendarNavigation currentDate={date} onChangeDate={onChangeDate} />
-         <CalendarWeekView currentDate={date} />
+         <CalendarNavigation
+            currentDate={date}
+            onChangeDate={onChangeDate}
+            onChangeCalendarType={onChangeCalendarType}
+         />
+         <CalendarWeekView currentDate={date} calendarType={calendarType} />
       </Box>
    );
 
