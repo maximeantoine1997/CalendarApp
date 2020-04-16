@@ -36,7 +36,6 @@ export const getWeekReservationsAsync = functions.https.onCall(
 
       const cache: Array<Record<string, Reservation>> = [];
 
-      // 1) Get the Calendar reservations
       let i = 1;
       while (i < 8) {
          const currentIndex = i;
@@ -93,46 +92,6 @@ export const getWeekReservationsAsync = functions.https.onCall(
             });
          i++;
       }
-
-      await admin
-         .database()
-         .ref("Calendar/NoEndDate")
-         .once("value")
-         .then(async snapshot => {
-            if (snapshot) {
-               const values = snapshot.val();
-               if (values) {
-                  // All the ids of the NoEndDates reservations
-                  const reservationsIds = Object.values(values as string);
-
-                  for (const id of reservationsIds) {
-                     await admin
-                        .database()
-                        .ref("Reservations")
-                        .child(id)
-                        .once("value")
-                        .then(snap => {
-                           const res = snap.val();
-                           // put res in cache
-
-                           const noEndDate = JSON.parse(res);
-                           const start = moment(noEndDate.startDate);
-
-                           let index = 1;
-
-                           while (index < 8) {
-                              const currentIndex = index;
-                              const currentDate = moment(date).day(currentIndex);
-                              if (start.isSameOrBefore(currentDate, "day")) {
-                                 weekReservations[index - 1].push(noEndDate);
-                              }
-                              index++;
-                           }
-                        });
-                  }
-               }
-            }
-         });
 
       const final = Promise.all(weekReservations);
       return final;
