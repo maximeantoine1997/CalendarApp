@@ -90,23 +90,15 @@ export const isDuplicateFirebaseAsync = async (url: string, value: string): Prom
    return isDuplicate;
 };
 
-// Reservation
+// #region Reservation
 export const addReservationAsync = async (reservation: Reservation): Promise<void> => {
    const dateKey = reservation.startDate.format("YYYY-MM-DD");
-
-   let calendarPath = "";
-   if (!reservation.endDate) {
-      // Put reservation in NoEndDate category
-      calendarPath = "Calendar/NoEndDate";
-   } else {
-      calendarPath = `Calendar/${dateKey}`;
-   }
 
    // This will store the reservation JSON
    const reservationId = await createFirebaseKeyAsync("Reservations");
 
    // This will reference the JSON with its unique reservation ID (to avoid duplicate data)
-   const calendarId = await createFirebaseKeyAsync(calendarPath);
+   const calendarId = await createFirebaseKeyAsync(`Calendar/${dateKey}`);
 
    if (calendarId && reservationId) {
       // Put reference of reservationId within JSON
@@ -116,19 +108,18 @@ export const addReservationAsync = async (reservation: Reservation): Promise<voi
       // Stores the reservation JSON
       updates[`Reservations/${reservationId}`] = JSON.stringify(reservation);
 
-      // Stores the reference of the reservation JSON
+      // Put reference at start date
+      updates[`Calendar/${dateKey}/${calendarId}`] = reservationId;
       if (reservation.endDate) {
-         const currentDate = reservation.startDate.clone();
-         while (currentDate.format("YYYY-MM-DD") !== reservation.endDate.format("YYYY-MM-DD")) {
-            const currentDateKey = currentDate.format("YYYY-MM-DD");
-            updates[`Calendar/${currentDateKey}/${calendarId}`] = reservationId;
-            currentDate.add(1, "day");
-         }
+         // Put reference at end date
          const endDateKey = reservation.endDate.format("YYYY-MM-DD");
          updates[`Calendar/${endDateKey}/${calendarId}`] = reservationId;
       } else {
+         // Put reference at no end date
          updates[`Calendar/NoEndDate/${calendarId}`] = reservationId;
       }
+
+      //#region Reservation form data
 
       reservation.accessoires.forEach(async accessoire => {
          if (!(await isDuplicateFirebaseAsync("Reservation/Accessoires", accessoire))) {
@@ -166,6 +157,7 @@ export const addReservationAsync = async (reservation: Reservation): Promise<voi
          const modeleId = await createFirebaseKeyAsync("Reservation/Modele");
          updates[`Reservation/Modele/${modeleId}`] = reservation.modele;
       }
+      // #endregion
 
       await firebase
          .database()

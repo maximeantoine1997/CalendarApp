@@ -28,30 +28,16 @@ const useStyles = makeStyles(() =>
 interface CalendarWeekViewProps {
    currentDate: Moment;
    calendarType: CalendarType;
+   weekPlanning: Array<Array<Reservation>>;
 }
 
-const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({ currentDate, calendarType }) => {
+const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({ weekPlanning, currentDate, calendarType }) => {
    const classes = useStyles();
-
-   const [weekPlanning, setWeekPlanning] = useState<Array<Array<Reservation>>>([]);
-
-   useEffect(() => {
-      const getData = async () => {
-         const day = currentDate.clone();
-         let week: Array<Array<Reservation>> = [];
-         const getWeekReservationsAsync = firebase.functions().httpsCallable("getWeekReservationsAsync");
-         await getWeekReservationsAsync({ date: day.format("YYYY-MM-DD") }).then(result => {
-            week = result.data;
-         });
-         setWeekPlanning(week);
-      };
-      getData();
-   }, [currentDate]);
 
    if (!weekPlanning.length) {
       return <></>;
    }
-   if (calendarType === CalendarType.preparation) {
+   if (calendarType === "preparation") {
       return (
          <Grid container justify="center" alignContent="space-around" direction="row">
             {weekPlanning.map((dayData, index) => {

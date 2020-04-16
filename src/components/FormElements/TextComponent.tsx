@@ -46,11 +46,13 @@ const TextComponent: FunctionComponent<TextProps> = ({
    hasError,
    errorText,
    customClass,
-   value = "",
+   value = multiple ? [] : "",
    variant = "outlined",
 }): ReactElement => {
    const classes = useStyles();
    const [options, setOptions] = useState<Array<string>>(options_);
+
+   const [multipleValue, setMultipleValue] = useState<Array<string>>(value);
 
    const onBlur = (event: any) => {
       if (event && !multiple) {
@@ -63,6 +65,7 @@ const TextComponent: FunctionComponent<TextProps> = ({
    const onChangeMultiple = (value: any) => {
       if (multiple) {
          onChange(value);
+         setMultipleValue(value);
       }
    };
 
@@ -80,7 +83,7 @@ const TextComponent: FunctionComponent<TextProps> = ({
       <>
          <Autocomplete
             className={customClass ? undefined : classes.autocomplete}
-            value={value}
+            value={multiple ? multipleValue : value}
             style={customClass}
             multiple={multiple}
             freeSolo

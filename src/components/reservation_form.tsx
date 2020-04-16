@@ -7,6 +7,7 @@ import EuroComponent from "./FormElements/EuroComponent";
 import CheckBoxComponent from "./FormElements/CheckboxComponent";
 import DateComponent from "./FormElements/DateComponent";
 import { addReservationAsync } from "../Firebase/Firebase.Utils";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -115,6 +116,8 @@ export interface Reservation {
 const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    const classes = useStyles();
 
+   const history = useHistory();
+
    // #region  useRef
    const prenom = useRef<string>("");
    const nom = useRef<string>("");
@@ -138,8 +141,9 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
       ref.current = newValue;
    };
 
-   const addReservation = (reservation: Reservation): void => {
-      addReservationAsync(reservation);
+   const addReservation = async (reservation: Reservation): Promise<void> => {
+      await addReservationAsync(reservation);
+      history.push("/calendrier");
    };
 
    /**

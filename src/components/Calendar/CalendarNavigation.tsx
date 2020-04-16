@@ -82,14 +82,14 @@ const CalendarNavigation: React.FC<CalendarNavigationProps> = ({ currentDate, on
                <ButtonGroup>
                   <Button
                      onClick={() => {
-                        onChangeCalendarType(CalendarType.preparation);
+                        onChangeCalendarType("preparation");
                      }}
                   >
                      PREPARATION
                   </Button>
                   <Button
                      onClick={() => {
-                        onChangeCalendarType(CalendarType.livraison);
+                        onChangeCalendarType("livraison");
                      }}
                   >
                      LIVRAISON
