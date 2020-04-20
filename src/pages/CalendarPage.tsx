@@ -52,6 +52,7 @@ const CalendarPage: React.FC = () => {
             currentDate={date}
             onChangeDate={onChangeDate}
             onChangeCalendarType={onChangeCalendarType}
+            calendarType={calendarType}
          />
          <CalendarWeekView weekPlanning={weekPlanning} currentDate={date} calendarType={calendarType} />
       </Box>
