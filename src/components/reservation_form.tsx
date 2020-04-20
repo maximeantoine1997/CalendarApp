@@ -111,7 +111,10 @@ export interface Reservation {
    isBancontact: boolean;
    isReceived: boolean;
    reservationNumber?: string;
+   type: ReservationType;
 }
+
+export type ReservationType = "Preparation" | "Livraison" | "Livre" | "Retour" | "Fini";
 
 const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    const classes = useStyles();
@@ -260,6 +263,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
             montant: montant.current,
             isBancontact: isBancontact.current,
             isReceived: isReceived.current,
+            type: "Preparation",
          });
       }
       setValidForm(newValidForm);
