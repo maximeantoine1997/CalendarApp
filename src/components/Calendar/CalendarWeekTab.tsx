@@ -1,10 +1,10 @@
-import { makeStyles, createStyles, Box, Grid } from "@material-ui/core";
+import { Box, createStyles, Grid, makeStyles } from "@material-ui/core";
 import moment, { Moment } from "moment";
-import React, { ReactElement, useEffect } from "react";
+import React from "react";
+import { CalendarType } from "../../Interfaces/Common";
+import { isLivraison, isPreparation } from "../../Utils";
 import { Reservation } from "../reservation_form";
 import CalendarReservation from "./CalendarReservation";
-import { CalendarType } from "../../Interfaces/Common";
-import { isPreparation, isLivraison } from "../../Utils";
 
 const useStyles = makeStyles(() =>
    createStyles({

@@ -1,11 +1,5 @@
-import React from "react";
-
-import { makeStyles } from "@material-ui/core/styles";
 import { Box, Grid, Typography } from "@material-ui/core";
-
-const useStyles = makeStyles(() => ({
-   default: {},
-}));
+import React from "react";
 
 interface ColorBlockProps {
    /**
@@ -20,8 +14,6 @@ interface ColorBlockProps {
 }
 
 const ColorBlock: React.FunctionComponent<ColorBlockProps> = ({ color, label }) => {
-   const classes = useStyles();
-
    return (
       <Grid container alignItems="center" justify="flex-start" style={{ padding: "5px" }}>
          <Grid item>

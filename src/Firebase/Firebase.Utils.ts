@@ -3,7 +3,6 @@ import * as firebase from "firebase/app";
 import "firebase/database";
 import "firebase/auth";
 import { Nullable } from "../Interfaces/Common";
-import moment, { Moment } from "moment";
 
 // #region Realtime Database
 export const getFirebaseElementAsync = async (url: string): Promise<string> => {
@@ -230,108 +229,6 @@ export const getReservationsAsync = async (date: string): Promise<Array<Reservat
 export const updateReservationAsync = (id: string, newReservation: Reservation): void => {
    const raw = JSON.stringify(newReservation);
    firebase.database().ref("Reservations").child(id).set(raw);
-};
-
-export const getWeekReservationsAsync = async (date: Moment): Promise<Array<Array<Reservation>>> => {
-   const weekReservations: Array<Array<Reservation>> = [[], [], [], [], [], [], []];
-
-   const cache: Array<Record<string, Reservation>> = [];
-
-   // 1) Get the Calendar reservations
-   //    let i = 1;
-   //    while (i < 8) {
-   //       const currentIndex = i;
-   //       const currentDate = date.clone().day(i);
-   //       await firebase
-   //          .database()
-   //          .ref("Calendar/")
-   //          .child(currentDate.format("YYYY-MM-DD"))
-   //          .once("value")
-
-   //          .then(snapshot => {
-   //             if (snapshot) {
-   //                const reservations = snapshot.val();
-
-   //                if (reservations) {
-   //                   const reservationIds: Array<string> = Object.values(reservations);
-
-   //                   reservationIds.forEach(async id => {
-   //                      let reservation = cache.find(record => {
-   //                         console.log("record is: ", record);
-   //                         return record[id];
-   //                      });
-   //                      if (!reservation) {
-   //                         await firebase
-   //                            .database()
-   //                            .ref("Reservations")
-   //                            .child(id)
-   //                            .once("value")
-   //                            .then(snapshot => {
-   //                               const res = snapshot.val();
-   //                               // put res in cache
-   //                               const cacheRes: Record<string, Reservation> = {};
-   //                               cacheRes[id] = JSON.parse(res);
-   //                               cache.push(cacheRes);
-   //                               reservation = cacheRes;
-   //                            });
-   //                      }
-
-   //                      if (reservation) {
-   //                         const finalReservation = Object.values(reservation)[0];
-   //                         weekReservations[currentIndex - 1].push(finalReservation);
-   //                      }
-   //                   });
-   //                }
-   //             }
-   //          });
-   //       i++;
-   //    }
-
-   // 2) Get the NoEndDate reservations
-   await firebase
-      .database()
-      .ref("Calendar/NoEndDate")
-      .once("value")
-      .then(snapshot => {
-         if (snapshot) {
-            const values = snapshot.val();
-            if (values) {
-               // All the ids of the NoEndDates reservations
-               const reservationsIds = Object.values(values) as Array<string>;
-
-               reservationsIds.forEach(id => {
-                  firebase
-                     .database()
-                     .ref("Reservations")
-                     .child(id)
-                     .once("value")
-                     .then(snapshot => {
-                        const res = snapshot.val();
-                        // put res in cache
-
-                        const noEndDate = JSON.parse(res);
-                        const start = moment(noEndDate.startDate);
-
-                        let i = 1;
-                        const currentDate = date.clone();
-
-                        while (i < 8) {
-                           if (currentDate.isSameOrAfter(start)) {
-                              weekReservations[i - 1].push(noEndDate);
-                           }
-                           i++;
-                        }
-                     });
-               });
-            }
-         }
-      });
-
-   // 2) When ids found, put in cache if not in there yet
-
-   // 3)
-
-   return weekReservations;
 };
 
 // #endregion

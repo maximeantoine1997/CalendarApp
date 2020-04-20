@@ -1,29 +1,10 @@
-import { createStyles, Grid, makeStyles } from "@material-ui/core";
-import * as firebase from "firebase/app";
+import { Grid } from "@material-ui/core";
 import "firebase/functions";
 import { Moment } from "moment";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { CalendarType } from "../../Interfaces/Common";
 import { Reservation } from "../reservation_form";
 import CalendarWeekTab from "./CalendarWeekTab";
-import { CalendarType } from "../../Interfaces/Common";
-
-const useStyles = makeStyles(() =>
-   createStyles({
-      calendar: {
-         padding: "25px",
-         minHeight: "50vh",
-      },
-      button: {
-         margin: "auto",
-      },
-      root: {
-         padding: "10px",
-      },
-      pointer: {
-         cursor: "pointer",
-      },
-   })
-);
 
 interface CalendarWeekViewProps {
    currentDate: Moment;
@@ -32,8 +13,6 @@ interface CalendarWeekViewProps {
 }
 
 const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({ weekPlanning, currentDate, calendarType }) => {
-   const classes = useStyles();
-
    if (!weekPlanning.length) {
       return <></>;
    }

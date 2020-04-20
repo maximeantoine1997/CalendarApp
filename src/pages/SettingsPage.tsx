@@ -3,7 +3,6 @@ import { createStyles, Grid, makeStyles, Theme, Typography } from "@material-ui/
 import React from "react";
 import { Redirect } from "react-router-dom";
 import useUserContext from "../Contexts/UserContext";
-import ReservationForm from "../components/reservation_form";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({

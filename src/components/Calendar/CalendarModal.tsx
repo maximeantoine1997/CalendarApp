@@ -1,23 +1,23 @@
-import React, { ReactElement, useState, useRef } from "react";
 import {
-   Grid,
-   Typography,
-   Dialog,
-   makeStyles,
+   Button,
+   Chip,
    createStyles,
+   Dialog,
+   DialogActions,
    DialogContent,
    DialogTitle,
-   Chip,
-   Button,
-   DialogActions,
    Divider,
-   Select,
+   Grid,
+   makeStyles,
    MenuItem,
+   Select,
+   Typography,
 } from "@material-ui/core";
-import { Reservation } from "../reservation_form";
-import TextComponent from "../FormElements/TextComponent";
-import { updateFirebaseElementAsync, updateReservationAsync } from "../../Firebase/Firebase.Utils";
+import React, { ReactElement, useRef, useState } from "react";
+import { updateReservationAsync } from "../../Firebase/Firebase.Utils";
 import { CalendarType } from "../../Interfaces/Common";
+import TextComponent from "../FormElements/TextComponent";
+import { Reservation } from "../reservation_form";
 import ColorBlock from "./Blocks/ColorBlock";
 
 const useStyles = makeStyles(() =>
@@ -130,10 +130,7 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
             <DialogContent>
                <Grid container className={classes.dialog} direction="row" justify="space-between">
                   <Grid item xs={12}>
-                     <Select
-                        value={editReservation.current.type}
-                        onChange={e => onChangeSelect(e.target.value as CalendarType)}
-                     >
+                     <Select value={type} onChange={e => onChangeSelect(e.target.value as CalendarType)}>
                         <MenuItem value="Livraison">
                            <ColorBlock color="red" label="Livraison" />
                         </MenuItem>
