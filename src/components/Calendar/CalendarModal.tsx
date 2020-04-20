@@ -11,10 +11,14 @@ import {
    Button,
    DialogActions,
    Divider,
+   Select,
+   MenuItem,
 } from "@material-ui/core";
 import { Reservation } from "../reservation_form";
 import TextComponent from "../FormElements/TextComponent";
 import { updateFirebaseElementAsync, updateReservationAsync } from "../../Firebase/Firebase.Utils";
+import { CalendarType } from "../../Interfaces/Common";
+import ColorBlock from "./Blocks/ColorBlock";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -84,6 +88,9 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
          case "societe":
             newReservation.societe = newValue;
             break;
+         case "type":
+            newReservation.type = newValue;
+            break;
          default:
             break;
       }
@@ -103,6 +110,12 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
       editReservation.current = { ...reservation.current };
    };
 
+   const [type, setType] = useState<string>(reservation.current.type);
+   const onChangeSelect = (value: CalendarType) => {
+      setType(value);
+      updateReservation("type", value);
+   };
+
    const renderAccessoires: Array<ReactElement> = reservation.current.accessoires
       ? reservation.current.accessoires.map((accessoire, index) => {
            return <Chip label={accessoire} variant="outlined" color="secondary" size="medium" key={index} />;
@@ -116,6 +129,22 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
             <Divider />
             <DialogContent>
                <Grid container className={classes.dialog} direction="row" justify="space-between">
+                  <Grid item xs={12}>
+                     <Select
+                        value={editReservation.current.type}
+                        onChange={e => onChangeSelect(e.target.value as CalendarType)}
+                     >
+                        <MenuItem value="Livraison">
+                           <ColorBlock color="red" label="Livraison" />
+                        </MenuItem>
+                        <MenuItem value="Preparation">
+                           <ColorBlock color="green" label="Preparation" />
+                        </MenuItem>
+                        <MenuItem value="Livre">
+                           <ColorBlock color="blue" label="Livré" />
+                        </MenuItem>
+                     </Select>
+                  </Grid>
                   <Grid item xs={12}>
                      <TextComponent
                         placeholder="Dossier Vary"
@@ -183,6 +212,10 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
          <Divider />
          <DialogContent>
             <Grid container className={classes.dialog} direction="column">
+               <Grid item>
+                  <Typography className={classes.title}>type:</Typography>
+                  <Typography>{reservation.current.type}</Typography>
+               </Grid>
                <Grid item>
                   <Typography className={classes.title}>Dossier Vary:</Typography>
                   <Typography>{reservation.current.reservationNumber}</Typography>

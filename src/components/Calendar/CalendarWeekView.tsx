@@ -37,22 +37,24 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({ weekPlanning, curre
    if (!weekPlanning.length) {
       return <></>;
    }
-   if (calendarType === "preparation") {
-      return (
-         <Grid container justify="center" alignContent="space-around" direction="row">
-            {weekPlanning.map((dayData, index) => {
-               console.log("index: ", index, " - data: ", dayData);
-               return (
-                  <Grid item key={index}>
-                     <CalendarWeekTab data={dayData} day={currentDate.clone().day(index + 1)} key={index} />
-                  </Grid>
-               );
-            })}
-         </Grid>
-      );
-   }
 
-   return <>LIVRAISON</>;
+   return (
+      <Grid container justify="center" alignContent="space-around" direction="row">
+         {weekPlanning.map((dayData, index) => {
+            console.log("index: ", index, " - data: ", dayData);
+            return (
+               <Grid item key={index}>
+                  <CalendarWeekTab
+                     data={dayData}
+                     day={currentDate.clone().day(index + 1)}
+                     key={index}
+                     type={calendarType}
+                  />
+               </Grid>
+            );
+         })}
+      </Grid>
+   );
 };
 
 export default CalendarWeekView;

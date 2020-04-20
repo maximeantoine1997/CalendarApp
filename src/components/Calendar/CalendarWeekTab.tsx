@@ -3,6 +3,8 @@ import moment, { Moment } from "moment";
 import React, { ReactElement, useEffect } from "react";
 import { Reservation } from "../reservation_form";
 import CalendarReservation from "./CalendarReservation";
+import { CalendarType } from "../../Interfaces/Common";
+import { isPreparation, isLivraison } from "../../Utils";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -32,13 +34,28 @@ const useStyles = makeStyles(() =>
 interface CalendarWeekTabProps {
    day: Moment;
    data: Array<Reservation>;
+   type: CalendarType;
 }
 
-const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day, data }) => {
+const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day, data, type }) => {
    const classes = useStyles();
 
    const dayName = day.format("dddd").substring(0, 2).toUpperCase();
    const dayDate = day.date();
+
+   const filterData = (): Array<Reservation> => {
+      let newData: Array<Reservation> = [];
+
+      if (type === "preparation") {
+         newData = data.filter(reservation => isPreparation(reservation));
+      }
+      if (type === "livraison") {
+         newData = data.filter(reservation => isLivraison(reservation));
+      }
+      return newData;
+   };
+
+   const reservations = filterData();
 
    return (
       <Grid container className={classes.calendar} direction="row">
@@ -48,7 +65,7 @@ const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day, data }) => {
             <Box className={classes.dateNumber}>{dayDate}</Box>
          </Grid>
          <Grid item>
-            {data.map((reservation, index) => {
+            {reservations.map((reservation, index) => {
                return <CalendarReservation reservation={reservation} key={index} />;
             })}
          </Grid>
