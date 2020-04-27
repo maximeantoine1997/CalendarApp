@@ -21,9 +21,11 @@ const SettingsPage = () => {
 
    if (user) {
       return (
-         <Grid container justify="center" alignContent="center" alignItems="center" className={classes.grid}>
-            <Typography>Settings Page</Typography>
-         </Grid>
+         <>
+            <Grid container justify="center" alignContent="center" alignItems="center" className={classes.grid}>
+               <Typography>Settings Page</Typography>
+            </Grid>
+         </>
       );
    }
 
