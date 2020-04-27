@@ -6,7 +6,7 @@ import TextComponent from "./FormElements/TextComponent";
 import EuroComponent from "./FormElements/EuroComponent";
 import CheckBoxComponent from "./FormElements/CheckboxComponent";
 import DateComponent from "./FormElements/DateComponent";
-import { addReservationAsync } from "../Firebase/Firebase.Utils";
+import { _addReservationAsync } from "../Firebase/Firebase.Utils";
 import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -105,8 +105,8 @@ export interface Reservation {
    gsm: string;
    email: string;
    address: string;
-   startDate: Moment;
-   endDate?: Moment;
+   startDate: string;
+   endDate?: string;
    montant: number;
    isBancontact: boolean;
    isReceived: boolean;
@@ -145,8 +145,8 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    };
 
    const addReservation = async (reservation: Reservation): Promise<void> => {
-      await addReservationAsync(reservation);
-      history.push("/calendrier");
+      await _addReservationAsync(reservation);
+      //   history.push("/calendrier");
    };
 
    /**
@@ -258,8 +258,8 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
             gsm: gsm.current,
             email: email.current,
             address: address.current,
-            startDate: startDate.current,
-            endDate: endDate.current,
+            startDate: moment(startDate.current).format("YYYY-MM-DD"),
+            endDate: moment(endDate.current).format("YYYY-MM-DD"),
             montant: montant.current,
             isBancontact: isBancontact.current,
             isReceived: isReceived.current,
