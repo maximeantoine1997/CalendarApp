@@ -168,11 +168,8 @@ app.post("/reservation", (req, res) => {
       isReceived: req.body.isReceived,
    };
 
-   console.log("the data is: ", newReservation);
    admin
       .firestore()
-      .collection("calendar")
-      .doc(newReservation.startDate)
       .collection("reservations")
       .doc()
       .set(newReservation)
