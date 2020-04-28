@@ -12,6 +12,7 @@ import CalendarPage from "./pages/CalendarPage";
 import AccountPage from "./pages/AccountPage";
 import HomePage from "./pages/HomePage";
 import SettingsPage from "./pages/SettingsPage";
+import { SnackbarProvider } from "notistack";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -37,36 +38,38 @@ const App: React.FC = () => {
    });
 
    return (
-      <UserContextProvider>
-         <Router>
-            <Grid container>
-               <Grid item xs={12} className={classes.menu}>
-                  <SideBar />
+      <SnackbarProvider autoHideDuration={3000}>
+         <UserContextProvider>
+            <Router>
+               <Grid container>
+                  <Grid item xs={12} className={classes.menu}>
+                     <SideBar />
+                  </Grid>
+                  <Grid item xs={12} className={classes.content}>
+                     <AddButton>
+                        <Switch>
+                           <Route path="/reservation">
+                              <ReservationPage />
+                           </Route>
+                           <Route path="/calendrier">
+                              <CalendarPage />
+                           </Route>
+                           <Route path="/account">
+                              <AccountPage />
+                           </Route>
+                           <Route path="/settings">
+                              <SettingsPage />
+                           </Route>
+                           <Route exact path="/">
+                              <HomePage />
+                           </Route>
+                        </Switch>
+                     </AddButton>
+                  </Grid>
                </Grid>
-               <Grid item xs={12} className={classes.content}>
-                  <AddButton>
-                     <Switch>
-                        <Route path="/reservation">
-                           <ReservationPage />
-                        </Route>
-                        <Route path="/calendrier">
-                           <CalendarPage />
-                        </Route>
-                        <Route path="/account">
-                           <AccountPage />
-                        </Route>
-                        <Route path="/settings">
-                           <SettingsPage />
-                        </Route>
-                        <Route exact path="/">
-                           <HomePage />
-                        </Route>
-                     </Switch>
-                  </AddButton>
-               </Grid>
-            </Grid>
-         </Router>
-      </UserContextProvider>
+            </Router>
+         </UserContextProvider>
+      </SnackbarProvider>
    );
 };
 
