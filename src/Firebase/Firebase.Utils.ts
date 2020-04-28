@@ -191,3 +191,15 @@ export const _addReservationAsync = async (reservation: Reservation): Promise<vo
          console.log(error);
       });
 };
+
+export const getReservations = async (date: string): Promise<Array<Reservation>> => {
+   return Axios.get(`${api}/reservations`)
+      .then(response => {
+         console.log(response);
+         return [];
+      })
+      .catch(error => {
+         console.log(error);
+         return [];
+      });
+};
