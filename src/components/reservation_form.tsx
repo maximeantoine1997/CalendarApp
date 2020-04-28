@@ -146,7 +146,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
 
    const addReservation = async (reservation: Reservation): Promise<void> => {
       await _addReservationAsync(reservation);
-      //   history.push("/calendrier");
+      history.push("/calendrier");
    };
 
    /**
