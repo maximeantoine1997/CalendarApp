@@ -1,5 +1,5 @@
 import * as functions from "firebase-functions";
-// import * as moment from "moment";
+import * as moment from "moment";
 import * as admin from "firebase-admin";
 import * as express from "express";
 import * as cors from "cors";
@@ -25,128 +25,35 @@ export interface Reservation {
    isBancontact: boolean;
    isReceived: boolean;
 }
-// const getWeekReservationsAsync = functions.https.onCall(
-//    async (data: any, context): Promise<Array<Array<Reservation>>> => {
-//       const date: string = data.date;
 
-//       const weekReservations: Array<Array<Reservation>> = [[], [], [], [], [], [], []];
-
-//       const cache: Array<Record<string, Reservation>> = [];
-
-//       let i = 1;
-//       while (i < 8) {
-//          const currentIndex = i;
-
-//          const currentDate = moment(date).day(i);
-
-//          admin
-//             .database()
-//             .ref("Calendar/")
-//             .child(currentDate.format("YYYY-MM-DD"))
-//             .on("value", snapshot => {
-//                if (snapshot) {
-//                   const reservations = snapshot.val();
-
-//                   if (reservations) {
-//                      const reservationIds: Array<string> = Object.values(reservations);
-
-//                      reservationIds.forEach(async id => {
-//                         let reservation = cache.find(record => {
-//                            return record[id];
-//                         });
-//                         if (!reservation) {
-//                            admin
-//                               .database()
-//                               .ref("Reservations")
-//                               .child(id)
-//                               .on("value", snap => {
-//                                  if (snap) {
-//                                     const res = snap.val();
-//                                     // put res in cache
-//                                     const cacheRes: Record<string, Reservation> = {};
-//                                     cacheRes[id] = JSON.parse(res);
-//                                     cache.push(cacheRes);
-//                                     reservation = cacheRes;
-//                                  }
-//                               });
-//                         }
-
-//                         if (reservation) {
-//                            const finalReservation = Object.values(reservation)[0];
-//                            weekReservations[currentIndex - 1].push(finalReservation);
-//                         }
-//                      });
-//                   }
-//                }
-//             });
-//          i++;
-//       }
-
-//       const final = Promise.all(weekReservations);
-//       return final;
-//    }
-// );
-
-app.get("/calendar", (req, res) => {
-   console.log("req is: ", req);
+app.get("/reservations", (req, res) => {
    const date: string = req.query.date as string;
-   console.log("the date is: ", date);
-   admin
-      .firestore()
-      .collection("Calendar")
-      .doc(date)
+   const day = moment(date);
+   let reservationsRef = admin.firestore().collection("reservations");
+
+   const getWeekDays = (): Array<string> => {
+      const days: Array<string> = [];
+      for (let i = 1; i < 8; i++) {
+         days.push(day.clone().day(i).format("YYYY-MM-DD"));
+      }
+      return days;
+   };
+   const weekdays = getWeekDays();
+
+   reservationsRef
+      .where("startDate", "in", weekdays)
       .get()
-      .then(snap => {
-         let ids: Array<string> = [];
-         console.log("snap data is: ", snap.data());
-         const data = snap.data();
-         if (data) {
-            ids = Object.values<string>(data);
-         }
-         return res.json(ids);
+      .then(snapshot => {
+         const data: Array<Reservation> = [];
+         snapshot.forEach(doc => {
+            data.push(doc.data() as Reservation);
+         });
+         console.log(data);
+         return res.status(200).send({ message: "it works", reservations: data });
       })
       .catch(error => {
          console.log(error);
-         return res.json({ error: "an error occured" });
-      });
-});
-
-app.get("/todayreservations", (req, res) => {
-   console.log("req is: ", req);
-   const date: string = req.query.date as string;
-   console.log("the date is: ", date);
-   admin
-      .firestore()
-      .collection("Calendar")
-      .doc(date)
-      .get()
-      .then(async snapshot => {
-         let result: Array<string> = [];
-         console.log("snap data is: ", snapshot.data());
-         const data = snapshot.data();
-         if (data) {
-            const reservations = data.res;
-
-            result = await admin
-               .firestore()
-               .collection("Reservations")
-               .where(admin.firestore.FieldPath.documentId(), "in", reservations)
-               .get()
-               .then(snap => {
-                  console.log("reservations are: ", snap.docs);
-                  if (snap.docs) {
-                     snap.docs.forEach(doc => {
-                        console.log("doc data: ", doc.data());
-                     });
-                  }
-                  return [];
-               });
-         }
-         return res.json(result);
-      })
-      .catch(error => {
-         console.log(error);
-         return res.json({ error: "an error occured" });
+         return res.status(500).send({ error: "an error occured" });
       });
 });
 
