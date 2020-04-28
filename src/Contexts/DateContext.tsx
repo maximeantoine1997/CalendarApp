@@ -1,6 +1,5 @@
 import moment, { Moment } from "moment";
 import React, { createContext, ReactElement, ReactNode, useContext, useState } from "react";
-import { Nullable } from "../Interfaces/Common";
 
 interface IDateContext {
    date: Moment;
