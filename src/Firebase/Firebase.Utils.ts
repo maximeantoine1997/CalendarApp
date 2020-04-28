@@ -193,10 +193,15 @@ export const _addReservationAsync = async (reservation: Reservation): Promise<vo
 };
 
 export const getReservations = async (date: string): Promise<Array<Reservation>> => {
-   return Axios.get(`${api}/reservations`)
+   return Axios.get(`${api}/reservations`, {
+      params: {
+         date: date,
+      },
+   })
       .then(response => {
-         console.log(response);
-         return [];
+         const data = response.data;
+
+         return data.reservations;
       })
       .catch(error => {
          console.log(error);
