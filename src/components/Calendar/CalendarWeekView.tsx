@@ -5,14 +5,17 @@ import React from "react";
 import { CalendarType } from "../../Interfaces/Common";
 import { Reservation } from "../reservation_form";
 import CalendarWeekTab from "./CalendarWeekTab";
+import useDateContext from "../../Contexts/DateContext";
 
 interface CalendarWeekViewProps {
-   currentDate: Moment;
    calendarType: CalendarType;
-   weekPlanning: Array<Array<Reservation>>;
 }
 
-const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({ weekPlanning, currentDate, calendarType }) => {
+const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({ calendarType }) => {
+   const { date } = useDateContext();
+
+   const weekPlanning: Array<Array<Reservation>> = [[], [], [], [], [], [], []];
+
    if (!weekPlanning.length) {
       return <></>;
    }
@@ -23,12 +26,7 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({ weekPlanning, curre
             console.log("index: ", index, " - data: ", dayData);
             return (
                <Grid item key={index}>
-                  <CalendarWeekTab
-                     data={dayData}
-                     day={currentDate.clone().day(index + 1)}
-                     key={index}
-                     type={calendarType}
-                  />
+                  <CalendarWeekTab data={dayData} day={date.clone().day(index + 1)} key={index} type={calendarType} />
                </Grid>
             );
          })}

@@ -7,6 +7,7 @@ import CalendarWeekView from "../components/Calendar/CalendarWeekView";
 import { CalendarType } from "../Interfaces/Common";
 import { Reservation } from "../components/reservation_form";
 import firebase from "firebase";
+import { DateContextProvider } from "../Contexts/DateContext";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -37,25 +38,22 @@ const CalendarPage: React.FC = () => {
       const getData = async () => {
          const day = date.clone();
          let week: Array<Array<Reservation>> = [];
-         const getWeekReservationsAsync = firebase.functions().httpsCallable("getWeekReservationsAsync");
-         await getWeekReservationsAsync({ date: day.format("YYYY-MM-DD") }).then(result => {
-            week = result.data;
-         });
+         //  const getWeekReservationsAsync = firebase.functions().httpsCallable("getWeekReservationsAsync");
+         //  await getWeekReservationsAsync({ date: day.format("YYYY-MM-DD") }).then(result => {
+         //     week = result.data;
+         //  });
          setWeekPlanning(week);
       };
       getData();
    }, [date]);
 
    return (
-      <Box className={classes.grid}>
-         <CalendarNavigation
-            currentDate={date}
-            onChangeDate={onChangeDate}
-            onChangeCalendarType={onChangeCalendarType}
-            calendarType={calendarType}
-         />
-         <CalendarWeekView weekPlanning={weekPlanning} currentDate={date} calendarType={calendarType} />
-      </Box>
+      <DateContextProvider>
+         <Box className={classes.grid}>
+            <CalendarNavigation onChangeCalendarType={onChangeCalendarType} calendarType={calendarType} />
+            <CalendarWeekView calendarType={calendarType} />
+         </Box>
+      </DateContextProvider>
    );
 
    //    return <Redirect to="/" />;

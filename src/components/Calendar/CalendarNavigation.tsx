@@ -10,6 +10,7 @@ import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
 import { CalendarType } from "../../Interfaces/Common";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import ToggleButton from "@material-ui/lab/ToggleButton";
+import useDateContext from "../../Contexts/DateContext";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -30,42 +31,37 @@ const useStyles = makeStyles(() =>
 );
 
 interface CalendarNavigationProps {
-   currentDate: Moment;
    calendarType: CalendarType;
-   onChangeDate: (newDate: Moment) => void;
    onChangeCalendarType: (type: CalendarType) => void;
 }
 
-const CalendarNavigation: React.FC<CalendarNavigationProps> = ({
-   currentDate,
-   onChangeDate,
-   onChangeCalendarType,
-   calendarType,
-}) => {
+const CalendarNavigation: React.FC<CalendarNavigationProps> = ({ onChangeCalendarType, calendarType }) => {
    const classes = useStyles();
 
-   const monday = currentDate.clone().day(1).date();
-   const sunday = currentDate.clone().day(7).date();
-   const month = currentDate.format("MMMM");
+   const { date, setDate } = useDateContext();
+
+   const monday = date.clone().day(1).date();
+   const sunday = date.clone().day(7).date();
+   const month = date.format("MMMM");
    const fullWeek = `${monday}-${sunday} ${month}`;
 
    const [calendarOpen, setCalendarOpen] = useState<boolean>(false);
 
    const onNextWeek = () => {
-      const newDate = currentDate.clone().add(7, "day");
+      const newDate = date.clone().add(7, "day");
 
-      onChangeDate(newDate);
+      setDate(newDate);
    };
 
    const onPreviousWeek = () => {
-      const newDate = currentDate.clone().subtract(7, "day");
+      const newDate = date.clone().subtract(7, "day");
 
-      onChangeDate(newDate);
+      setDate(newDate);
    };
 
    const onChangeCalendar = (newDate: MaterialUiPickersDate) => {
       setCalendarOpen(false);
-      onChangeDate(newDate as Moment);
+      setDate(newDate as Moment);
    };
    return (
       <Grid container className={classes.root} direction="row">
@@ -107,7 +103,7 @@ const CalendarNavigation: React.FC<CalendarNavigationProps> = ({
          {calendarOpen && (
             <Dialog open={calendarOpen} className={classes.calendar}>
                <MuiPickersUtilsProvider utils={MomentUtils} locale="fr">
-                  <Calendar date={currentDate} allowKeyboardControl onChange={onChangeCalendar} />
+                  <Calendar date={date} allowKeyboardControl onChange={onChangeCalendar} />
                </MuiPickersUtilsProvider>
             </Dialog>
          )}
