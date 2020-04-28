@@ -1,10 +1,11 @@
 import { Box, createStyles, Grid, makeStyles } from "@material-ui/core";
 import moment, { Moment } from "moment";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { CalendarType } from "../../Interfaces/Common";
 import { isLivraison, isPreparation } from "../../Utils";
 import { Reservation } from "../reservation_form";
 import CalendarReservation from "./CalendarReservation";
+import { getReservations } from "../../Firebase/Firebase.Utils";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -37,25 +38,35 @@ interface CalendarWeekTabProps {
    type: CalendarType;
 }
 
-const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day, data, type }) => {
+const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day, type }) => {
    const classes = useStyles();
 
    const dayName = day.format("dddd").substring(0, 2).toUpperCase();
    const dayDate = day.date();
 
+   const [reservations, setReservations] = useState<Array<Reservation>>([]);
+
+   useEffect(() => {
+      const getData = async () => {
+         const newReservations: Array<Reservation> = await getReservations(day.format("YYYY-MM-DD"));
+         setReservations(newReservations);
+      };
+      getData();
+   }, [day]);
+
    const filterData = (): Array<Reservation> => {
       let newData: Array<Reservation> = [];
 
       if (type === "preparation") {
-         newData = data.filter(reservation => isPreparation(reservation));
+         newData = reservations.filter(reservation => isPreparation(reservation));
       }
       if (type === "livraison") {
-         newData = data.filter(reservation => isLivraison(reservation));
+         newData = reservations.filter(reservation => isLivraison(reservation));
       }
       return newData;
    };
 
-   const reservations = filterData();
+   const filteredReservations = filterData();
 
    return (
       <Grid container className={classes.calendar} direction="row">
@@ -65,7 +76,7 @@ const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day, data, type }) =>
             <Box className={classes.dateNumber}>{dayDate}</Box>
          </Grid>
          <Grid item>
-            {reservations.map((reservation, index) => {
+            {filteredReservations.map((reservation, index) => {
                return <CalendarReservation reservation={reservation} key={index} />;
             })}
          </Grid>
