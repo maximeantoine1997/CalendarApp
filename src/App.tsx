@@ -38,7 +38,7 @@ const App: React.FC = () => {
    });
 
    return (
-      <SnackbarProvider autoHideDuration={3000}>
+      <SnackbarProvider autoHideDuration={2000}>
          <UserContextProvider>
             <Router>
                <Grid container>
