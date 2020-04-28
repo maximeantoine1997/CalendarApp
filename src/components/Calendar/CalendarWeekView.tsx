@@ -1,11 +1,13 @@
 import { Grid } from "@material-ui/core";
 import "firebase/functions";
-import { Moment } from "moment";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { CalendarType } from "../../Interfaces/Common";
 import { Reservation } from "../reservation_form";
 import CalendarWeekTab from "./CalendarWeekTab";
 import useDateContext from "../../Contexts/DateContext";
+import { getReservations } from "../../Firebase/Firebase.Utils";
+import { useSnackbar } from "notistack";
+import { IHash } from "../../Utils";
 
 interface CalendarWeekViewProps {
    calendarType: CalendarType;
@@ -13,20 +15,59 @@ interface CalendarWeekViewProps {
 
 const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({ calendarType }) => {
    const { date } = useDateContext();
+   const { enqueueSnackbar } = useSnackbar();
 
-   const weekPlanning: Array<Array<Reservation>> = [[], [], [], [], [], [], []];
+   const [reservations, setReservations] = useState<IHash>({});
 
-   if (!weekPlanning.length) {
-      return <></>;
-   }
+   useEffect(() => {
+      const getData = async () => {
+         enqueueSnackbar("Chargement...");
+         const newReservations: Array<Reservation> = await getReservations(date.format("YYYY-MM-DD"));
+
+         const hash: IHash = {};
+         newReservations.forEach(reservation => {
+            const start = reservation.startDate;
+            const end = reservation.endDate;
+
+            const startData = hash[start];
+            if (startData) {
+               startData.push(reservation);
+               hash[start] = startData;
+            } else {
+               hash[start] = [reservation];
+            }
+            if (end && end !== start) {
+               const endData = hash[end];
+               if (endData) {
+                  endData.push(reservation);
+                  hash[start] = endData;
+               } else {
+                  hash[end] = [reservation];
+               }
+            }
+         });
+         console.log(hash);
+         setReservations(hash);
+      };
+      getData();
+   }, [date, enqueueSnackbar]);
+
+   const getWeekDays = (): Array<string> => {
+      const days: Array<string> = [];
+      for (let i = 1; i < 8; i++) {
+         days.push(date.clone().day(i).format("YYYY-MM-DD"));
+      }
+      return days;
+   };
+   const weekDays = getWeekDays();
 
    return (
       <Grid container justify="center" alignContent="space-around" direction="row">
-         {weekPlanning.map((dayData, index) => {
-            console.log("index: ", index, " - data: ", dayData);
+         {weekDays.map((value, index) => {
+            const data = reservations[value] || [];
             return (
                <Grid item key={index}>
-                  <CalendarWeekTab data={dayData} day={date.clone().day(index + 1)} key={index} type={calendarType} />
+                  <CalendarWeekTab data={data} day={date.clone().day(index + 1)} key={index} type={calendarType} />
                </Grid>
             );
          })}
