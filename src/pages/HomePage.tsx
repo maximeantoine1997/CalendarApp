@@ -39,7 +39,7 @@ const HomePage = () => {
    return (
       <Grid container alignContent="center" className={classes.grid}>
          <Grid container justify="center">
-            <Grid item direction="column" className={classes.card}>
+            <Grid item className={classes.card}>
                <Link to="/calendrier" className={classes.link}>
                   <Calendar width="25vw" height="25vh" title="Calendrier" className={classes.picture} />
                   <Typography className={classes.title} align="center">
@@ -47,7 +47,7 @@ const HomePage = () => {
                   </Typography>
                </Link>
             </Grid>
-            <Grid item direction="column" className={classes.card}>
+            <Grid item className={classes.card}>
                <Link to="/reservation" className={classes.link}>
                   <Reservation width="25vw" height="25vh" title="Reservation" className={classes.picture} />
                   <Typography className={classes.title} align="center">
@@ -57,7 +57,7 @@ const HomePage = () => {
             </Grid>
          </Grid>
          <Grid container justify="center">
-            <Grid item direction="column" className={classes.card}>
+            <Grid item className={classes.card}>
                <Link to="/account" className={classes.link}>
                   <Compte width="25vw" height="25vh" title="Compte" className={classes.picture} />
                   <Typography className={classes.title} align="center">
@@ -65,7 +65,7 @@ const HomePage = () => {
                   </Typography>
                </Link>
             </Grid>
-            <Grid item direction="column" className={classes.card}>
+            <Grid item className={classes.card}>
                <Link to="/settings" className={classes.link}>
                   <Settings width="25vw" height="25vh" title="Admin" className={classes.picture} />
                   <Typography className={classes.title} align="center">
