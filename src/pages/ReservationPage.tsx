@@ -2,7 +2,7 @@ import { createStyles, Grid, makeStyles, Theme } from "@material-ui/core";
 
 import React from "react";
 import { Redirect } from "react-router-dom";
-import useUserContext from "../Contexts/UserContext";
+import useUserContext from "../contexts/UserContext";
 import ReservationForm from "../components/reservation_form";
 
 const useStyles = makeStyles((theme: Theme) =>
