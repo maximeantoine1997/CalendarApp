@@ -6,7 +6,7 @@ import useUserContext from "../../Contexts/UserContext";
 import * as firebase from "firebase/app";
 import "firebase/auth";
 import { isFunction } from "../../Utils";
-import FadeIn from "../transitions/FadeIn";
+import FadeIn from "../Transitions/FadeIn";
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";
 import { motion } from "framer-motion";
