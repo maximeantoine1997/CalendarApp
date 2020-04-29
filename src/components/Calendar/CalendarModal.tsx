@@ -100,9 +100,7 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
    const updateReservationFirebase = (): void => {
       reservation.current = { ...editReservation.current };
       setEditMode(false);
-      if (reservation.current.id) {
-         updateReservationAsync(reservation.current.id, reservation.current);
-      }
+      updateReservationAsync(reservation.current);
    };
 
    const toggleToEditMode = () => {
