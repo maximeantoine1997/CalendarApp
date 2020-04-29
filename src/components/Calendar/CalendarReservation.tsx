@@ -1,7 +1,8 @@
-import { createStyles, Grid, makeStyles, Typography } from "@material-ui/core";
+import { createStyles, Grid, makeStyles, Menu, MenuItem, Typography } from "@material-ui/core";
 import React, { useState } from "react";
 import { Reservation } from "../reservation_form";
 import CalendarModal from "./CalendarModal";
+import CalendarMenu from "./CalendarMenu";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -18,6 +19,7 @@ const useStyles = makeStyles(() =>
          paddingLeft: "10px",
          paddingRight: "10px",
          cursor: "pointer",
+         userSelect: "none",
       },
    })
 );
@@ -29,11 +31,30 @@ const CalendarReservation: React.FC<CalendarReservationProps> = ({ reservation }
    const classes = useStyles();
    const [expand, setExpand] = useState<boolean>(false);
 
+   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+   const handleClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      event.preventDefault();
+      setAnchorEl(event.currentTarget);
+   };
+
+   const handleClose = () => {
+      setAnchorEl(null);
+   };
+
    return (
       <>
-         <Grid container onClick={() => setExpand(true)} className={classes.container} direction="column">
+         <Grid
+            container
+            onClick={() => setExpand(true)}
+            onContextMenu={e => {
+               handleClick(e);
+            }}
+            className={classes.container}
+            direction="column"
+         >
             <Grid item>
-               <Typography>{reservation.reservationNumber || "123"}</Typography>
+               <Typography>{reservation.reservationNumber || "N° Vary"}</Typography>
             </Grid>
             <Grid item>
                <Typography>{reservation.societe}</Typography>
@@ -46,6 +67,12 @@ const CalendarReservation: React.FC<CalendarReservationProps> = ({ reservation }
             </Grid>
          </Grid>
          <CalendarModal reservation={reservation} open={expand} onClose={() => setExpand(false)} />
+         <CalendarMenu
+            reservation={reservation}
+            anchorEl={anchorEl}
+            handleClick={handleClick}
+            handleClose={handleClose}
+         />
       </>
    );
 };
