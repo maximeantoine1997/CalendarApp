@@ -24,6 +24,7 @@ export interface Reservation {
    montant: number;
    isBancontact: boolean;
    isReceived: boolean;
+   reservationNumber?: string;
 }
 
 app.get("/reservations", (req, res) => {
@@ -49,7 +50,7 @@ app.get("/reservations", (req, res) => {
             data.push(doc.data() as Reservation);
          });
          console.log(data);
-         return res.status(200).send({ message: "it works", reservations: data });
+         return res.status(200).send({ reservations: data });
       })
       .catch(error => {
          console.log(error);
@@ -58,9 +59,11 @@ app.get("/reservations", (req, res) => {
 });
 
 app.post("/reservation", (req, res) => {
+   const reservationRef = admin.firestore().collection("reservations").doc();
+
    const newReservation: Reservation = {
       prenom: req.body.prenom,
-      id: req.body.id || "",
+      id: reservationRef.id,
       nom: req.body.nom,
       societe: req.body.societe,
       modele: req.body.modele,
@@ -73,12 +76,10 @@ app.post("/reservation", (req, res) => {
       montant: req.body.montant,
       isBancontact: req.body.isBancontact,
       isReceived: req.body.isReceived,
+      reservationNumber: req.body.reservationNumber || "",
    };
 
-   admin
-      .firestore()
-      .collection("reservations")
-      .doc()
+   reservationRef
       .set(newReservation)
       .then(() => {
          return res.status(200).send({ message: "Reservation was made successfuly" });
@@ -86,6 +87,59 @@ app.post("/reservation", (req, res) => {
       .catch(error => {
          console.log(error);
          return res.status(500).send({ message: "An error occured" });
+      });
+});
+
+app.put("/reservation", (req, res) => {
+   const reservation: Reservation = {
+      prenom: req.body.prenom,
+      id: req.body.id,
+      nom: req.body.nom,
+      societe: req.body.societe,
+      modele: req.body.modele,
+      accessoires: req.body.accessoires,
+      gsm: req.body.gsm,
+      email: req.body.email,
+      address: req.body.address,
+      startDate: req.body.startDate,
+      endDate: req.body.endDate || "",
+      montant: req.body.montant,
+      isBancontact: req.body.isBancontact,
+      isReceived: req.body.isReceived,
+      reservationNumber: req.body.reservationNumber || "",
+   };
+   if (reservation.id) {
+      return admin
+         .firestore()
+         .collection("reservations")
+         .doc(reservation.id)
+         .set(reservation)
+         .then(() => {
+            return res.status(200).send({ message: "Reservation was updated successfuly" });
+         })
+         .catch(error => {
+            console.log(error);
+            return res.status(500).send({ error: "An error occured" });
+         });
+   } else {
+      return res.status(500).send({ error: "The reservation has no id" });
+   }
+});
+
+app.delete("/reservation", (req, res) => {
+   const id = req.body.id;
+
+   admin
+      .firestore()
+      .collection("reservations")
+      .doc(id)
+      .delete()
+      .then(() => {
+         return res.status(200).send({ message: "Reservation was deleted successfuly" });
+      })
+      .catch(error => {
+         console.log(error);
+         return res.status(500).send({ error: "An error occured" });
       });
 });
 
