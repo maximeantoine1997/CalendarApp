@@ -3,7 +3,7 @@ import { Grid, DialogTitle, TextField, Button, makeStyles, Theme, createStyles }
 import * as firebase from "firebase/app";
 import "firebase/auth";
 import { motion } from "framer-motion";
-import FadeIn from "../Transitions/FadeIn";
+import FadeIn from "../transitions/FadeIn";
 import signIn from "../../images/signIn.svg";
 
 const useStyles = makeStyles((theme: Theme) =>

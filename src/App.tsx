@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { makeStyles, Theme, createStyles, Grid } from "@material-ui/core";
 import * as firebase from "firebase/app";
 import "firebase/auth";
-import useUserContext, { UserContextProvider } from "./Contexts/UserContext";
+import useUserContext, { UserContextProvider } from "./contexts/UserContext";
 import { isFunction } from "./Utils";
 import SideBar from "./components/Navigation/Sidebar";
 import AddButton from "./components/AddButton";

@@ -3,7 +3,7 @@ import React from "react";
 import { Fab, Box, makeStyles, Theme, createStyles } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import { Link, useLocation } from "react-router-dom";
-import useUserContext from "../Contexts/UserContext";
+import useUserContext from "../contexts/UserContext";
 import { checkIfConnected } from "../Utils";
 
 const useStyles = makeStyles((theme: Theme) =>

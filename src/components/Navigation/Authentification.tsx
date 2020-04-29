@@ -2,11 +2,11 @@ import { makeStyles, Theme, createStyles, Button, Avatar, Menu, MenuItem, Dialog
 import React, { useState } from "react";
 
 import { Link } from "react-router-dom";
-import useUserContext from "../../Contexts/UserContext";
+import useUserContext from "../../contexts/UserContext";
 import * as firebase from "firebase/app";
 import "firebase/auth";
 import { isFunction } from "../../Utils";
-import FadeIn from "../Transitions/FadeIn";
+import FadeIn from "../transitions/FadeIn";
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";
 import { motion } from "framer-motion";
