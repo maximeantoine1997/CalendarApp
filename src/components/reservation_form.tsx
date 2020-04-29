@@ -1,13 +1,12 @@
 import { Button, createStyles, Grid, makeStyles, Theme, Typography } from "@material-ui/core";
-
 import moment, { Moment } from "moment";
 import React, { MutableRefObject, useRef, useState } from "react";
-import TextComponent from "./FormElements/TextComponent";
-import EuroComponent from "./FormElements/EuroComponent";
+import { useHistory } from "react-router-dom";
+import { addReservationAsync } from "../Firebase/Firebase.Utils";
 import CheckBoxComponent from "./FormElements/CheckboxComponent";
 import DateComponent from "./FormElements/DateComponent";
-import { _addReservationAsync } from "../Firebase/Firebase.Utils";
-import { useHistory } from "react-router-dom";
+import EuroComponent from "./FormElements/EuroComponent";
+import TextComponent from "./FormElements/TextComponent";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -145,7 +144,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    };
 
    const addReservation = async (reservation: Reservation): Promise<void> => {
-      await _addReservationAsync(reservation);
+      await addReservationAsync(reservation);
       history.push("/calendrier");
    };
 
