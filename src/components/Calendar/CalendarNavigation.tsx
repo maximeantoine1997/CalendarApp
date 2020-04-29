@@ -10,7 +10,7 @@ import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
 import { CalendarType } from "../../Interfaces/Common";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import ToggleButton from "@material-ui/lab/ToggleButton";
-import useDateContext from "../../contexts/DateContext";
+import useDateContext from "../../Contexts/DateContext";
 
 const useStyles = makeStyles(() =>
    createStyles({

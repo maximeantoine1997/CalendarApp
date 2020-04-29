@@ -2,7 +2,7 @@ import { createStyles, Grid, makeStyles, Theme, Typography } from "@material-ui/
 
 import React from "react";
 import { Redirect } from "react-router-dom";
-import useUserContext from "../contexts/UserContext";
+import useUserContext from "../Contexts/UserContext";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({

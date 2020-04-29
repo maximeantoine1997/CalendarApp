@@ -3,7 +3,7 @@ import "firebase/functions";
 import React, { useState } from "react";
 import CalendarNavigation from "../components/Calendar/CalendarNavigation";
 import CalendarWeekView from "../components/Calendar/CalendarWeekView";
-import { DateContextProvider } from "../contexts/DateContext";
+import { DateContextProvider } from "../Contexts/DateContext";
 import { CalendarType } from "../Interfaces/Common";
 
 const useStyles = makeStyles(() =>

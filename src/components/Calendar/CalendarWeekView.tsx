@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { CalendarType } from "../../Interfaces/Common";
 import { Reservation } from "../reservation_form";
 import CalendarWeekTab from "./CalendarWeekTab";
-import useDateContext from "../../contexts/DateContext";
+import useDateContext from "../../Contexts/DateContext";
 import { getReservations } from "../../Firebase/Firebase.Utils";
 import { useSnackbar } from "notistack";
 import { IHash } from "../../Utils";

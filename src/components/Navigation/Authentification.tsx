@@ -2,7 +2,7 @@ import { makeStyles, Theme, createStyles, Button, Avatar, Menu, MenuItem, Dialog
 import React, { useState } from "react";
 
 import { Link } from "react-router-dom";
-import useUserContext from "../../contexts/UserContext";
+import useUserContext from "../../Contexts/UserContext";
 import * as firebase from "firebase/app";
 import "firebase/auth";
 import { isFunction } from "../../Utils";
