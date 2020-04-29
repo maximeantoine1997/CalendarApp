@@ -1,12 +1,7 @@
-import { Menu, MenuItem, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Menu, MenuItem } from "@material-ui/core";
 import React from "react";
 import { Reservation } from "../reservation_form";
 import ColorBlock from "./Blocks/ColorBlock";
-
-const useStyles = makeStyles(() => ({
-   default: {},
-}));
 
 interface CalendarMenuProps {
    reservation: Reservation;
@@ -21,8 +16,6 @@ const CalendarMenu: React.FunctionComponent<CalendarMenuProps> = ({
    handleClick,
    handleClose,
 }) => {
-   const classes = useStyles();
-
    return (
       <Menu
          id="simple-menu"

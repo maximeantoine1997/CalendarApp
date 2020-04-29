@@ -1,8 +1,8 @@
-import { createStyles, Grid, makeStyles, Menu, MenuItem, Typography } from "@material-ui/core";
+import { createStyles, Grid, makeStyles, Typography } from "@material-ui/core";
 import React, { useState } from "react";
 import { Reservation } from "../reservation_form";
-import CalendarModal from "./CalendarModal";
 import CalendarMenu from "./CalendarMenu";
+import CalendarModal from "./CalendarModal";
 
 const useStyles = makeStyles(() =>
    createStyles({
