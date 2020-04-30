@@ -1,9 +1,7 @@
-import React, { useEffect, FunctionComponent, ReactElement, useState } from "react";
+import { createStyles, makeStyles, Typography } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
-import { makeStyles, createStyles, Typography } from "@material-ui/core";
-
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { getFirebaseElementsAsync } from "../../Firebase/Firebase.Utils";
+import React, { FunctionComponent, ReactElement, useState } from "react";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -28,7 +26,6 @@ interface TextProps {
    placeholder: string;
    onChange: (e: string | Array<string>) => void;
    options?: Array<string>;
-   url?: string;
    multiple?: boolean;
    hasError?: boolean;
    errorText?: string;
@@ -39,8 +36,7 @@ interface TextProps {
 
 const TextComponent: FunctionComponent<TextProps> = ({
    placeholder,
-   options: options_ = [],
-   url,
+   options = [],
    onChange,
    multiple = false,
    hasError,
@@ -50,7 +46,6 @@ const TextComponent: FunctionComponent<TextProps> = ({
    variant = "outlined",
 }): ReactElement => {
    const classes = useStyles();
-   const [options, setOptions] = useState<Array<string>>(options_);
 
    const [multipleValue, setMultipleValue] = useState<Array<string>>(value);
 
@@ -68,16 +63,6 @@ const TextComponent: FunctionComponent<TextProps> = ({
          setMultipleValue(value);
       }
    };
-
-   useEffect(() => {
-      const getData = async () => {
-         if (!options.length && url) {
-            const elements = await getFirebaseElementsAsync(url);
-            return setOptions(elements as Array<string>);
-         }
-      };
-      getData();
-   }, [options.length, options_, url]);
 
    return (
       <>
