@@ -11,8 +11,8 @@ export const checkIfConnected = (user: Optional<Nullable<firebase.User>>, path: 
    return path;
 };
 
-export interface IHash {
-   [key: string]: Array<Reservation>;
+export interface IHash<T> {
+   [key: string]: Array<T>;
 }
 
 export const isPreparation = (reservation: Reservation): boolean => {
