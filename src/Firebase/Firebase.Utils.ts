@@ -3,25 +3,59 @@ import * as firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
 import { Reservation } from "./../components/reservation_form";
+import { IHash } from "../Utils";
 
 const api = "https://europe-west1-antoinesprl-calendrier.cloudfunctions.net/api";
 
-export const getFirebaseElementsAsync = async (url: string): Promise<Array<any>> => {
-   const res: Array<any> = [];
-   await firebase
-      .database()
-      .ref(url)
-      .once("value")
-      .then(snapshot => {
-         const obj: Object = snapshot.val();
+// Auth
 
-         Object.values(obj).forEach(value => {
-            if (value) res.push(value);
-         });
+export const createUserAsync = async (email: string, password: string, userName: string): Promise<boolean> => {
+   return firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then(value => {
+         if (!value.user) return false;
+         return value.user
+            ?.updateProfile({
+               displayName: userName,
+            })
+            .then(() => {
+               return true;
+            })
+            .catch(error => {
+               console.error(error);
+               return false;
+            });
+      })
+      .catch(error => {
+         console.error(error);
+         return false;
       });
-
-   return res;
 };
+
+// Autocomplete
+
+export const getAutocompleteAsync = async (): Promise<IHash<unknown>> => {
+   return Axios.get(`${api}/autocomplete`)
+      .then(response => {
+         const data = response.data;
+
+         return data.hash;
+      })
+      .catch(error => {
+         console.log(error);
+         return {};
+      });
+};
+
+export const updateAutocompleteAsync = async (hash: IHash<unknown>): Promise<void> => {
+   console.log({ ...hash });
+   Axios.put(`${api}/autocomplete`, { ...hash }, { method: "PUT" }).then(response => {
+      console.log(response.data);
+   });
+};
+
+// Reservation
 
 export const addReservationAsync = async (reservation: Reservation): Promise<object> => {
    return Axios.post(`${api}/reservation`, { ...reservation }, { method: "POST" })
@@ -43,7 +77,7 @@ export const updateReservationAsync = async (reservation: Reservation): Promise<
       });
 };
 
-export const getReservations = async (date: string): Promise<Array<Reservation>> => {
+export const getReservationsAsync = async (date: string): Promise<Array<Reservation>> => {
    return Axios.get(`${api}/reservations`, {
       params: {
          date: date,
