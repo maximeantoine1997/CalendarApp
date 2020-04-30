@@ -5,6 +5,7 @@ import App from "./App";
 import * as firebase from "firebase/app";
 import "firebase/database";
 import "firebase/functions";
+import { UserContextProvider } from "./Contexts/UserContext";
 
 // #region Firebase
 
@@ -25,4 +26,9 @@ firebase.functions();
 
 // #endregion
 
-ReactDOM.render(<App />, document.getElementById("react"));
+ReactDOM.render(
+   <UserContextProvider>
+      <App />
+   </UserContextProvider>,
+   document.getElementById("react")
+);
