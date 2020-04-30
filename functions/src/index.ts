@@ -9,6 +9,8 @@ admin.initializeApp();
 const app = express();
 app.use(cors());
 
+type ReservationType = "Preparation" | "Livraison" | "Livre" | "Retour" | "Fini";
+
 export interface Reservation {
    id?: string;
    prenom: string;
@@ -25,7 +27,62 @@ export interface Reservation {
    isBancontact: boolean;
    isReceived: boolean;
    reservationNumber?: string;
+   type: ReservationType;
 }
+
+export interface IHash {
+   [key: string]: Array<unknown>;
+}
+
+// Autocomplete
+
+app.get("/autocomplete", (req, res) => {
+   admin
+      .firestore()
+      .collection("autocomplete")
+      .get()
+      .then(snapshot => {
+         const documents = snapshot.docs;
+         if (!documents) return res.status(500).send({ error: "No documents in autocomplete", hash: {} });
+         const hash: IHash = {};
+         documents.forEach(doc => {
+            hash[doc.id] = doc.data().items || [];
+         });
+         return res.status(200).send({ hash: hash });
+      })
+      .catch(error => {
+         console.log(error);
+         return res.status(500).send({ error: "an error occured", hash: {} });
+      });
+});
+
+const updateAutocompleteElement = (docName: string, items: Array<unknown>): void => {
+   const newArray = [...new Set(items)];
+   admin
+      .firestore()
+      .collection("autocomplete")
+      .doc(docName)
+      .update({
+         items: newArray,
+      })
+      .catch(error => {
+         console.log(error);
+      });
+};
+
+app.put("/autocomplete", (req, res) => {
+   updateAutocompleteElement("prenoms", req.body.prenoms);
+   updateAutocompleteElement("noms", req.body.noms);
+   updateAutocompleteElement("societes", req.body.societes);
+   updateAutocompleteElement("modeles", req.body.modeles);
+   updateAutocompleteElement("accessoires", req.body.accessoires);
+   updateAutocompleteElement("gsms", req.body.gsms);
+   updateAutocompleteElement("emails", req.body.emails);
+   updateAutocompleteElement("addresses", req.body.addresses);
+   return res.status(200).send({ message: "Autocomplete was updated successfuly" });
+});
+
+// Reservation
 
 app.get("/reservations", (req, res) => {
    const date: string = req.query.date as string;
@@ -77,6 +134,7 @@ app.post("/reservation", (req, res) => {
       isBancontact: req.body.isBancontact,
       isReceived: req.body.isReceived,
       reservationNumber: req.body.reservationNumber || "",
+      type: req.body.type,
    };
 
    reservationRef
@@ -107,6 +165,7 @@ app.put("/reservation", (req, res) => {
       isBancontact: req.body.isBancontact,
       isReceived: req.body.isReceived,
       reservationNumber: req.body.reservationNumber || "",
+      type: req.body.type,
    };
    if (reservation.id) {
       return admin
