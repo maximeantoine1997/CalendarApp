@@ -1,10 +1,10 @@
 import React, { useRef } from "react";
 import { Grid, DialogTitle, TextField, Button, makeStyles, Theme, createStyles } from "@material-ui/core";
-import * as firebase from "firebase/app";
-import "firebase/auth";
 import { motion } from "framer-motion";
 import FadeIn from "../Transitions/FadeIn";
 import signUp from "../../images/signup.svg";
+import { createUserAsync } from "../../Firebase/Firebase.Utils";
+import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -31,11 +31,11 @@ interface SignUpProps {
 
 const SignUp: React.FC<SignUpProps> = ({ onSignIn, onClose }) => {
    const classes = useStyles();
-
+   const { enqueueSnackbar } = useSnackbar();
    const userName = useRef("");
-   const email = useRef("florian@antoinesprl.be");
-   const password = useRef("123456");
-   const confirmPassword = useRef("123456");
+   const email = useRef("");
+   const password = useRef("");
+   const confirmPassword = useRef("");
 
    // #region Animation
 
@@ -55,22 +55,17 @@ const SignUp: React.FC<SignUpProps> = ({ onSignIn, onClose }) => {
       ref.current = event.target.value;
    };
 
-   const onSignUp = (): void => {
-      firebase
-         .auth()
-         .createUserWithEmailAndPassword(email.current, password.current)
-         .then(value => {
-            value.user
-               ?.updateProfile({
-                  displayName: userName.current,
-               })
-               .then()
-               .catch(error => console.error(error));
-         })
-         .catch(error => {
-            const errorMessage = error.message;
-            console.error(errorMessage);
-         });
+   const onSignUp = async (): Promise<void> => {
+      if (password.current !== confirmPassword.current) {
+         console.log("passwords are not the same, please make it happen");
+         return;
+      }
+      const isCreated = await createUserAsync(email.current, password.current, userName.current);
+      if (isCreated) {
+         enqueueSnackbar("Compte créé", { variant: "success" });
+      } else {
+         enqueueSnackbar("Une erreur s'est produite", { variant: "error" });
+      }
       onClose(false);
    };
    return (
