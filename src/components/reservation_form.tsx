@@ -1,12 +1,13 @@
 import { Button, createStyles, Grid, makeStyles, Theme, Typography } from "@material-ui/core";
 import moment, { Moment } from "moment";
-import React, { MutableRefObject, useRef, useState } from "react";
+import React, { MutableRefObject, useRef, useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { addReservationAsync } from "../Firebase/Firebase.Utils";
+import { addReservationAsync, getAutocompleteAsync, updateAutocompleteAsync } from "../Firebase/Firebase.Utils";
 import CheckBoxComponent from "./FormElements/CheckboxComponent";
 import DateComponent from "./FormElements/DateComponent";
 import EuroComponent from "./FormElements/EuroComponent";
 import TextComponent from "./FormElements/TextComponent";
+import { IHash } from "../Utils";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -117,7 +118,6 @@ export type ReservationType = "Preparation" | "Livraison" | "Livre" | "Retour" |
 
 const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    const classes = useStyles();
-
    const history = useHistory();
 
    // #region  useRef
@@ -137,13 +137,30 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    // #endregion
 
    const [validForm, setValidForm] = useState<ValidReservation>(initValidForm);
-
    const [hasEndDate, setHasEndDate] = useState<boolean>(false);
+   const [autocomplete, setAutocomplete] = useState<IHash<unknown>>({});
+
    const onChange = (ref: MutableRefObject<any>, newValue: any) => {
       ref.current = newValue;
    };
-
+   const addAutocompleteItem = (docName: string, newItem: unknown) => {
+      const items = autocomplete[docName];
+      items.push(newItem);
+   };
    const addReservation = async (reservation: Reservation): Promise<void> => {
+      addAutocompleteItem("prenoms", reservation.prenom);
+      addAutocompleteItem("noms", reservation.nom);
+      addAutocompleteItem("addresses", reservation.address);
+      addAutocompleteItem("emails", reservation.email);
+      addAutocompleteItem("gsms", reservation.gsm);
+      addAutocompleteItem("modeles", reservation.modele);
+      addAutocompleteItem("societes", reservation.societe);
+      const items = autocomplete["accessoires"];
+      reservation.accessoires.forEach(accessoire => {
+         items.push(accessoire);
+      });
+      reservation.type = "Preparation";
+      updateAutocompleteAsync(autocomplete);
       await addReservationAsync(reservation);
       history.push("/calendrier");
    };
@@ -268,6 +285,14 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
       setValidForm(newValidForm);
    };
 
+   useEffect(() => {
+      const getAutocomplete = async () => {
+         const data = await getAutocompleteAsync();
+         setAutocomplete(data);
+      };
+      getAutocomplete();
+   }, []);
+
    return (
       <Grid
          container
@@ -293,7 +318,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                hasError={validForm["modele"].hasError}
                errorText={validForm["modele"].errorMessage}
                placeholder="Modèle"
-               url="Reservation/Modele"
+               options={autocomplete["modeles"] as Array<string>}
                onChange={e => onChange(modele, e)}
             />
          </Grid>
@@ -305,7 +330,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                hasError={validForm["accessoires"].hasError}
                errorText={validForm["accessoires"].errorMessage}
                placeholder="Accessoires"
-               url="Reservation/Accessoires"
+               options={autocomplete["accessoires"] as Array<string>}
                onChange={e => onChange(accessoires, e)}
                multiple
             />
@@ -333,7 +358,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                errorText={validForm["societe"].errorMessage}
                placeholder="Société"
                onChange={e => onChange(societe, e)}
-               url="Reservation/Societe"
+               options={autocomplete["societes"] as Array<string>}
             />
          </Grid>
          <Grid item xs={6}></Grid>
@@ -342,7 +367,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                hasError={validForm["address"].hasError}
                errorText={validForm["address"].errorMessage}
                placeholder="Adresse"
-               url="Reservation/Address"
+               options={autocomplete["addresses"] as Array<string>}
                onChange={e => onChange(address, e)}
                customClass={{ paddingLeft: "5%", width: "85%", paddingRight: "10%" }}
             />
@@ -390,7 +415,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                hasError={validForm["nom"].hasError}
                errorText={validForm["nom"].errorMessage}
                placeholder="Nom"
-               url="Reservation/Nom"
+               options={autocomplete["noms"] as Array<string>}
                onChange={e => onChange(nom, e)}
             />
          </Grid>
@@ -399,7 +424,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                hasError={validForm["prenom"].hasError}
                errorText={validForm["prenom"].errorMessage}
                placeholder="Prénom"
-               url="Reservation/Prenom"
+               options={autocomplete["prenoms"] as Array<string>}
                onChange={e => onChange(prenom, e)}
             />
          </Grid>
@@ -408,7 +433,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                hasError={validForm["gsm"].hasError}
                errorText={validForm["gsm"].errorMessage}
                placeholder="Téléphone"
-               url="Reservation/Telephone"
+               options={autocomplete["gsms"] as Array<string>}
                onChange={e => onChange(gsm, e)}
             />
          </Grid>
@@ -417,7 +442,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                hasError={validForm["email"].hasError}
                errorText={validForm["email"].errorMessage}
                placeholder="Email"
-               url="Reservation/Email"
+               options={autocomplete["emails"] as Array<string>}
                onChange={e => onChange(email, e)}
             />
          </Grid>
