@@ -32,8 +32,6 @@ const CalendarPage: React.FC = () => {
          </Box>
       </DateContextProvider>
    );
-
-   //    return <Redirect to="/" />;
 };
 
 export default CalendarPage;
