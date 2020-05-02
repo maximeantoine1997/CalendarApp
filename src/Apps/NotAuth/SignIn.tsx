@@ -1,9 +1,9 @@
 import { Button, createStyles, DialogTitle, Grid, makeStyles, TextField, Theme } from "@material-ui/core";
-import * as firebase from "firebase/app";
 import "firebase/auth";
 import React, { useRef } from "react";
 import FadeIn from "../../components/Transitions/FadeIn";
 import useUserContext from "../../Contexts/UserContext";
+import { signInUserAsync } from "../../Firebase/Firebase.Utils";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -30,23 +30,8 @@ const SignIn: React.FC<SignInProps> = ({ onChange }) => {
    };
 
    const onSignIn = async (): Promise<void> => {
-      await firebase
-         .auth()
-         .setPersistence(firebase.auth.Auth.Persistence.SESSION)
-         .then(async () => {
-            await firebase
-               .auth()
-               .signInWithEmailAndPassword(email.current, password.current)
-               .then(user => {
-                  console.log("user is set to: ", user.user);
-                  setUser(user.user);
-               });
-            console.log("you are signed In");
-         })
-         .catch(error => {
-            var errorMessage = error.message;
-            console.error(errorMessage);
-         });
+      const user = await signInUserAsync(email.current, password.current);
+      setUser(user);
    };
    return (
       <Grid container className={classes.root} justify="center" style={{ border: "1px solid black" }}>

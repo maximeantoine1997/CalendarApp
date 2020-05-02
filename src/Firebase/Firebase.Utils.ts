@@ -33,6 +33,24 @@ export const createUserAsync = async (email: string, password: string, userName:
       });
 };
 
+export const signInUserAsync = async (email: string, password: string): Promise<firebase.User | null> => {
+   return firebase
+      .auth()
+      .setPersistence(firebase.auth.Auth.Persistence.SESSION)
+      .then(async () => {
+         return firebase
+            .auth()
+            .signInWithEmailAndPassword(email, password)
+            .then(user => {
+               return user.user;
+            });
+      })
+      .catch(error => {
+         console.error(error);
+         return null;
+      });
+};
+
 // Autocomplete
 
 export const getAutocompleteAsync = async (): Promise<IHash<unknown>> => {
