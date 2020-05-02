@@ -1,7 +1,7 @@
+import React, { createContext, ReactNode, ReactElement, useContext, useState, useEffect } from "react";
 import * as firebase from "firebase/app";
 import "firebase/auth";
-import React, { createContext, ReactElement, ReactNode, useContext, useState } from "react";
-import { Nullable, Optional } from "../Interfaces/Common";
+import { Optional, Nullable } from "../Interfaces/Common";
 
 interface IUserContext {
    user: Optional<Nullable<firebase.User>>;
@@ -16,6 +16,11 @@ export const UserContext = createContext<IUserContext>({
 export const UserContextProvider = (props: { children: ReactNode }): ReactElement => {
    const [user, setUser] = useState<Optional<Nullable<firebase.User>>>();
 
+   useEffect(() => {
+      firebase.auth().onAuthStateChanged(user => {
+         setUser(user);
+      });
+   }, []);
    const userContext = { user, setUser };
    return <UserContext.Provider value={userContext}>{props.children}</UserContext.Provider>;
 };
