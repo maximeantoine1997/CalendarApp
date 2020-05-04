@@ -1,7 +1,5 @@
 import { createStyles, Grid, makeStyles, Theme, Typography } from "@material-ui/core";
-
 import React from "react";
-import { Redirect } from "react-router-dom";
 import useUserContext from "../Contexts/UserContext";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -17,19 +15,11 @@ const useStyles = makeStyles((theme: Theme) =>
 const SettingsPage = () => {
    const classes = useStyles();
 
-   const { user } = useUserContext();
-
-   if (user) {
-      return (
-         <>
-            <Grid container justify="center" alignContent="center" alignItems="center" className={classes.grid}>
-               <Typography>Settings Page</Typography>
-            </Grid>
-         </>
-      );
-   }
-
-   return <Redirect to="/" />;
+   return (
+      <>
+         <Grid container justify="center" alignContent="center" alignItems="center" className={classes.grid}></Grid>
+      </>
+   );
 };
 
 export default SettingsPage;
