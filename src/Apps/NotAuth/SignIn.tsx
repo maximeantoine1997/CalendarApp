@@ -31,6 +31,7 @@ const SignIn: React.FC<SignInProps> = ({ onChange }) => {
 
    const onSignIn = async (): Promise<void> => {
       const user = await signInUserAsync(email.current, password.current);
+      localStorage.setItem("authUser", JSON.stringify(user));
       setUser(user);
    };
    return (

@@ -17,9 +17,14 @@ export const UserContextProvider = (props: { children: ReactNode }): ReactElemen
    const [user, setUser] = useState<Optional<Nullable<firebase.User>>>();
 
    useEffect(() => {
-      firebase.auth().onAuthStateChanged(user => {
-         setUser(user);
-      });
+      const user = localStorage.getItem("authUser");
+      if (user) {
+         setUser(JSON.parse(user));
+      } else {
+         firebase.auth().onAuthStateChanged(user => {
+            setUser(user);
+         });
+      }
    }, []);
    const userContext = { user, setUser };
    return <UserContext.Provider value={userContext}>{props.children}</UserContext.Provider>;

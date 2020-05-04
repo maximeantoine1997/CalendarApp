@@ -80,6 +80,7 @@ const Authentification: React.FC<AuthProps> = () => {
    };
 
    const signOut = () => {
+      localStorage.removeItem("authUser");
       firebase.auth().signOut();
       if (isFunction(setUser)) setUser(null);
    };
