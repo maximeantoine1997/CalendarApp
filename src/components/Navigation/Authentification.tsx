@@ -1,15 +1,10 @@
-import { makeStyles, Theme, createStyles, Button, Avatar, Menu, MenuItem, Dialog } from "@material-ui/core";
-import React, { useState } from "react";
-
-import { Link } from "react-router-dom";
-import useUserContext from "../../Contexts/UserContext";
+import { Avatar, Button, createStyles, makeStyles, Menu, MenuItem, Theme } from "@material-ui/core";
 import * as firebase from "firebase/app";
 import "firebase/auth";
-import { isFunction } from "../../Utils";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import useUserContext from "../../Contexts/UserContext";
 import FadeIn from "../Transitions/FadeIn";
-import SignUp from "./SignUp";
-import SignIn from "./SignIn";
-import { motion } from "framer-motion";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -66,9 +61,6 @@ const Authentification: React.FC<AuthProps> = () => {
 
    const initial = user?.displayName?.charAt(0).toUpperCase();
 
-   const [openSignUp, setOpenSignUp] = useState<boolean>(false);
-
-   const [isOpenAuth, setIsOpenAuth] = useState<boolean>(false);
    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -82,11 +74,7 @@ const Authentification: React.FC<AuthProps> = () => {
    const signOut = () => {
       localStorage.removeItem("authUser");
       firebase.auth().signOut();
-      if (isFunction(setUser)) setUser(null);
-   };
-
-   const toggleAuth = (value: boolean) => {
-      setIsOpenAuth(value);
+      setUser(null);
    };
 
    if (user && initial) {
@@ -116,35 +104,6 @@ const Authentification: React.FC<AuthProps> = () => {
                </Menu>
             </FadeIn>
          </>
-      );
-   }
-   if (isOpenAuth) {
-      if (openSignUp) {
-         return (
-            <Dialog open={isOpenAuth} fullWidth onClose={() => setIsOpenAuth(false)}>
-               <SignUp onSignIn={() => setOpenSignUp(false)} onClose={() => setIsOpenAuth(false)} />
-            </Dialog>
-         );
-      }
-      return (
-         <Dialog open={isOpenAuth} fullWidth onClose={() => setIsOpenAuth(false)}>
-            <SignIn onSignUp={() => setOpenSignUp(true)} onClose={() => setIsOpenAuth(false)} />
-         </Dialog>
-      );
-   }
-
-   if (user === null) {
-      return (
-         <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 1 }}>
-            <Button
-               onClick={() => {
-                  toggleAuth(true);
-               }}
-               className={classes.menuButton}
-            >
-               Se Connecter
-            </Button>
-         </motion.div>
       );
    }
 
