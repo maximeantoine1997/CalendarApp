@@ -206,30 +206,46 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
          <DialogTitle>Reservation</DialogTitle>
          <Divider />
          <DialogContent>
-            <Grid container className={classes.dialog} direction="column">
-               <Grid item>
-                  <Typography className={classes.title}>type:</Typography>
-                  <Typography>{reservation.current.type}</Typography>
-               </Grid>
-               <Grid item>
-                  <Typography className={classes.title}>Dossier Vary:</Typography>
-                  <Typography>{reservation.current.reservationNumber}</Typography>
-               </Grid>
-               <Grid item>
+            <Grid container className={classes.dialog}>
+               <Grid item xs={6}>
                   <Typography className={classes.title}>Societé:</Typography>
                   <Typography>{reservation.current.societe}</Typography>
                </Grid>
-               <Grid item>
+               <Grid item xs={6}>
+                  <Typography className={classes.title}>Dossier Vary:</Typography>
+                  <Typography>{reservation.current.reservationNumber}</Typography>
+               </Grid>
+               <Grid item xs={12}>
+                  <Typography className={classes.title}>Adresse:</Typography>
+                  <Typography>{reservation.current.address}</Typography>
+               </Grid>
+               <Grid item xs={6}>
                   <Typography className={classes.title}>Machine:</Typography>
                   <Typography>{reservation.current.modele}</Typography>
                </Grid>
-               <Grid item>
+               <Grid item xs={6}>
                   <Typography className={classes.title}>Accessoires:</Typography>
                   {renderAccessoires}
                </Grid>
-               <Grid item>
-                  <Typography className={classes.title}>Addresse:</Typography>
-                  <Typography>{reservation.current.address}</Typography>
+               <Grid item xs={6}>
+                  <Typography className={classes.title}>Prénom:</Typography>
+                  <Typography>{reservation.current.prenom}</Typography>
+               </Grid>
+               <Grid item xs={6}>
+                  <Typography className={classes.title}>Nom:</Typography>
+                  <Typography>{reservation.current.nom}</Typography>
+               </Grid>
+               <Grid item xs={6}>
+                  <Typography className={classes.title}>Téléphone:</Typography>
+                  <Typography>{reservation.current.gsm}</Typography>
+               </Grid>
+               <Grid item xs={6}>
+                  <Typography className={classes.title}>Email:</Typography>
+                  <Typography>{reservation.current.email}</Typography>
+               </Grid>
+               <Grid item xs={12}>
+                  <Typography className={classes.title}>type:</Typography>
+                  <Typography>{reservation.current.type}</Typography>
                </Grid>
             </Grid>
          </DialogContent>
