@@ -1,13 +1,14 @@
-import React from "react";
-import { makeStyles, createStyles, Grid, Typography } from "@material-ui/core";
+import React, { useRef } from "react";
+import { makeStyles, createStyles, Grid } from "@material-ui/core";
 import { Redirect } from "react-router-dom";
 import useUserContext from "../Contexts/UserContext";
+import TextComponent from "../components/FormElements/TextComponent";
 
 const useStyles = makeStyles(() =>
    createStyles({
       grid: {
          height: "95vh",
-         paddingTop: "3vh",
+         paddingTop: "5vh",
       },
    })
 );
@@ -17,14 +18,43 @@ const AccountPage = () => {
 
    const { user } = useUserContext();
 
+   const email = useRef<string>(user?.email || "");
+   const username = useRef<string>(user?.displayName || "");
+
    if (user) {
       return (
-         <Grid container justify="center" alignContent="center" alignItems="center" className={classes.grid}>
-            <h1> {user.displayName} </h1>
-            <br />
-            <Typography>IDK</Typography>
-            <br />
-            <h1> {user.email} </h1>
+         <Grid
+            container
+            justify="center"
+            alignContent="center"
+            alignItems="center"
+            className={classes.grid}
+            style={{ border: "1px solid black" }}
+         >
+            <Grid item xs={12}>
+               <TextComponent
+                  placeholder="Username"
+                  onChange={e => {
+                     if (typeof e === "string") {
+                        username.current = e;
+                     }
+                  }}
+                  value={username.current}
+                  customClass={{ paddingLeft: "30%", width: "40%", paddingRight: "30%" }}
+               />
+            </Grid>
+            <Grid item xs={12}>
+               <TextComponent
+                  placeholder="Email"
+                  onChange={e => {
+                     if (typeof e === "string") {
+                        email.current = e;
+                     }
+                  }}
+                  value={email.current}
+                  customClass={{ paddingLeft: "30%", width: "40%", paddingRight: "30%" }}
+               />
+            </Grid>
          </Grid>
       );
    }
