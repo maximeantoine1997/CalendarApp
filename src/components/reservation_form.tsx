@@ -304,12 +304,12 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
          alignContent="center"
       >
          <Grid item xs={6}>
-            <Typography variant="h4" align="center">
+            <Typography variant="h4" align="center" style={{ paddingBottom: "2vh" }}>
                Machine
             </Typography>
          </Grid>
          <Grid item xs={6}>
-            <Typography variant="h4" align="center">
+            <Typography variant="h4" align="center" style={{ paddingBottom: "2vh" }}>
                Info
             </Typography>
          </Grid>
@@ -348,7 +348,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
             />
          </Grid>
          <Grid item xs={12}>
-            <Typography variant="h4" align="center">
+            <Typography variant="h4" align="center" style={{ paddingTop: "5vh", paddingBottom: "2vh" }}>
                Chantier
             </Typography>
          </Grid>
@@ -406,7 +406,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
             )}
          </Grid>
          <Grid item xs={12}>
-            <Typography variant="h4" align="center">
+            <Typography variant="h4" align="center" style={{ paddingTop: "5vh", paddingBottom: "2vh" }}>
                Client
             </Typography>
          </Grid>
