@@ -18,10 +18,17 @@ const useStyles = makeStyles(() =>
 
 interface EuroProps {
    placeholder: string;
-   onChange: (e: string) => void;
+   onChange: (e: number) => void;
+   value?: number;
+   variant?: "filled" | "outlined" | "standard";
 }
 
-const EuroComponent: FunctionComponent<EuroProps> = ({ placeholder, onChange }): ReactElement => {
+const EuroComponent: FunctionComponent<EuroProps> = ({
+   placeholder,
+   onChange,
+   value,
+   variant = "outlined",
+}): ReactElement => {
    const classes = useStyles();
    const onBlur = (event: any) => {
       if (event) {
@@ -35,10 +42,11 @@ const EuroComponent: FunctionComponent<EuroProps> = ({ placeholder, onChange }):
          <TextField
             label={placeholder}
             onBlur={onBlur}
-            variant="outlined"
+            variant={variant}
+            value={value}
             fullWidth
             margin="normal"
-            className={classes.color}
+            className={variant === "outlined" ? classes.color : undefined}
             InputProps={{
                startAdornment: (
                   <InputAdornment position="start">
