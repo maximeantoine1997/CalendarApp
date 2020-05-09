@@ -21,45 +21,41 @@ const AccountPage = () => {
    const email = useRef<string>(user?.email || "");
    const username = useRef<string>(user?.displayName || "");
 
-   if (user) {
-      return (
-         <Grid
-            container
-            justify="center"
-            alignContent="center"
-            alignItems="center"
-            className={classes.grid}
-            style={{ border: "1px solid black" }}
-         >
-            <Grid item xs={12}>
-               <TextComponent
-                  placeholder="Username"
-                  onChange={e => {
-                     if (typeof e === "string") {
-                        username.current = e;
-                     }
-                  }}
-                  value={username.current}
-                  customClass={{ paddingLeft: "30%", width: "40%", paddingRight: "30%" }}
-               />
-            </Grid>
-            <Grid item xs={12}>
-               <TextComponent
-                  placeholder="Email"
-                  onChange={e => {
-                     if (typeof e === "string") {
-                        email.current = e;
-                     }
-                  }}
-                  value={email.current}
-                  customClass={{ paddingLeft: "30%", width: "40%", paddingRight: "30%" }}
-               />
-            </Grid>
+   return (
+      <Grid
+         container
+         justify="center"
+         alignContent="center"
+         alignItems="center"
+         className={classes.grid}
+         style={{ border: "1px solid black" }}
+      >
+         <Grid item xs={12}>
+            <TextComponent
+               placeholder="Username"
+               onChange={e => {
+                  if (typeof e === "string") {
+                     username.current = e;
+                  }
+               }}
+               value={username.current}
+               customClass={{ paddingLeft: "30%", width: "40%", paddingRight: "30%" }}
+            />
          </Grid>
-      );
-   }
-
-   return <Redirect to="/" />;
+         <Grid item xs={12}>
+            <TextComponent
+               placeholder="Email"
+               onChange={e => {
+                  if (typeof e === "string") {
+                     email.current = e;
+                  }
+               }}
+               value={email.current}
+               customClass={{ paddingLeft: "30%", width: "40%", paddingRight: "30%" }}
+            />
+         </Grid>
+      </Grid>
+   );
 };
 
 export default AccountPage;
