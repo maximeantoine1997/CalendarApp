@@ -17,9 +17,17 @@ interface EuroProps {
    placeholder: string;
    onChange: (e: boolean) => void;
    value: boolean;
+   orientation?: "start" | "end";
+   color?: "primary" | "secondary";
 }
 
-const CheckBoxComponent: FunctionComponent<EuroProps> = ({ value, placeholder, onChange }): ReactElement => {
+const CheckBoxComponent: FunctionComponent<EuroProps> = ({
+   value,
+   placeholder,
+   onChange,
+   orientation = "end",
+   color = "primary",
+}): ReactElement => {
    const classes = useStyles();
 
    const [checked, setChecked] = useState<boolean>(value);
@@ -33,8 +41,9 @@ const CheckBoxComponent: FunctionComponent<EuroProps> = ({ value, placeholder, o
       <Box className={classes.checkboxComponent}>
          <FormControlLabel
             style={{ width: "100%", height: "100%" }}
-            control={<Checkbox checked={checked} onChange={onCheck} name="Bancontact" color="primary" />}
+            control={<Checkbox checked={checked} onChange={onCheck} name="Bancontact" color={color} />}
             label={<Typography variant="h6">{placeholder}</Typography>}
+            labelPlacement={orientation}
          />
       </Box>
    );
