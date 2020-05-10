@@ -5,7 +5,7 @@ interface ColorBlockProps {
    /**
     * The color of the block.
     */
-   color: "red" | "green" | "blue";
+   color: string;
 
    /**
     * The type of Reservation.
