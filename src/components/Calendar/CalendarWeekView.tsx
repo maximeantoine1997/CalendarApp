@@ -3,11 +3,12 @@ import "firebase/functions";
 import React, { useState, useEffect } from "react";
 import { CalendarType } from "../../Interfaces/Common";
 import { Reservation } from "../reservation_form";
-import CalendarWeekTab from "./CalendarWeekTab";
+
 import useDateContext from "../../Contexts/DateContext";
 import { getReservationsAsync } from "../../Firebase/Firebase.Utils";
 import { useSnackbar } from "notistack";
 import { IHash } from "../../Utils";
+import CalendarWeekTab from "./CalendarWeekTab";
 
 interface CalendarWeekViewProps {
    calendarType: CalendarType;
@@ -67,7 +68,7 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({ calendarType }) => 
             const data = reservations[value] || [];
             return (
                <Grid item key={index}>
-                  <CalendarWeekTab data={data} day={date.clone().day(index + 1)} key={index} type={calendarType} />
+                  <CalendarWeekTab data={[...data]} day={date.clone().day(index + 1)} key={index} type={calendarType} />
                </Grid>
             );
          })}
