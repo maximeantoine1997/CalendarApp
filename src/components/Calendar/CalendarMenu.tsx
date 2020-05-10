@@ -1,7 +1,10 @@
 import { Menu, MenuItem } from "@material-ui/core";
 import React from "react";
+import { typeColors, ReservationType } from "../../Interfaces/Common";
 import { Reservation } from "../reservation_form";
 import ColorBlock from "./Blocks/ColorBlock";
+import { updateReservationAsync } from "../../Firebase/Firebase.Utils";
+import { useSnackbar } from "notistack";
 
 interface CalendarMenuProps {
    reservation: Reservation;
@@ -16,6 +19,20 @@ const CalendarMenu: React.FunctionComponent<CalendarMenuProps> = ({
    handleClick,
    handleClose,
 }) => {
+   const { enqueueSnackbar } = useSnackbar();
+
+   const onClick = (newType: ReservationType) => {
+      reservation.type = newType;
+      try {
+         updateReservationAsync(reservation);
+         enqueueSnackbar("Succes", { variant: "success" });
+      } catch {
+         enqueueSnackbar("Erreur", { variant: "error" });
+      }
+
+      handleClose();
+   };
+
    return (
       <Menu
          id="simple-menu"
@@ -28,14 +45,14 @@ const CalendarMenu: React.FunctionComponent<CalendarMenuProps> = ({
             handleClose();
          }}
       >
-         <MenuItem onClick={handleClose}>
-            <ColorBlock label="Préparation" color="red" />
+         <MenuItem onClick={() => onClick("Preparation")}>
+            <ColorBlock label="Préparation" color={typeColors["Preparation"]} />
          </MenuItem>
-         <MenuItem onClick={handleClose}>
-            <ColorBlock label="Livraison" color="green" />
+         <MenuItem onClick={() => onClick("Livraison")}>
+            <ColorBlock label="Livraison" color={typeColors["Livraison"]} />
          </MenuItem>
-         <MenuItem onClick={handleClose}>
-            <ColorBlock label="Livré" color="blue" />
+         <MenuItem onClick={() => onClick("Livre")}>
+            <ColorBlock label="Livré" color={typeColors["Livre"]} />
          </MenuItem>
       </Menu>
    );
