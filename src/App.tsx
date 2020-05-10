@@ -8,8 +8,8 @@ const App: React.FunctionComponent = () => {
    const { user } = useUserContext();
 
    const app = user ? <AuthApp /> : <NotAuthApp />;
-   console.log("user is: ", user);
-   return <SnackbarProvider autoHideDuration={3000}>{app}</SnackbarProvider>;
+
+   return <SnackbarProvider autoHideDuration={2000}>{app}</SnackbarProvider>;
 };
 
 export default App;
