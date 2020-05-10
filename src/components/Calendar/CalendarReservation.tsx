@@ -1,8 +1,9 @@
-import { createStyles, Grid, makeStyles, Typography } from "@material-ui/core";
+import { createStyles, Grid, makeStyles, Typography, Chip } from "@material-ui/core";
 import React, { useState } from "react";
 import { Reservation } from "../reservation_form";
 import CalendarMenu from "./CalendarMenu";
 import CalendarModal from "./CalendarModal";
+import { typeColors } from "../../Interfaces/Common";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -21,13 +22,18 @@ const useStyles = makeStyles(() =>
          cursor: "pointer",
          userSelect: "none",
       },
+      reservation: {
+         paddingLeft: "5px",
+         fontSize: "1em",
+      },
    })
 );
 interface CalendarReservationProps {
    reservation: Reservation;
+   onUpdate: (newReservation: Reservation) => void;
 }
 
-const CalendarReservation: React.FC<CalendarReservationProps> = ({ reservation }) => {
+const CalendarReservation: React.FC<CalendarReservationProps> = ({ reservation, onUpdate }) => {
    const classes = useStyles();
    const [expand, setExpand] = useState<boolean>(false);
 
@@ -38,7 +44,13 @@ const CalendarReservation: React.FC<CalendarReservationProps> = ({ reservation }
       setAnchorEl(event.currentTarget);
    };
 
+   const onModalClose = (newReservation: Reservation) => {
+      onUpdate(newReservation);
+      setExpand(false);
+   };
+
    const handleClose = () => {
+      onUpdate(reservation);
       setAnchorEl(null);
    };
 
@@ -54,19 +66,24 @@ const CalendarReservation: React.FC<CalendarReservationProps> = ({ reservation }
             direction="column"
          >
             <Grid item>
-               <Typography>{reservation.reservationNumber || "N° Vary"}</Typography>
+               <Chip
+                  label={reservation.reservationNumber || "N° Vary"}
+                  style={{ backgroundColor: typeColors[reservation.type], fontSize: "1em", cursor: "pointer" }}
+               />
             </Grid>
             <Grid item>
-               <Typography>{reservation.societe}</Typography>
+               <Typography className={classes.reservation} style={{ paddingTop: "3px" }}>
+                  {reservation.societe}
+               </Typography>
             </Grid>
             <Grid item>
-               <Typography>{reservation.modele}</Typography>
+               <Typography className={classes.reservation}>{reservation.modele}</Typography>
             </Grid>
             <Grid item>
-               <Typography>{reservation.address}</Typography>
+               <Typography className={classes.reservation}>{reservation.address}</Typography>
             </Grid>
          </Grid>
-         <CalendarModal reservation={reservation} open={expand} onClose={() => setExpand(false)} />
+         <CalendarModal reservation={reservation} open={expand} onClose={onModalClose} />
          <CalendarMenu
             reservation={reservation}
             anchorEl={anchorEl}
