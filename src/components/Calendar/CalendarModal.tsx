@@ -40,7 +40,7 @@ const useStyles = makeStyles(() =>
 interface CalendarModalProps {
    reservation: Reservation;
    open: boolean;
-   onClose: () => void;
+   onClose: (reservation: Reservation) => void;
 }
 
 const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_, open, onClose: onClose_ }) => {
@@ -121,7 +121,7 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
 
    if (editMode && editReservation.current) {
       return (
-         <Dialog open={open} onClose={onClose_} fullWidth maxWidth="lg" scroll="paper">
+         <Dialog open={open} onClose={() => onClose_(reservation.current)} fullWidth maxWidth="lg" scroll="paper">
             <DialogContent>
                <Grid container className={classes.dialog} direction="row" justify="space-between">
                   <Grid item xs={12}>
@@ -267,7 +267,7 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
    }
 
    return (
-      <Dialog open={open} onClose={onClose_} fullWidth maxWidth="lg" scroll="paper">
+      <Dialog open={open} onClose={() => onClose_(reservation.current)} fullWidth maxWidth="lg" scroll="paper">
          <DialogContent>
             <Grid container className={classes.dialog}>
                <Grid item xs={12}>
