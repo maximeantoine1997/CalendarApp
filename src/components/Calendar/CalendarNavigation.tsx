@@ -83,6 +83,7 @@ const CalendarNavigation: React.FC<CalendarNavigationProps> = ({ onChangeCalenda
          <Grid item xs={4}>
             <Grid container justify="center">
                <ToggleButtonGroup value={calendarType} exclusive onChange={(_, v) => onChangeCalendarType(v)}>
+                  <ToggleButton value="general">GENERAL</ToggleButton>
                   <ToggleButton value="preparation">PREPARATION</ToggleButton>
                   <ToggleButton value="livraison">LIVRAISON</ToggleButton>
                </ToggleButtonGroup>

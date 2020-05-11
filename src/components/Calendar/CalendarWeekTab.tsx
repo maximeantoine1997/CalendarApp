@@ -47,12 +47,16 @@ const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day, data: data_, typ
    const filterData = (): Array<Reservation> => {
       let newData: Array<Reservation> = [];
 
+      if (type === "general") {
+         newData = [...data];
+      }
       if (type === "preparation") {
          newData = data.filter(reservation => isPreparation(reservation));
       }
       if (type === "livraison") {
          newData = data.filter(reservation => isLivraison(reservation));
       }
+
       return newData;
    };
 

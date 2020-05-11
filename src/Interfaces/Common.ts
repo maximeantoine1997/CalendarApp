@@ -2,7 +2,7 @@ export type Nullable<T> = null | T;
 
 export type Optional<T> = undefined | T;
 
-export type CalendarType = "livraison" | "preparation" | "livre";
+export type CalendarType = "livraison" | "preparation" | "livre" | "general";
 
 export type ReservationType = "Preparation" | "Livraison" | "Livre" | "Retour" | "Fini";
 
