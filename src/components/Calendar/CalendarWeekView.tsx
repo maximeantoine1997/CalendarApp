@@ -24,11 +24,10 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({ calendarType }) => 
       const getData = async () => {
          enqueueSnackbar("Chargement...");
          const newReservations: Array<Reservation> = await getReservationsAsync(date.format("YYYY-MM-DD"));
-
+         console.log("reservations are: ", newReservations);
          const hash: IHash<Reservation> = {};
          newReservations.forEach(reservation => {
             const start = reservation.startDate;
-            const end = reservation.endDate;
 
             const startData = hash[start];
             if (startData) {
@@ -36,15 +35,6 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({ calendarType }) => 
                hash[start] = startData;
             } else {
                hash[start] = [reservation];
-            }
-            if (end && end !== start) {
-               const endData = hash[end];
-               if (endData) {
-                  endData.push(reservation);
-                  hash[start] = endData;
-               } else {
-                  hash[end] = [reservation];
-               }
             }
          });
          console.log(hash);
