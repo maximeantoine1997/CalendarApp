@@ -82,7 +82,7 @@ const SideBar: React.FC = () => {
                </IconButton>
                <Typography variant="h6" className={classes.title}>
                   <Link to="/" className={classes.title}>
-                     Calendrier Antoine SPRL
+                     Agenda Antoine SPRL
                   </Link>
                </Typography>
                <Authentification />
