@@ -95,6 +95,17 @@ export const updateReservationAsync = async (reservation: Reservation): Promise<
       });
 };
 
+export const deleteReservationAsync = async (reservation: Reservation): Promise<void> => {
+   console.log("axios id is: ", reservation.id);
+   Axios.delete(`${api}/reservation`, {
+      params: {
+         id: reservation.id,
+      },
+   }).catch(error => {
+      console.log(error);
+   });
+};
+
 export const getReservationsAsync = async (date: string): Promise<Array<Reservation>> => {
    return Axios.get(`${api}/reservations`, {
       params: {
