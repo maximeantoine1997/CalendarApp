@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { CalendarType } from "../../Interfaces/Common";
 import { isLivraison, isPreparation } from "../../Utils";
 import { Reservation } from "../reservation_form";
-import CalendarReservation from "./CalendarReservation";
+import CalendarReservation from "./Reservation/CalendarReservation";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -62,9 +62,13 @@ const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day, data: data_, typ
 
    const filteredData = filterData();
 
-   const onUpdate = (newReservation: Reservation, index: number) => {
+   const onUpdate = (newReservation: Reservation | null, index: number) => {
       const newData = [...data];
-      newData[index] = newReservation;
+      if (newReservation) {
+         newData[index] = newReservation;
+      } else {
+         newData.splice(index, 1);
+      }
       setData([...newData]);
    };
 
