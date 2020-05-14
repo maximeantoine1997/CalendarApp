@@ -186,8 +186,8 @@ app.put("/reservation", (req, res) => {
 });
 
 app.delete("/reservation", (req, res) => {
-   const id = req.body.id;
-
+   const id = req.query.id as string;
+   console.log("id is: ", id);
    admin
       .firestore()
       .collection("reservations")
