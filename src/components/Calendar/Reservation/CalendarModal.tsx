@@ -257,6 +257,14 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
                         color="secondary"
                      />
                   </Grid>
+                  <Grid item xs={3}>
+                     <CheckBoxComponent
+                        placeholder="Cash"
+                        value={editReservation.current.isCash}
+                        onChange={e => updateReservation("isCash", e)}
+                        color="secondary"
+                     />
+                  </Grid>
                </Grid>
             </DialogContent>
             <Divider />
