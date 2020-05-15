@@ -1,6 +1,3 @@
-import { Optional, Nullable } from "./Interfaces/Common";
-import { Reservation } from "./components/reservation_form";
-
 export const isFunction = (f: any): f is Function => {
    return typeof f === "function";
 };
@@ -15,36 +12,52 @@ export interface IHash<T> {
    [key: string]: Array<T>;
 }
 
-export const isPreparation = (reservation: Reservation): boolean => {
-   switch (reservation.type) {
-      case "Fini":
-         return true;
-      case "Livraison":
-         return false;
-      case "Livre":
-         return false;
-      case "Preparation":
-         return true;
-      case "Retour":
-         return false;
-      default:
-         return true;
-   }
+export type Nullable<T> = null | T;
+
+export type Optional<T> = undefined | T;
+
+export type CalendarType = "transport" | "general";
+
+export type ReservationType =
+   | "A Livrer"
+   | "Annulé"
+   | "Attente Caution"
+   | "Client Vient Chercher"
+   | "Dépannage"
+   | "Divers"
+   | "Doit Confirmer"
+   | "Livraison par Transporteur"
+   | "Livré / Venu Chercher"
+   | "Rendez-vous"
+   | "Retour"
+   | "Transport";
+
+export const typeColors: Record<ReservationType, string> = {
+   "A Livrer": "#E09494",
+   "Annulé": "#474747",
+   "Attente Caution": "#55ABE5",
+   "Client Vient Chercher": "#A895E2",
+   "Dépannage": "#B9C0CB",
+   "Divers": "#A3B367",
+   "Doit Confirmer": "#FECB6F",
+   "Livraison par Transporteur": "#33BAB1",
+   "Livré / Venu Chercher": "#910A19",
+   "Rendez-vous": "#FFF13A",
+   "Retour": "#1C6367",
+   "Transport": "#E48BB5",
 };
 
-export const isLivraison = (reservation: Reservation): boolean => {
-   switch (reservation.type) {
-      case "Fini":
-         return true;
-      case "Livraison":
-         return true;
-      case "Livre":
-         return true;
-      case "Preparation":
-         return false;
-      case "Retour":
-         return true;
-      default:
-         return true;
-   }
+export const isTransport: Record<ReservationType, boolean> = {
+   "A Livrer": true,
+   "Annulé": false,
+   "Attente Caution": false,
+   "Client Vient Chercher": false,
+   "Dépannage": true,
+   "Divers": true,
+   "Doit Confirmer": false,
+   "Livraison par Transporteur": true,
+   "Livré / Venu Chercher": false,
+   "Rendez-vous": false,
+   "Retour": true,
+   "Transport": true,
 };
