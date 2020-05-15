@@ -1,24 +1,16 @@
 import { Grid } from "@material-ui/core";
 import "firebase/functions";
-import React, { useState, useEffect } from "react";
-import { CalendarType } from "../../Interfaces/Common";
-import { Reservation } from "../reservation_form";
-
+import { useSnackbar } from "notistack";
+import React, { useEffect } from "react";
 import useDateContext from "../../Contexts/DateContext";
 import { getReservationsAsync } from "../../Firebase/Firebase.Utils";
-import { useSnackbar } from "notistack";
 import { IHash } from "../../Utils";
+import { Reservation } from "../reservation_form";
 import CalendarWeekTab from "./CalendarWeekTab";
 
-interface CalendarWeekViewProps {
-   calendarType: CalendarType;
-}
-
-const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({ calendarType }) => {
-   const { date } = useDateContext();
+const CalendarWeekView: React.FC = () => {
+   const { date, setReservations } = useDateContext();
    const { enqueueSnackbar } = useSnackbar();
-
-   const [reservations, setReservations] = useState<IHash<Reservation>>({});
 
    useEffect(() => {
       const getData = async () => {
@@ -37,11 +29,11 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({ calendarType }) => 
                hash[start] = [reservation];
             }
          });
-         console.log(hash);
+
          setReservations(hash);
       };
       getData();
-   }, [date, enqueueSnackbar]);
+   }, [date, enqueueSnackbar, setReservations]);
 
    const getWeekDays = (): Array<string> => {
       const days: Array<string> = [];
@@ -52,13 +44,14 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({ calendarType }) => 
    };
    const weekDays = getWeekDays();
 
+   console.log("Weekview rendering...");
+
    return (
       <Grid container justify="center" alignContent="space-around" direction="row">
          {weekDays.map((value, index) => {
-            const data = reservations[value] || [];
             return (
                <Grid item key={index}>
-                  <CalendarWeekTab data={[...data]} day={date.clone().day(index + 1)} key={index} type={calendarType} />
+                  <CalendarWeekTab day={date.clone().day(index + 1)} key={index} />
                </Grid>
             );
          })}

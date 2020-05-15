@@ -1,8 +1,8 @@
 import { Box, createStyles, Grid, makeStyles } from "@material-ui/core";
 import moment, { Moment } from "moment";
 import React, { useState, useEffect } from "react";
-import { CalendarType } from "../../Interfaces/Common";
-import { isLivraison, isPreparation } from "../../Utils";
+import useDateContext from "../../Contexts/DateContext";
+import { isTransport } from "../../Utils";
 import { Reservation } from "../reservation_form";
 import CalendarReservation from "./Reservation/CalendarReservation";
 
@@ -33,28 +33,21 @@ const useStyles = makeStyles(() =>
 
 interface CalendarWeekTabProps {
    day: Moment;
-   data: Array<Reservation>;
-   type: CalendarType;
 }
 
-const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day, data: data_, type }) => {
+const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day }) => {
    const classes = useStyles();
-   const [data, setData] = useState<Array<Reservation>>([...data_]);
+   const { calendarType, reservations, updateReservations } = useDateContext();
+   const data = reservations[day.format("YYYY-MM-DD")] || [];
 
    const dayName = day.format("dddd").substring(0, 2).toUpperCase();
    const dayDate = day.date();
 
    const filterData = (): Array<Reservation> => {
-      let newData: Array<Reservation> = [];
+      let newData: Array<Reservation> = data;
 
-      if (type === "general") {
-         newData = [...data];
-      }
-      if (type === "preparation") {
-         newData = data.filter(reservation => isPreparation(reservation));
-      }
-      if (type === "livraison") {
-         newData = data.filter(reservation => isLivraison(reservation));
+      if (calendarType === "transport") {
+         newData = data.filter(reservation => isTransport[reservation.type]);
       }
 
       return newData;
@@ -69,13 +62,8 @@ const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day, data: data_, typ
       } else {
          newData.splice(index, 1);
       }
-      setData([...newData]);
+      updateReservations(day.format("YYYY-MM-DD"), newData);
    };
-
-   // Update @ runtime of data will rerender this component
-   useEffect(() => {
-      setData(data_);
-   }, [data_]);
 
    return (
       <Grid container className={classes.calendar} direction="row">

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Reservation } from "../../reservation_form";
 import CalendarMenu from "./CalendarMenu";
 import CalendarModal from "./CalendarModal";
-import { typeColors } from "../../../Interfaces/Common";
+import { typeColors } from "../../../Utils";
 
 const useStyles = makeStyles(() =>
    createStyles({
