@@ -1,7 +1,7 @@
 import React, { createContext, ReactNode, ReactElement, useContext, useState, useEffect } from "react";
 import * as firebase from "firebase/app";
 import "firebase/auth";
-import { Optional, Nullable } from "../Interfaces/Common";
+import { Optional, Nullable } from "../Utils";
 
 interface IUserContext {
    user: Optional<Nullable<firebase.User>>;
