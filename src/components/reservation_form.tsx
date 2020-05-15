@@ -7,7 +7,7 @@ import CheckBoxComponent from "./FormElements/CheckboxComponent";
 import DateComponent from "./FormElements/DateComponent";
 import EuroComponent from "./FormElements/EuroComponent";
 import TextComponent from "./FormElements/TextComponent";
-import { IHash } from "../Utils";
+import { IHash, ReservationType } from "../Utils";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -17,14 +17,13 @@ const useStyles = makeStyles((theme: Theme) =>
          paddingTop: "0%",
       },
       submit: {
-         width: "60%",
-         marginLeft: "20%",
-         marginRight: "20%",
+         width: "40%",
+         marginLeft: "5%",
+         marginRight: "5%",
          marginTop: "2%",
          marginBottom: "2%",
          height: "7vh",
          borderRadius: "25px",
-         background: "#EB4969",
          color: "white",
       },
       errorText: {
@@ -110,11 +109,10 @@ export interface Reservation {
    montant: number;
    isBancontact: boolean;
    isReceived: boolean;
+   isCash: boolean;
    reservationNumber?: string;
    type: ReservationType;
 }
-
-export type ReservationType = "Preparation" | "Livraison" | "Livre" | "Retour" | "Fini";
 
 const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    const classes = useStyles();
@@ -134,6 +132,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    const montant = useRef<number>(0);
    const isBancontact = useRef<boolean>(false);
    const isReceived = useRef<boolean>(false);
+   const isCash = useRef<boolean>(false);
    // #endregion
 
    const [validForm, setValidForm] = useState<ValidReservation>(initValidForm);
@@ -159,7 +158,6 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
       reservation.accessoires.forEach(accessoire => {
          items.push(accessoire);
       });
-      reservation.type = "Preparation";
       updateAutocompleteAsync(autocomplete);
       await addReservationAsync(reservation);
       history.push("/calendrier");
@@ -168,7 +166,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    /**
     * Checks if the form is valid. Validation logic is here.
     */
-   const onSubmit = () => {
+   const onSubmit = (type: "chercher" | "reserver") => {
       let newValidForm: ValidReservation = {
          societe: {
             hasError: false,
@@ -279,7 +277,8 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
             montant: montant.current,
             isBancontact: isBancontact.current,
             isReceived: isReceived.current,
-            type: "Preparation",
+            isCash: isCash.current,
+            type: type === "chercher" ? "Client Vient Chercher" : "A Livrer",
          });
       }
       setValidForm(newValidForm);
@@ -303,6 +302,39 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
          justify="center"
          alignContent="center"
       >
+         <Grid item xs={6} style={{ minHeight: "10vh" }}>
+            <DateComponent placeholder="Début" onChange={(e: any) => onChange(startDate, e)} />
+         </Grid>
+         <Grid item xs={6}>
+            <Grid container justify="center" style={{ minHeight: "10vh" }}>
+               {hasEndDate && (
+                  <Grid item xs={6}>
+                     <DateComponent placeholder="Fin" onChange={(e: any) => onChange(endDate, e)} />
+                  </Grid>
+               )}
+               <Grid item xs={hasEndDate ? 6 : 12}>
+                  <CheckBoxComponent
+                     value={hasEndDate}
+                     placeholder="Date de fin"
+                     onChange={(e: boolean) => {
+                        setHasEndDate(e);
+                        if (e) {
+                           onChange(endDate, moment());
+                        } else {
+                           onChange(endDate, undefined);
+                        }
+                     }}
+                  />
+               </Grid>
+            </Grid>
+         </Grid>
+         <Grid item xs={12}>
+            {validForm["startDate"].hasError && (
+               <Typography className={classes.errorText} align="center">
+                  {validForm["startDate"].errorMessage}
+               </Typography>
+            )}
+         </Grid>
          <Grid item xs={6}>
             <Typography variant="h4" align="center" style={{ paddingBottom: "2vh" }}>
                Machine
@@ -336,6 +368,11 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
             />
          </Grid>
          <Grid item xs={6}>
+            <CheckBoxComponent
+               value={isReceived.current}
+               placeholder="Cash"
+               onChange={(e: any) => onChange(isCash, e)}
+            />
             <CheckBoxComponent
                value={isBancontact.current}
                placeholder="Par Bancontact"
@@ -372,39 +409,17 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                customClass={{ paddingLeft: "5%", width: "85%", paddingRight: "10%" }}
             />
          </Grid>
-         <Grid item xs={6} style={{ minHeight: "10vh" }}>
-            <DateComponent placeholder="Début" onChange={(e: any) => onChange(startDate, e)} />
-         </Grid>
          <Grid item xs={6}>
-            <Grid container justify="center" style={{ minHeight: "10vh" }}>
-               {hasEndDate && (
-                  <Grid item xs={6}>
-                     <DateComponent placeholder="Fin" onChange={(e: any) => onChange(endDate, e)} />
-                  </Grid>
-               )}
-               <Grid item xs={hasEndDate ? 6 : 12}>
-                  <CheckBoxComponent
-                     value={hasEndDate}
-                     placeholder="Date de fin"
-                     onChange={(e: boolean) => {
-                        setHasEndDate(e);
-                        if (e) {
-                           onChange(endDate, moment());
-                        } else {
-                           onChange(endDate, undefined);
-                        }
-                     }}
-                  />
-               </Grid>
-            </Grid>
+            <TextComponent
+               hasError={validForm["societe"].hasError}
+               errorText={validForm["societe"].errorMessage}
+               placeholder="N° de Chantier"
+               onChange={e => onChange(societe, e)}
+               options={autocomplete["societes"] as Array<string>}
+            />
          </Grid>
-         <Grid item xs={12}>
-            {validForm["startDate"].hasError && (
-               <Typography className={classes.errorText} align="center">
-                  {validForm["startDate"].errorMessage}
-               </Typography>
-            )}
-         </Grid>
+         <Grid item xs={6}></Grid>
+
          <Grid item xs={12}>
             <Typography variant="h4" align="center" style={{ paddingTop: "5vh", paddingBottom: "2vh" }}>
                Client
@@ -447,9 +462,26 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
             />
          </Grid>
          <Grid item xs={12}>
-            <Button variant="contained" type="button" className={classes.submit} onClick={e => onSubmit()}>
-               <Typography variant="h6">Reserver</Typography>
-            </Button>
+            <Grid container justify="space-evenly">
+               <Button
+                  variant="contained"
+                  type="button"
+                  className={classes.submit}
+                  onClick={e => onSubmit("reserver")}
+                  style={{ background: "#5FBE7D" }}
+               >
+                  <Typography variant="h6">A LIVRER</Typography>
+               </Button>
+               <Button
+                  variant="contained"
+                  type="button"
+                  className={classes.submit}
+                  onClick={e => onSubmit("chercher")}
+                  style={{ background: "#674F78" }}
+               >
+                  <Typography variant="h6">Vient Chercher</Typography>
+               </Button>
+            </Grid>
          </Grid>
       </Grid>
    );
