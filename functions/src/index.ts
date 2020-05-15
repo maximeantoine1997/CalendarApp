@@ -9,7 +9,19 @@ admin.initializeApp();
 const app = express();
 app.use(cors());
 
-type ReservationType = "Preparation" | "Livraison" | "Livre" | "Retour" | "Fini";
+export type ReservationType =
+   | "A Livrer"
+   | "Annulé"
+   | "Attente Caution"
+   | "Client Vient Chercher"
+   | "Dépannage"
+   | "Divers"
+   | "Doit Confirmer"
+   | "Livraison par Transporteur"
+   | "Livré / Venu Chercher"
+   | "Rendez-vous"
+   | "Retour"
+   | "Transport";
 
 export interface Reservation {
    id?: string;
@@ -26,6 +38,7 @@ export interface Reservation {
    montant: number;
    isBancontact: boolean;
    isReceived: boolean;
+   isCash: boolean;
    reservationNumber?: string;
    type: ReservationType;
 }
@@ -133,6 +146,7 @@ app.post("/reservation", (req, res) => {
       montant: req.body.montant,
       isBancontact: req.body.isBancontact,
       isReceived: req.body.isReceived,
+      isCash: req.body.isReceived,
       reservationNumber: req.body.reservationNumber || "",
       type: req.body.type,
    };
@@ -164,6 +178,7 @@ app.put("/reservation", (req, res) => {
       montant: req.body.montant,
       isBancontact: req.body.isBancontact,
       isReceived: req.body.isReceived,
+      isCash: req.body.isCash,
       reservationNumber: req.body.reservationNumber || "",
       type: req.body.type,
    };
