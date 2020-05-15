@@ -1,11 +1,11 @@
 import { Menu, MenuItem, Divider } from "@material-ui/core";
 import React, { useState } from "react";
-import { typeColors, ReservationType } from "../../../Interfaces/Common";
 import { Reservation } from "../../reservation_form";
-import ColorBlock from "../Blocks/ColorBlock";
 import { updateReservationAsync, deleteReservationAsync } from "../../../Firebase/Firebase.Utils";
 import { useSnackbar } from "notistack";
 import DeleteModal from "./DeleteModal";
+import { ReservationType, typeColors } from "../../../Utils";
+import ColorBlock from "../Blocks/ColorBlock";
 
 interface CalendarMenuProps {
    reservation: Reservation;
@@ -65,14 +65,41 @@ const CalendarMenu: React.FunctionComponent<CalendarMenuProps> = ({
          >
             <MenuItem onClick={() => setOpenModal(true)}>Supprimer </MenuItem>
             <Divider />
-            <MenuItem onClick={() => onClick("Preparation")}>
-               <ColorBlock label="Préparation" color={typeColors["Preparation"]} />
+            <MenuItem onClick={() => onClick("A Livrer")}>
+               <ColorBlock label="A Livrer" color={typeColors["A Livrer"]} />
             </MenuItem>
-            <MenuItem onClick={() => onClick("Livraison")}>
-               <ColorBlock label="Livraison" color={typeColors["Livraison"]} />
+            <MenuItem onClick={() => onClick("Annulé")}>
+               <ColorBlock label="Annulé" color={typeColors["Annulé"]} />
             </MenuItem>
-            <MenuItem onClick={() => onClick("Livre")}>
-               <ColorBlock label="Livré" color={typeColors["Livre"]} />
+            <MenuItem onClick={() => onClick("Attente Caution")}>
+               <ColorBlock label="Attente Caution" color={typeColors["Attente Caution"]} />
+            </MenuItem>
+            <MenuItem onClick={() => onClick("Client Vient Chercher")}>
+               <ColorBlock label="Client Vient Chercher" color={typeColors["Client Vient Chercher"]} />
+            </MenuItem>
+            <MenuItem onClick={() => onClick("Dépannage")}>
+               <ColorBlock label="Dépannage" color={typeColors["Dépannage"]} />
+            </MenuItem>
+            <MenuItem onClick={() => onClick("Divers")}>
+               <ColorBlock label="Divers" color={typeColors["Divers"]} />
+            </MenuItem>
+            <MenuItem onClick={() => onClick("Doit Confirmer")}>
+               <ColorBlock label="Doit Confirmer" color={typeColors["Doit Confirmer"]} />
+            </MenuItem>
+            <MenuItem onClick={() => onClick("Livraison par Transporteur")}>
+               <ColorBlock label="Livraison par Transporteur" color={typeColors["Livraison par Transporteur"]} />
+            </MenuItem>
+            <MenuItem onClick={() => onClick("Livré / Venu Chercher")}>
+               <ColorBlock label="Livré / Venu Chercher" color={typeColors["Livré / Venu Chercher"]} />
+            </MenuItem>
+            <MenuItem onClick={() => onClick("Rendez-vous")}>
+               <ColorBlock label="Rendez-vous" color={typeColors["Rendez-vous"]} />
+            </MenuItem>
+            <MenuItem onClick={() => onClick("Retour")}>
+               <ColorBlock label="Retour" color={typeColors["Retour"]} />
+            </MenuItem>
+            <MenuItem onClick={() => onClick("Transport")}>
+               <ColorBlock label="Transport" color={typeColors["Transport"]} />
             </MenuItem>
          </Menu>
          <DeleteModal
