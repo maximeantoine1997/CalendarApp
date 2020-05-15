@@ -27,7 +27,7 @@ const DeleteModal: React.FunctionComponent<DeleteModalProps> = ({ open, onDelete
    return (
       <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
          <Grid container className={classes.container}>
-            <Grid xs={12} style={{ paddingBottom: "30px" }}>
+            <Grid item xs={12} style={{ paddingBottom: "30px" }}>
                <Typography variant="h5" align="center">
                   Êtes-vous certain de vouloir supprimer cette réservation?
                </Typography>
