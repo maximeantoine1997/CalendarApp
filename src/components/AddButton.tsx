@@ -18,11 +18,7 @@ const useStyles = makeStyles((theme: Theme) =>
    })
 );
 
-interface AddProps {
-   children: ReactElement;
-}
-
-const AddButton: React.FC<AddProps> = ({ children }) => {
+const AddButton: React.FC = () => {
    const classes = useStyles();
 
    const { user } = useUserContext();
@@ -31,19 +27,15 @@ const AddButton: React.FC<AddProps> = ({ children }) => {
 
    if (pathname !== "/reservation") {
       return (
-         <Box position="relative">
-            {children}
-
-            <Link to={checkIfConnected(user, "/reservation")}>
-               <Fab variant="round" className={classes.addButton}>
-                  <AddIcon fontSize="large" />
-               </Fab>
-            </Link>
-         </Box>
+         <Link to={checkIfConnected(user, "/reservation")}>
+            <Fab variant="round" className={classes.addButton}>
+               <AddIcon fontSize="large" />
+            </Fab>
+         </Link>
       );
    }
 
-   return <>{children}</>;
+   return null;
 };
 
 export default AddButton;
