@@ -1,7 +1,6 @@
-import { ReactElement } from "react";
-import React from "react";
-import { Fab, Box, makeStyles, Theme, createStyles } from "@material-ui/core";
+import { createStyles, Fab, makeStyles, Theme } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import useUserContext from "../Contexts/UserContext";
 import { checkIfConnected } from "../Utils";
