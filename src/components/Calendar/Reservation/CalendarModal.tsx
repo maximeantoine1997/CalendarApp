@@ -1,5 +1,6 @@
 import {
    Button,
+   Checkbox,
    Chip,
    createStyles,
    Dialog,
@@ -9,14 +10,13 @@ import {
    Grid,
    makeStyles,
    Typography,
-   Checkbox,
 } from "@material-ui/core";
 import React, { ReactElement, useRef, useState } from "react";
-import { updateReservationAsync, deleteReservationAsync } from "../../../Firebase/Firebase.Utils";
-import TextComponent from "../../FormElements/TextComponent";
-import { Reservation } from "../../reservation_form";
+import { updateReservationAsync } from "../../../Firebase/Firebase.Utils";
 import CheckBoxComponent from "../../FormElements/CheckboxComponent";
 import EuroComponent from "../../FormElements/EuroComponent";
+import TextComponent from "../../FormElements/TextComponent";
+import { Reservation } from "../../reservation_form";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -111,12 +111,6 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
    const toggleToEditMode = () => {
       setEditMode(true);
       editReservation.current = { ...reservation.current };
-   };
-
-   const deleteReservation = async () => {
-      await deleteReservationAsync(reservation.current).then(() => {
-         onClose_(null);
-      });
    };
 
    const renderAccessoires: Array<ReactElement> = reservation.current.accessoires
@@ -359,7 +353,6 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
             <Button onClick={toggleToEditMode} variant="outlined" color="secondary">
                Modifier
             </Button>
-            <Button onClick={deleteReservation}>Supprimer</Button>
          </DialogActions>
       </Dialog>
    );
