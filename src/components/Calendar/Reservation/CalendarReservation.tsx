@@ -1,9 +1,9 @@
-import { createStyles, Grid, makeStyles, Typography, Chip } from "@material-ui/core";
+import { Box, createStyles, Grid, makeStyles } from "@material-ui/core";
 import React, { useState } from "react";
+import { typeColors } from "../../../Utils";
 import { Reservation } from "../../reservation_form";
 import CalendarMenu from "./CalendarMenu";
 import CalendarModal from "./CalendarModal";
-import { typeColors } from "../../../Utils";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -16,15 +16,15 @@ const useStyles = makeStyles(() =>
          background: "white",
       },
       container: {
-         marginTop: "20px",
-         paddingLeft: "10px",
-         paddingRight: "10px",
+         marginTop: "10px",
+         padding: "5px 10px",
          cursor: "pointer",
          userSelect: "none",
-      },
-      reservation: {
-         paddingLeft: "5px",
          fontSize: "1em",
+         color: "white",
+         borderRadius: "10px",
+         whiteSpace: "nowrap",
+         width: "13vw",
       },
    })
 );
@@ -59,6 +59,19 @@ const CalendarReservation: React.FC<CalendarReservationProps> = ({ reservation, 
       setAnchorEl(null);
    };
 
+   const getAccessoires = (): string => {
+      let text = "";
+      reservation.accessoires.forEach((accessoire, index) => {
+         if (index === 0) {
+            text = text.concat(accessoire);
+         } else {
+            text = text.concat(" - ", accessoire);
+         }
+      });
+      console.log(text);
+      return text;
+   };
+
    return (
       <>
          <Grid
@@ -68,24 +81,39 @@ const CalendarReservation: React.FC<CalendarReservationProps> = ({ reservation, 
                handleClick(e);
             }}
             className={classes.container}
-            direction="column"
+            style={{ backgroundColor: typeColors[reservation.type] }}
          >
-            <Grid item>
-               <Chip
-                  label={reservation.reservationNumber || "N° Vary"}
-                  style={{ backgroundColor: typeColors[reservation.type], fontSize: "1em", cursor: "pointer" }}
-               />
+            <Grid container alignItems="center">
+               <Grid item xs={6}>
+                  <Box textOverflow="ellipsis" overflow="hidden" fontSize="0.8em" paddingBottom="3px">
+                     {reservation.reservationNumber}
+                  </Box>
+               </Grid>
+               <Grid item xs={reservation.reservationNumber ? 6 : 12}>
+                  <Box textOverflow="ellipsis" overflow="hidden" fontSize="0.8em" paddingBottom="3px">
+                     {reservation.societe}
+                  </Box>
+               </Grid>
             </Grid>
-            <Grid item>
-               <Typography className={classes.reservation} style={{ paddingTop: "3px" }}>
-                  {reservation.societe}
-               </Typography>
+            <Grid item xs={12}>
+               <Box textOverflow="ellipsis" overflow="hidden" fontSize="0.8em" paddingBottom="3px">
+                  {reservation.modele}
+               </Box>
             </Grid>
-            <Grid item>
-               <Typography className={classes.reservation}>{reservation.modele}</Typography>
-            </Grid>
-            <Grid item>
-               <Typography className={classes.reservation}>{reservation.address}</Typography>
+            {reservation.accessoires.length > 0 && (
+               <Grid item xs={12}>
+                  <Box textOverflow="ellipsis" overflow="hidden" fontSize="0.8em" paddingBottom="3px">
+                     {getAccessoires()}
+                  </Box>
+               </Grid>
+            )}
+
+            <Grid container>
+               <Grid item xs={12}>
+                  <Box textOverflow="ellipsis" overflow="hidden" fontSize="0.8em" paddingBottom="3px">
+                     {reservation.address}
+                  </Box>
+               </Grid>
             </Grid>
          </Grid>
          <CalendarModal reservation={reservation} open={expand} onClose={onModalClose} />
