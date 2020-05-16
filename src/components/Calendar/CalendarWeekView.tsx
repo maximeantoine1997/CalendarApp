@@ -47,7 +47,7 @@ const CalendarWeekView: React.FC = () => {
    console.log("Weekview rendering...");
 
    return (
-      <Grid container justify="center" alignContent="space-around" direction="row">
+      <Grid container direction="row">
          {weekDays.map((value, index) => {
             return (
                <Grid item key={index}>

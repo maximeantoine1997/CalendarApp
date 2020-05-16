@@ -1,6 +1,6 @@
 import { Box, createStyles, Grid, makeStyles } from "@material-ui/core";
 import moment, { Moment } from "moment";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import useDateContext from "../../Contexts/DateContext";
 import { isTransport } from "../../Utils";
 import { Reservation } from "../reservation_form";
@@ -66,7 +66,7 @@ const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day }) => {
    };
 
    return (
-      <Grid container className={classes.calendar} direction="row">
+      <Grid container className={classes.calendar} direction="row" alignContent="flex-start" justify="center">
          <Grid item style={{ color: day.isSame(moment(), "date") ? "red" : "black" }} className={classes.date}>
             {dayName}
             <br />
