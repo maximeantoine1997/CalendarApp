@@ -10,8 +10,9 @@ const useStyles = makeStyles(() =>
    createStyles({
       calendar: {
          border: "1px solid #F4F4F4",
+         borderBottomStyle: "hidden",
          width: "14vw",
-         height: "80vh",
+         minHeight: "83vh",
       },
       date: {
          border: "1px solid #F4F4F4",
@@ -20,14 +21,12 @@ const useStyles = makeStyles(() =>
          padding: "20px",
          fontFamily: "Arial",
          fontWeight: "bold",
-         height: "100px",
+         height: "13vh",
       },
       dateNumber: {
          fontSize: "2em",
       },
-      scroll: {
-         overflowY: "auto",
-      },
+      scroll: {},
    })
 );
 
@@ -72,7 +71,7 @@ const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day }) => {
             <br />
             <Box className={classes.dateNumber}>{dayDate}</Box>
          </Grid>
-         <Grid item>
+         <Grid item className={classes.scroll}>
             {filteredData.map((reservation, index) => {
                return (
                   <CalendarReservation
