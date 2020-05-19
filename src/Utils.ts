@@ -33,7 +33,7 @@ export type ReservationType =
    | "Transport";
 
 export const typeColors: Record<ReservationType, string> = {
-   "A Livrer": "#E09494",
+   "A Livrer": "#5FBE7D",
    "Annulé": "#474747",
    "Attente Caution": "#55ABE5",
    "Client Vient Chercher": "#A895E2",
