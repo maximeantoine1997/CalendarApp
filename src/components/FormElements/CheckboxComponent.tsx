@@ -40,9 +40,8 @@ const CheckBoxComponent: FunctionComponent<EuroProps> = ({
    return (
       <Box className={classes.checkboxComponent}>
          <FormControlLabel
-            style={{ width: "100%", height: "100%" }}
             control={<Checkbox checked={checked} onChange={onCheck} name="Bancontact" color={color} />}
-            label={<Typography variant="h6">{placeholder}</Typography>}
+            label={placeholder}
             labelPlacement={orientation}
          />
       </Box>
