@@ -8,6 +8,15 @@ import DateComponent from "./FormElements/DateComponent";
 import EuroComponent from "./FormElements/EuroComponent";
 import TextComponent from "./FormElements/TextComponent";
 import { IHash, ReservationType } from "../Utils";
+import SquareButton from "./FormElements/SquareButton";
+import LocalShippingIcon from "@material-ui/icons/LocalShipping";
+import PersonIcon from "@material-ui/icons/Person";
+import BusinessIcon from "@material-ui/icons/Business";
+import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
+import PaymentIcon from "@material-ui/icons/Payment";
+import DoneIcon from "@material-ui/icons/Done";
+import ClearIcon from "@material-ui/icons/Clear";
+import SquareButtons from "./FormElements/SquareButton";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -136,8 +145,9 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    // #endregion
 
    const [validForm, setValidForm] = useState<ValidReservation>(initValidForm);
-   const [hasEndDate, setHasEndDate] = useState<boolean>(false);
+   const [hasEndDate, setHasEndDate] = useState<boolean>(true);
    const [autocomplete, setAutocomplete] = useState<IHash<unknown>>({});
+   const newType = true;
 
    const onChange = (ref: MutableRefObject<any>, newValue: any) => {
       ref.current = newValue;
@@ -292,60 +302,211 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
       getAutocomplete();
    }, []);
 
-   return (
-      <Grid
-         container
-         className={classes.container}
-         spacing={0}
-         direction="row"
-         alignItems="center"
-         justify="center"
-         alignContent="center"
-      >
-         <Grid item xs={6} style={{ minHeight: "10vh" }}>
-            <DateComponent placeholder="Début" onChange={(e: any) => onChange(startDate, e)} />
-         </Grid>
-         <Grid item xs={6}>
-            <Grid container justify="center" style={{ minHeight: "10vh" }}>
-               {hasEndDate && (
-                  <Grid item xs={6}>
-                     <DateComponent placeholder="Fin" onChange={(e: any) => onChange(endDate, e)} />
+   if (!newType) {
+      return (
+         <Grid
+            container
+            className={classes.container}
+            spacing={0}
+            direction="row"
+            alignItems="center"
+            justify="center"
+            alignContent="center"
+         >
+            <Grid item xs={6} style={{ minHeight: "10vh" }}>
+               <DateComponent placeholder="Début" onChange={(e: any) => onChange(startDate, e)} />
+            </Grid>
+            <Grid item xs={6}>
+               <Grid container justify="center" style={{ minHeight: "10vh" }}>
+                  {hasEndDate && (
+                     <Grid item xs={6}>
+                        <DateComponent placeholder="Fin" onChange={(e: any) => onChange(endDate, e)} />
+                     </Grid>
+                  )}
+                  <Grid item xs={hasEndDate ? 6 : 12}>
+                     <CheckBoxComponent
+                        value={hasEndDate}
+                        placeholder="Date de fin"
+                        onChange={(e: boolean) => {
+                           setHasEndDate(e);
+                           if (e) {
+                              onChange(endDate, moment());
+                           } else {
+                              onChange(endDate, undefined);
+                           }
+                        }}
+                     />
                   </Grid>
+               </Grid>
+            </Grid>
+            <Grid item xs={12}>
+               {validForm["startDate"].hasError && (
+                  <Typography className={classes.errorText} align="center">
+                     {validForm["startDate"].errorMessage}
+                  </Typography>
                )}
-               <Grid item xs={hasEndDate ? 6 : 12}>
-                  <CheckBoxComponent
-                     value={hasEndDate}
-                     placeholder="Date de fin"
-                     onChange={(e: boolean) => {
-                        setHasEndDate(e);
-                        if (e) {
-                           onChange(endDate, moment());
-                        } else {
-                           onChange(endDate, undefined);
-                        }
-                     }}
-                  />
+            </Grid>
+            <Grid item xs={6}>
+               <Typography variant="h4" align="center" style={{ paddingBottom: "2vh" }}>
+                  Machine
+               </Typography>
+            </Grid>
+            <Grid item xs={6}>
+               <Typography variant="h4" align="center" style={{ paddingBottom: "2vh" }}>
+                  Info
+               </Typography>
+            </Grid>
+            <Grid item xs={6}>
+               <TextComponent
+                  hasError={validForm["modele"].hasError}
+                  errorText={validForm["modele"].errorMessage}
+                  placeholder="Modèle"
+                  options={autocomplete["modeles"] as Array<string>}
+                  onChange={e => onChange(modele, e)}
+               />
+            </Grid>
+            <Grid item xs={6}>
+               <EuroComponent placeholder="Montant" onChange={(e: any) => onChange(montant, e)} />
+            </Grid>
+            <Grid item xs={6}>
+               <TextComponent
+                  hasError={validForm["accessoires"].hasError}
+                  errorText={validForm["accessoires"].errorMessage}
+                  placeholder="Accessoires"
+                  options={autocomplete["accessoires"] as Array<string>}
+                  onChange={e => onChange(accessoires, e)}
+                  multiple
+               />
+            </Grid>
+            <Grid item xs={6}>
+               <CheckBoxComponent
+                  value={isReceived.current}
+                  placeholder="Cash"
+                  onChange={(e: any) => onChange(isCash, e)}
+               />
+               <CheckBoxComponent
+                  value={isBancontact.current}
+                  placeholder="Par Bancontact"
+                  onChange={(e: any) => onChange(isBancontact, e)}
+               />
+               <CheckBoxComponent
+                  value={isReceived.current}
+                  placeholder="Reçu"
+                  onChange={(e: any) => onChange(isReceived, e)}
+               />
+            </Grid>
+            <Grid item xs={12}>
+               <Typography variant="h4" align="center" style={{ paddingTop: "5vh", paddingBottom: "2vh" }}>
+                  Chantier
+               </Typography>
+            </Grid>
+            <Grid item xs={6}>
+               <TextComponent
+                  hasError={validForm["societe"].hasError}
+                  errorText={validForm["societe"].errorMessage}
+                  placeholder="Société"
+                  onChange={e => onChange(societe, e)}
+                  options={autocomplete["societes"] as Array<string>}
+               />
+            </Grid>
+            <Grid item xs={6}></Grid>
+            <Grid item xs={12}>
+               <TextComponent
+                  hasError={validForm["address"].hasError}
+                  errorText={validForm["address"].errorMessage}
+                  placeholder="Adresse"
+                  options={autocomplete["addresses"] as Array<string>}
+                  onChange={e => onChange(address, e)}
+                  customClass={{ paddingLeft: "5%", width: "85%", paddingRight: "10%" }}
+               />
+            </Grid>
+            <Grid item xs={6}>
+               <TextComponent
+                  hasError={validForm["societe"].hasError}
+                  errorText={validForm["societe"].errorMessage}
+                  placeholder="N° de Chantier"
+                  onChange={e => onChange(societe, e)}
+                  options={autocomplete["societes"] as Array<string>}
+               />
+            </Grid>
+            <Grid item xs={6}></Grid>
+
+            <Grid item xs={12}>
+               <Typography variant="h4" align="center" style={{ paddingTop: "5vh", paddingBottom: "2vh" }}>
+                  Client
+               </Typography>
+            </Grid>
+            <Grid item xs={6}>
+               <TextComponent
+                  hasError={validForm["nom"].hasError}
+                  errorText={validForm["nom"].errorMessage}
+                  placeholder="Nom"
+                  options={autocomplete["noms"] as Array<string>}
+                  onChange={e => onChange(nom, e)}
+               />
+            </Grid>
+            <Grid item xs={6}>
+               <TextComponent
+                  hasError={validForm["prenom"].hasError}
+                  errorText={validForm["prenom"].errorMessage}
+                  placeholder="Prénom"
+                  options={autocomplete["prenoms"] as Array<string>}
+                  onChange={e => onChange(prenom, e)}
+               />
+            </Grid>
+            <Grid item xs={6}>
+               <TextComponent
+                  hasError={validForm["gsm"].hasError}
+                  errorText={validForm["gsm"].errorMessage}
+                  placeholder="Téléphone"
+                  options={autocomplete["gsms"] as Array<string>}
+                  onChange={e => onChange(gsm, e)}
+               />
+            </Grid>
+            <Grid item xs={6}>
+               <TextComponent
+                  hasError={validForm["email"].hasError}
+                  errorText={validForm["email"].errorMessage}
+                  placeholder="Email"
+                  options={autocomplete["emails"] as Array<string>}
+                  onChange={e => onChange(email, e)}
+               />
+            </Grid>
+            <Grid item xs={12}>
+               <Grid container justify="space-evenly">
+                  <Button
+                     variant="contained"
+                     type="button"
+                     className={classes.submit}
+                     onClick={e => onSubmit("reserver")}
+                     style={{ background: "#5FBE7D" }}
+                  >
+                     <Typography variant="h6">A LIVRER</Typography>
+                  </Button>
+                  <Button
+                     variant="contained"
+                     type="button"
+                     className={classes.submit}
+                     onClick={e => onSubmit("chercher")}
+                     style={{ background: "#674F78" }}
+                  >
+                     <Typography variant="h6">Vient Chercher</Typography>
+                  </Button>
                </Grid>
             </Grid>
          </Grid>
-         <Grid item xs={12}>
-            {validForm["startDate"].hasError && (
-               <Typography className={classes.errorText} align="center">
-                  {validForm["startDate"].errorMessage}
-               </Typography>
-            )}
+      );
+   }
+
+   return (
+      <Grid container>
+         <Grid item xs={4} style={{ paddingLeft: "25px" }}>
+            <Typography variant="h4">Date:</Typography>
+            <DateComponent placeholder="Début" onChange={(e: any) => onChange(startDate, e)} />
+            {hasEndDate && <DateComponent placeholder="Fin" onChange={(e: any) => onChange(endDate, e)} />}
          </Grid>
-         <Grid item xs={6}>
-            <Typography variant="h4" align="center" style={{ paddingBottom: "2vh" }}>
-               Machine
-            </Typography>
-         </Grid>
-         <Grid item xs={6}>
-            <Typography variant="h4" align="center" style={{ paddingBottom: "2vh" }}>
-               Info
-            </Typography>
-         </Grid>
-         <Grid item xs={6}>
+         <Grid item xs={4}>
+            <Typography variant="h4">Machine:</Typography>
             <TextComponent
                hasError={validForm["modele"].hasError}
                errorText={validForm["modele"].errorMessage}
@@ -353,11 +514,6 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                options={autocomplete["modeles"] as Array<string>}
                onChange={e => onChange(modele, e)}
             />
-         </Grid>
-         <Grid item xs={6}>
-            <EuroComponent placeholder="Montant" onChange={(e: any) => onChange(montant, e)} />
-         </Grid>
-         <Grid item xs={6}>
             <TextComponent
                hasError={validForm["accessoires"].hasError}
                errorText={validForm["accessoires"].errorMessage}
@@ -367,121 +523,16 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                multiple
             />
          </Grid>
-         <Grid item xs={6}>
-            <CheckBoxComponent
-               value={isReceived.current}
-               placeholder="Cash"
-               onChange={(e: any) => onChange(isCash, e)}
+         <Grid item xs={4}>
+            <Typography variant="h4">Client:</Typography>
+            <SquareButtons
+               iconLeft={<PersonIcon fontSize="large" />}
+               iconRight={<BusinessIcon fontSize="large" />}
+               labelLeft="Particulier"
+               labelRight="Société"
+               value={false}
+               onClick={value => console.log(value)}
             />
-            <CheckBoxComponent
-               value={isBancontact.current}
-               placeholder="Par Bancontact"
-               onChange={(e: any) => onChange(isBancontact, e)}
-            />
-            <CheckBoxComponent
-               value={isReceived.current}
-               placeholder="Reçu"
-               onChange={(e: any) => onChange(isReceived, e)}
-            />
-         </Grid>
-         <Grid item xs={12}>
-            <Typography variant="h4" align="center" style={{ paddingTop: "5vh", paddingBottom: "2vh" }}>
-               Chantier
-            </Typography>
-         </Grid>
-         <Grid item xs={6}>
-            <TextComponent
-               hasError={validForm["societe"].hasError}
-               errorText={validForm["societe"].errorMessage}
-               placeholder="Société"
-               onChange={e => onChange(societe, e)}
-               options={autocomplete["societes"] as Array<string>}
-            />
-         </Grid>
-         <Grid item xs={6}></Grid>
-         <Grid item xs={12}>
-            <TextComponent
-               hasError={validForm["address"].hasError}
-               errorText={validForm["address"].errorMessage}
-               placeholder="Adresse"
-               options={autocomplete["addresses"] as Array<string>}
-               onChange={e => onChange(address, e)}
-               customClass={{ paddingLeft: "5%", width: "85%", paddingRight: "10%" }}
-            />
-         </Grid>
-         <Grid item xs={6}>
-            <TextComponent
-               hasError={validForm["societe"].hasError}
-               errorText={validForm["societe"].errorMessage}
-               placeholder="N° de Chantier"
-               onChange={e => onChange(societe, e)}
-               options={autocomplete["societes"] as Array<string>}
-            />
-         </Grid>
-         <Grid item xs={6}></Grid>
-
-         <Grid item xs={12}>
-            <Typography variant="h4" align="center" style={{ paddingTop: "5vh", paddingBottom: "2vh" }}>
-               Client
-            </Typography>
-         </Grid>
-         <Grid item xs={6}>
-            <TextComponent
-               hasError={validForm["nom"].hasError}
-               errorText={validForm["nom"].errorMessage}
-               placeholder="Nom"
-               options={autocomplete["noms"] as Array<string>}
-               onChange={e => onChange(nom, e)}
-            />
-         </Grid>
-         <Grid item xs={6}>
-            <TextComponent
-               hasError={validForm["prenom"].hasError}
-               errorText={validForm["prenom"].errorMessage}
-               placeholder="Prénom"
-               options={autocomplete["prenoms"] as Array<string>}
-               onChange={e => onChange(prenom, e)}
-            />
-         </Grid>
-         <Grid item xs={6}>
-            <TextComponent
-               hasError={validForm["gsm"].hasError}
-               errorText={validForm["gsm"].errorMessage}
-               placeholder="Téléphone"
-               options={autocomplete["gsms"] as Array<string>}
-               onChange={e => onChange(gsm, e)}
-            />
-         </Grid>
-         <Grid item xs={6}>
-            <TextComponent
-               hasError={validForm["email"].hasError}
-               errorText={validForm["email"].errorMessage}
-               placeholder="Email"
-               options={autocomplete["emails"] as Array<string>}
-               onChange={e => onChange(email, e)}
-            />
-         </Grid>
-         <Grid item xs={12}>
-            <Grid container justify="space-evenly">
-               <Button
-                  variant="contained"
-                  type="button"
-                  className={classes.submit}
-                  onClick={e => onSubmit("reserver")}
-                  style={{ background: "#5FBE7D" }}
-               >
-                  <Typography variant="h6">A LIVRER</Typography>
-               </Button>
-               <Button
-                  variant="contained"
-                  type="button"
-                  className={classes.submit}
-                  onClick={e => onSubmit("chercher")}
-                  style={{ background: "#674F78" }}
-               >
-                  <Typography variant="h6">Vient Chercher</Typography>
-               </Button>
-            </Grid>
          </Grid>
       </Grid>
    );
