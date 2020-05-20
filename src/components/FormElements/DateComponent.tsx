@@ -22,7 +22,7 @@ const DateComponent: FunctionComponent<DateProps> = ({ onChange: onChange_, plac
    };
 
    return (
-      <Box>
+      <Box width="100%">
          <MuiPickersUtilsProvider utils={MomentUtils} locale="fr">
             <KeyboardDatePicker
                disableToolbar

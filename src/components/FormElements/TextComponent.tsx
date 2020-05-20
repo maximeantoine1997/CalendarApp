@@ -9,7 +9,7 @@ const useStyles = makeStyles(() =>
          backgroundColor: "#E7EAED",
       },
       autocomplete: {
-         width: "90%",
+         width: "100%",
       },
       errorText: {
          paddingLeft: "10%",

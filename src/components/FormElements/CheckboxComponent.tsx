@@ -1,5 +1,5 @@
+import { Box, Checkbox, createStyles, FormControlLabel, makeStyles } from "@material-ui/core";
 import React, { FunctionComponent, ReactElement, useState } from "react";
-import { FormControlLabel, Typography, Box, Checkbox, makeStyles, createStyles } from "@material-ui/core";
 
 const useStyles = makeStyles(() =>
    createStyles({

@@ -46,8 +46,13 @@ const SquareButtons: React.FunctionComponent<SquareButtonProps> = ({
       }
    };
    return (
-      <Grid container justify="space-evenly">
-         <Button variant="outlined" color={isActive ? "secondary" : "default"} onClick={() => onClick(isActive, 1)}>
+      <Grid container justify="flex-start" style={{ paddingTop: "10px", paddingBottom: "10px" }}>
+         <Button
+            variant="outlined"
+            color={isActive ? "secondary" : "default"}
+            onClick={() => onClick(isActive, 1)}
+            style={{ marginRight: "20px" }}
+         >
             <Grid container justify="center">
                <Grid item xs={12}>
                   {iconLeft}

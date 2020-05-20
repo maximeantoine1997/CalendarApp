@@ -9,9 +9,7 @@ const useStyles = makeStyles(() =>
          backgroundColor: "#E7EAED",
       },
       textComponent: {
-         paddingLeft: "20%",
-         paddingRight: "20%",
-         width: "60%",
+         width: "100%",
       },
    })
 );
