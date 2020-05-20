@@ -1,22 +1,23 @@
-import { Button, createStyles, Grid, makeStyles, Theme, Typography } from "@material-ui/core";
+import { Button, createStyles, Grid, makeStyles, Theme, Typography, TextareaAutosize } from "@material-ui/core";
+import ArchiveIcon from "@material-ui/icons/Archive";
+import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
+import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
+import BusinessIcon from "@material-ui/icons/Business";
+import ClearIcon from "@material-ui/icons/Clear";
+import DoneIcon from "@material-ui/icons/Done";
+import LocalShippingIcon from "@material-ui/icons/LocalShipping";
+import PaymentIcon from "@material-ui/icons/Payment";
+import PersonIcon from "@material-ui/icons/Person";
 import moment, { Moment } from "moment";
-import React, { MutableRefObject, useRef, useState, useEffect } from "react";
+import React, { MutableRefObject, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { addReservationAsync, getAutocompleteAsync, updateAutocompleteAsync } from "../Firebase/Firebase.Utils";
+import { IHash, ReservationType } from "../Utils";
 import CheckBoxComponent from "./FormElements/CheckboxComponent";
 import DateComponent from "./FormElements/DateComponent";
 import EuroComponent from "./FormElements/EuroComponent";
-import TextComponent from "./FormElements/TextComponent";
-import { IHash, ReservationType } from "../Utils";
-import SquareButton from "./FormElements/SquareButton";
-import LocalShippingIcon from "@material-ui/icons/LocalShipping";
-import PersonIcon from "@material-ui/icons/Person";
-import BusinessIcon from "@material-ui/icons/Business";
-import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
-import PaymentIcon from "@material-ui/icons/Payment";
-import DoneIcon from "@material-ui/icons/Done";
-import ClearIcon from "@material-ui/icons/Clear";
 import SquareButtons from "./FormElements/SquareButton";
+import TextComponent from "./FormElements/TextComponent";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -26,11 +27,8 @@ const useStyles = makeStyles((theme: Theme) =>
          paddingTop: "0%",
       },
       submit: {
-         width: "40%",
-         marginLeft: "5%",
-         marginRight: "5%",
-         marginTop: "2%",
-         marginBottom: "2%",
+         width: "90%",
+         marginTop: "-2%",
          height: "7vh",
          borderRadius: "25px",
          color: "white",
@@ -313,11 +311,11 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
             justify="center"
             alignContent="center"
          >
-            <Grid item xs={6} style={{ minHeight: "10vh" }}>
+            <Grid item xs={6}>
                <DateComponent placeholder="Début" onChange={(e: any) => onChange(startDate, e)} />
             </Grid>
             <Grid item xs={6}>
-               <Grid container justify="center" style={{ minHeight: "10vh" }}>
+               <Grid container justify="center">
                   {hasEndDate && (
                      <Grid item xs={6}>
                         <DateComponent placeholder="Fin" onChange={(e: any) => onChange(endDate, e)} />
@@ -499,13 +497,41 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    }
 
    return (
-      <Grid container>
-         <Grid item xs={4} style={{ paddingLeft: "25px" }}>
+      <Grid container alignContent="flex-start">
+         <Grid item xs={4} style={{ padding: "25px" }}>
             <Typography variant="h4">Date:</Typography>
             <DateComponent placeholder="Début" onChange={(e: any) => onChange(startDate, e)} />
+            <SquareButtons
+               iconLeft={<DoneIcon />}
+               iconRight={<ClearIcon />}
+               labelLeft="Date de fin"
+               labelRight="aucune date"
+               value={hasEndDate}
+               onClick={value => setHasEndDate(value)}
+            />
             {hasEndDate && <DateComponent placeholder="Fin" onChange={(e: any) => onChange(endDate, e)} />}
+            <Typography variant="h4" style={{ paddingTop: "25px" }}>
+               Caution:
+            </Typography>
+            <EuroComponent placeholder="Montant" onChange={(e: any) => onChange(montant, e)} />
+            <SquareButtons
+               iconLeft={<AttachMoneyIcon />}
+               iconRight={<PaymentIcon />}
+               labelLeft="Cash"
+               labelRight="Bancontact"
+               value={false}
+               onClick={value => console.log(value)}
+            />
+            <SquareButtons
+               iconLeft={<DoneIcon />}
+               iconRight={<ClearIcon />}
+               labelLeft="Reçu"
+               labelRight="Pas Reçu"
+               value={false}
+               onClick={value => console.log(value)}
+            />
          </Grid>
-         <Grid item xs={4}>
+         <Grid item xs={4} style={{ padding: "25px" }}>
             <Typography variant="h4">Machine:</Typography>
             <TextComponent
                hasError={validForm["modele"].hasError}
@@ -522,17 +548,136 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                onChange={e => onChange(accessoires, e)}
                multiple
             />
+            <Typography variant="h4" style={{ paddingTop: "25px" }}>
+               Chantier:
+            </Typography>
+            <SquareButtons
+               iconLeft={<LocalShippingIcon />}
+               iconRight={<ArrowDownwardIcon />}
+               labelLeft="A Livrer"
+               labelRight="Vient Chercher"
+               value={false}
+               onClick={value => console.log(value)}
+            />
+            <TextComponent
+               hasError={validForm["societe"].hasError}
+               errorText={validForm["societe"].errorMessage}
+               placeholder="Rue"
+               onChange={e => onChange(societe, e)}
+               options={autocomplete["societes"] as Array<string>}
+            />
+            <Grid container>
+               <Grid item xs={4} style={{ paddingRight: "25px" }}>
+                  <TextComponent
+                     hasError={validForm["societe"].hasError}
+                     errorText={validForm["societe"].errorMessage}
+                     placeholder="Code Postal"
+                     onChange={e => onChange(societe, e)}
+                     options={autocomplete["societes"] as Array<string>}
+                  />
+               </Grid>
+               <Grid item xs={8}>
+                  <TextComponent
+                     hasError={validForm["societe"].hasError}
+                     errorText={validForm["societe"].errorMessage}
+                     placeholder="Ville"
+                     onChange={e => onChange(societe, e)}
+                     options={autocomplete["societes"] as Array<string>}
+                  />
+               </Grid>
+            </Grid>
+            <TextComponent
+               hasError={validForm["societe"].hasError}
+               errorText={validForm["societe"].errorMessage}
+               placeholder="N° de Chantier"
+               onChange={e => onChange(societe, e)}
+               options={autocomplete["societes"] as Array<string>}
+            />
          </Grid>
-         <Grid item xs={4}>
+         <Grid item xs={4} style={{ padding: "25px" }}>
             <Typography variant="h4">Client:</Typography>
             <SquareButtons
-               iconLeft={<PersonIcon fontSize="large" />}
-               iconRight={<BusinessIcon fontSize="large" />}
+               iconLeft={<PersonIcon />}
+               iconRight={<BusinessIcon />}
                labelLeft="Particulier"
                labelRight="Société"
                value={false}
                onClick={value => console.log(value)}
             />
+            <SquareButtons
+               iconLeft={<ArchiveIcon />}
+               iconRight={<ClearIcon />}
+               labelLeft="Enregistrer"
+               labelRight="Pas Enregistrer"
+               value={false}
+               onClick={value => console.log(value)}
+            />
+            <TextComponent
+               hasError={validForm["societe"].hasError}
+               errorText={validForm["societe"].errorMessage}
+               placeholder="Société"
+               onChange={e => onChange(societe, e)}
+               options={autocomplete["societes"] as Array<string>}
+            />
+            <Grid container>
+               <Grid item xs={6} style={{ paddingRight: "25px" }}>
+                  <TextComponent
+                     hasError={validForm["nom"].hasError}
+                     errorText={validForm["nom"].errorMessage}
+                     placeholder="Nom"
+                     options={autocomplete["noms"] as Array<string>}
+                     onChange={e => onChange(nom, e)}
+                  />
+               </Grid>
+               <Grid item xs={6}>
+                  <TextComponent
+                     hasError={validForm["prenom"].hasError}
+                     errorText={validForm["prenom"].errorMessage}
+                     placeholder="Prénom"
+                     options={autocomplete["prenoms"] as Array<string>}
+                     onChange={e => onChange(prenom, e)}
+                  />
+               </Grid>
+            </Grid>
+
+            <TextComponent
+               hasError={validForm["gsm"].hasError}
+               errorText={validForm["gsm"].errorMessage}
+               placeholder="Téléphone"
+               options={autocomplete["gsms"] as Array<string>}
+               onChange={e => onChange(gsm, e)}
+            />
+
+            <TextComponent
+               hasError={validForm["email"].hasError}
+               errorText={validForm["email"].errorMessage}
+               placeholder="Email"
+               options={autocomplete["emails"] as Array<string>}
+               onChange={e => onChange(email, e)}
+            />
+         </Grid>
+         <Grid item xs={12} style={{ padding: "25px" }}>
+            <Grid container>
+               <Grid item xs={6}>
+                  <TextareaAutosize
+                     rowsMax={4}
+                     rowsMin={4}
+                     style={{
+                        borderRadius: "5px",
+                        fontSize: "16px",
+                        backgroundColor: "#E7EAED",
+                        marginTop: "-25px",
+                        width: "90%",
+                     }}
+                     placeholder="Notes"
+                  />
+               </Grid>
+               <Grid item xs={6}>
+                  <Button variant="contained" color="secondary" className={classes.submit}>
+                     RESERVER
+                  </Button>
+               </Grid>
+            </Grid>
          </Grid>
       </Grid>
    );
