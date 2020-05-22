@@ -12,9 +12,7 @@ const useStyles = makeStyles(() =>
          width: "100%",
       },
       errorText: {
-         paddingLeft: "10%",
-         paddingRight: "10%",
-         width: "80%",
+         width: "100%",
          color: "red",
       },
    })
