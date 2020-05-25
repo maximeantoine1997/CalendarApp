@@ -1,4 +1,4 @@
-import { Button, createStyles, Grid, makeStyles, Theme, Typography, TextareaAutosize } from "@material-ui/core";
+import { Button, createStyles, Grid, makeStyles, Theme, Typography } from "@material-ui/core";
 import ArchiveIcon from "@material-ui/icons/Archive";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
@@ -8,15 +8,14 @@ import DoneIcon from "@material-ui/icons/Done";
 import LocalShippingIcon from "@material-ui/icons/LocalShipping";
 import PaymentIcon from "@material-ui/icons/Payment";
 import PersonIcon from "@material-ui/icons/Person";
-import moment, { Moment } from "moment";
-import React, { MutableRefObject, useEffect, useRef, useState } from "react";
+import moment from "moment";
+import React, { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { addReservationAsync, getAutocompleteAsync, updateAutocompleteAsync } from "../Firebase/Firebase.Utils";
 import { IHash, ReservationType } from "../Utils";
-import CheckBoxComponent from "./FormElements/CheckboxComponent";
 import DateComponent from "./FormElements/DateComponent";
-import EuroComponent from "./FormElements/EuroComponent";
 import SquareButtons from "./FormElements/SquareButton";
+import TextBox from "./FormElements/TextBox";
 import TextComponent from "./FormElements/TextComponent";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -42,228 +41,291 @@ const useStyles = makeStyles((theme: Theme) =>
    })
 );
 
-const initValidForm = {
-   societe: {
-      hasError: false,
-      errorMessage: "",
-   },
-   modele: {
-      hasError: false,
-      errorMessage: "",
-   },
-   accessoires: {
-      hasError: false,
-      errorMessage: "",
-   },
-   gsm: {
-      hasError: false,
-      errorMessage: "",
-   },
-   email: {
-      hasError: false,
-      errorMessage: "",
-   },
-   prenom: {
-      hasError: false,
-      errorMessage: "",
-   },
-   nom: {
-      hasError: false,
-      errorMessage: "",
-   },
-   address: {
-      hasError: false,
-      errorMessage: "",
-   },
-   startDate: {
-      hasError: false,
-      errorMessage: "",
-   },
-   endDate: {
-      hasError: false,
-      errorMessage: "",
-   },
-   montant: {
-      hasError: false,
-      errorMessage: "",
-   },
-};
-
 export interface FormProps {
    id?: string;
    onChange?: (newValue: any) => void;
 }
 
-interface ValidReservation {
-   [key: string]: {
+type ValidReservation = {
+   [key in ReservationKeys]: {
       hasError: boolean;
       errorMessage: string;
    };
-}
+};
+
+export type ReservationKeys =
+   | "startDate"
+   | "endDate"
+   | "amount"
+   | "isReceived"
+   | "isCash"
+   | "modele"
+   | "accessoires"
+   | "isToBeDelivered"
+   | "street"
+   | "postalCode"
+   | "city"
+   | "sitePhone"
+   | "isCompany"
+   | "toSave"
+   | "company"
+   | "firstname"
+   | "lastname"
+   | "phone"
+   | "email";
 
 export interface Reservation {
-   id?: string;
-   prenom: string;
-   nom: string;
-   societe: string;
-   modele: string;
-   accessoires: Array<string>;
-   gsm: string;
-   email: string;
-   address: string;
+   // Date:
    startDate: string;
    endDate?: string;
-   montant: number;
-   isBancontact: boolean;
+
+   // Caution:
+   amount: number;
    isReceived: boolean;
    isCash: boolean;
-   reservationNumber?: string;
+
+   // Machine:
+   modele: string;
+   accessoires: Array<string>;
+
+   // Chantier:
+   isToBeDelivered: boolean;
+   street: string;
+   postalCode: string;
+   city: string;
+   sitePhone: string;
+
+   // Client:
+   isCompany: boolean;
+   toSave: boolean;
+   company?: string;
+   firstname?: string;
+   lastname?: string;
+   phone?: string;
+   email?: string;
+
+   // Extra:
+   id?: string;
+   varyNumber?: string;
    type: ReservationType;
+   notes?: string;
 }
+
+export type KVReservation = {
+   [key in keyof Reservation]: any;
+};
 
 const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    const classes = useStyles();
    const history = useHistory();
 
-   // #region  useRef
-   const prenom = useRef<string>("");
-   const nom = useRef<string>("");
-   const societe = useRef<string>("");
-   const modele = useRef<string>("");
-   const accessoires = useRef<Array<string>>([]);
-   const gsm = useRef<string>("");
-   const email = useRef<string>("");
-   const address = useRef<string>("");
-   const startDate = useRef<Moment>(moment());
-   const endDate = useRef<Moment>();
-   const montant = useRef<number>(0);
-   const isBancontact = useRef<boolean>(false);
-   const isReceived = useRef<boolean>(false);
-   const isCash = useRef<boolean>(false);
-   // #endregion
-
-   const [validForm, setValidForm] = useState<ValidReservation>(initValidForm);
-   const [hasEndDate, setHasEndDate] = useState<boolean>(true);
-   const [autocomplete, setAutocomplete] = useState<IHash<unknown>>({});
-   const newType = true;
-
-   const onChange = (ref: MutableRefObject<any>, newValue: any) => {
-      ref.current = newValue;
+   const initValidForm: ValidReservation = {
+      company: {
+         hasError: false,
+         errorMessage: "",
+      },
+      modele: {
+         hasError: false,
+         errorMessage: "",
+      },
+      accessoires: {
+         hasError: false,
+         errorMessage: "",
+      },
+      phone: {
+         hasError: false,
+         errorMessage: "",
+      },
+      email: {
+         hasError: false,
+         errorMessage: "",
+      },
+      firstname: {
+         hasError: false,
+         errorMessage: "",
+      },
+      lastname: {
+         hasError: false,
+         errorMessage: "",
+      },
+      street: {
+         hasError: false,
+         errorMessage: "",
+      },
+      postalCode: {
+         hasError: false,
+         errorMessage: "",
+      },
+      city: {
+         hasError: false,
+         errorMessage: "",
+      },
+      startDate: {
+         hasError: false,
+         errorMessage: "",
+      },
+      endDate: {
+         hasError: false,
+         errorMessage: "",
+      },
+      amount: {
+         hasError: false,
+         errorMessage: "",
+      },
+      isCash: {
+         hasError: false,
+         errorMessage: "",
+      },
+      isCompany: {
+         hasError: false,
+         errorMessage: "",
+      },
+      isReceived: {
+         hasError: false,
+         errorMessage: "",
+      },
+      isToBeDelivered: {
+         hasError: false,
+         errorMessage: "",
+      },
+      toSave: {
+         hasError: false,
+         errorMessage: "",
+      },
+      sitePhone: {
+         hasError: false,
+         errorMessage: "",
+      },
    };
-   const addAutocompleteItem = (docName: string, newItem: unknown) => {
+
+   const newReservation = useRef<KVReservation>({
+      startDate: moment().format("YYYY-MM-DD"),
+      amount: 0,
+      isCash: true,
+      isReceived: false,
+      modele: "",
+      accessoires: [],
+      isToBeDelivered: true,
+      street: "",
+      postalCode: "",
+      city: "",
+      sitePhone: "",
+      isCompany: true,
+      toSave: true,
+      type: "A Livrer",
+   });
+
+   const [validForm, setValidForm] = useState<ValidReservation>({ ...initValidForm });
+   const [hasEndDate, setHasEndDate] = useState<boolean>(false);
+   const [isCompany, setIsCompany] = useState<boolean>(true);
+   const [toSave, setToSave] = useState<boolean>(true);
+   const [autocomplete, setAutocomplete] = useState<IHash<unknown>>({});
+
+   const onChange = (key: keyof Reservation, value: unknown) => {
+      const res = newReservation.current;
+      res[key] = value;
+   };
+
+   const addAutocompleteItem = (docName: ReservationKeys, newItem: unknown) => {
       const items = autocomplete[docName];
       items.push(newItem);
    };
-   const addReservation = async (reservation: Reservation): Promise<void> => {
-      addAutocompleteItem("prenoms", reservation.prenom);
-      addAutocompleteItem("noms", reservation.nom);
-      addAutocompleteItem("addresses", reservation.address);
-      addAutocompleteItem("emails", reservation.email);
-      addAutocompleteItem("gsms", reservation.gsm);
-      addAutocompleteItem("modeles", reservation.modele);
-      addAutocompleteItem("societes", reservation.societe);
+   const addReservation = async (): Promise<void> => {
+      const res = newReservation.current;
+
+      if (!res.isToBeDelivered) {
+         res.type = "Client Vient Chercher";
+      }
+
+      addAutocompleteItem("street", res.street);
+      addAutocompleteItem("postalCode", res.postalCode);
+      addAutocompleteItem("city", res.city);
+      addAutocompleteItem("sitePhone", res.sitePhone);
+
+      addAutocompleteItem("modele", res.modele);
       const items = autocomplete["accessoires"];
-      reservation.accessoires.forEach(accessoire => {
+      res.accessoires.forEach((accessoire: string) => {
          items.push(accessoire);
       });
+
+      if (isCompany) {
+         addAutocompleteItem("company", res.company);
+      } else {
+         addAutocompleteItem("firstname", res.firstname);
+         addAutocompleteItem("lastname", res.lastname);
+      }
+      if (toSave) {
+         addAutocompleteItem("phone", res.phone);
+         addAutocompleteItem("email", res.email);
+      }
+
       updateAutocompleteAsync(autocomplete);
-      await addReservationAsync(reservation);
+
+      await addReservationAsync({ ...newReservation.current });
       history.push("/calendrier");
    };
 
    /**
     * Checks if the form is valid. Validation logic is here.
     */
-   const onSubmit = (type: "chercher" | "reserver") => {
-      let newValidForm: ValidReservation = {
-         societe: {
-            hasError: false,
-            errorMessage: "",
-         },
-         modele: {
-            hasError: false,
-            errorMessage: "",
-         },
-         accessoires: {
-            hasError: false,
-            errorMessage: "",
-         },
-         gsm: {
-            hasError: false,
-            errorMessage: "",
-         },
-         email: {
-            hasError: false,
-            errorMessage: "",
-         },
-         prenom: {
-            hasError: false,
-            errorMessage: "",
-         },
-         nom: {
-            hasError: false,
-            errorMessage: "",
-         },
-         address: {
-            hasError: false,
-            errorMessage: "",
-         },
-         startDate: {
-            hasError: false,
-            errorMessage: "",
-         },
-         endDate: {
-            hasError: false,
-            errorMessage: "",
-         },
-         montant: {
-            hasError: false,
-            errorMessage: "",
-         },
-      };
+   const onSubmit = () => {
+      let newValidForm = { ...initValidForm };
 
-      const updateForm = (type: string, hasError: boolean, errorMessage: string) => {
+      const updateForm = (type: ReservationKeys, hasError: boolean, errorMessage: string) => {
          newValidForm[type].hasError = hasError;
          newValidForm[type].errorMessage = errorMessage;
       };
 
+      const res = newReservation.current;
+
       // #region errors
-      // Prenom
-      if (prenom.current.length < 1) {
-         updateForm("prenom", true, "Au moins un caractère");
-      }
-      // Nom;
-      if (nom.current.length < 1) {
-         updateForm("nom", true, "Au moins un caractère");
-      }
-      // Societe
-      if (societe.current.length < 1) {
-         updateForm("societe", true, "Au moins un caractère");
-      }
-      // Modele
-      if (modele.current.length < 1) {
+
+      if (res["modele"]?.length < 1) {
          updateForm("modele", true, "Veuillez rentrer un modèle");
       }
-      // Gsm
-      if (gsm.current.length < 1) {
-         updateForm("gsm", true, "Au moins un numéro");
+
+      if (res["sitePhone"]?.length < 1) {
+         updateForm("sitePhone", true, "Numéro non valide");
       }
-      // Email
-      if (email.current.length < 1) {
-         updateForm("email", true, "Veuillez rentrer un email valide");
-      }
+
       // Address
-      if (address.current.length < 1) {
-         updateForm("address", true, "Au moins un caractère");
+      if (res["street"]?.length < 1) {
+         updateForm("street", true, "Rue non valide");
       }
-      // startDate & endDate
-      if (endDate.current && !startDate.current?.isSameOrBefore(endDate.current, "day")) {
-         updateForm(
-            "startDate",
-            true,
-            "la date de fin ne peut pas être avant celle du début, veuillez ajuster en conséquence"
-         );
+      if (!res["postalCode"] || res["postalCode"]?.length < 1) {
+         updateForm("postalCode", true, "Code postal non valide");
       }
+      if (res["city"]?.length < 1) {
+         updateForm("city", true, "Ville non valide");
+      }
+      if (isCompany) {
+         if (!res["company"] || res["company"]?.length < 1) {
+            updateForm("company", true, "Au moins un caractère");
+         }
+      } else {
+         if (!res["firstname"] || res["firstname"]?.length < 1) {
+            updateForm("firstname", true, "Au moins un caractère");
+         }
+         if (!res["lastname"] || res["lastname"]?.length < 1) {
+            updateForm("lastname", true, "Au moins un caractère");
+         }
+      }
+      if (toSave) {
+         if (!res["phone"] || res["phone"]?.length < 1) {
+            updateForm("phone", true, "Numéro non valide");
+         }
+         if (!res["email"] || res["email"]?.length < 1) {
+            updateForm("email", true, "Veuillez rentrer un email valide");
+         }
+      }
+      //   // startDate & endDate
+      //   if (endDate.current && !startDate.current?.isSameOrBefore(endDate.current, "day")) {
+      //      updateForm(
+      //         "startDate",
+      //         true,
+      //         "la date de fin ne peut pas être avant celle du début, veuillez ajuster en conséquence"
+      //      );
+      //   }
       // #endregion
 
       const hasError = Object.values(newValidForm).find(value => {
@@ -271,25 +333,10 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
       });
 
       if (!hasError) {
-         addReservation({
-            prenom: prenom.current,
-            nom: nom.current,
-            societe: societe.current,
-            modele: modele.current,
-            accessoires: accessoires.current,
-            gsm: gsm.current,
-            email: email.current,
-            address: address.current,
-            startDate: moment(startDate.current).format("YYYY-MM-DD"),
-            endDate: moment(endDate.current).format("YYYY-MM-DD"),
-            montant: montant.current,
-            isBancontact: isBancontact.current,
-            isReceived: isReceived.current,
-            isCash: isCash.current,
-            type: type === "chercher" ? "Client Vient Chercher" : "A Livrer",
-         });
+         addReservation();
       }
-      setValidForm(newValidForm);
+
+      setValidForm({ ...newValidForm });
    };
 
    useEffect(() => {
@@ -300,207 +347,11 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
       getAutocomplete();
    }, []);
 
-   if (!newType) {
-      return (
-         <Grid
-            container
-            className={classes.container}
-            spacing={0}
-            direction="row"
-            alignItems="center"
-            justify="center"
-            alignContent="center"
-         >
-            <Grid item xs={6}>
-               <DateComponent placeholder="Début" onChange={(e: any) => onChange(startDate, e)} />
-            </Grid>
-            <Grid item xs={6}>
-               <Grid container justify="center">
-                  {hasEndDate && (
-                     <Grid item xs={6}>
-                        <DateComponent placeholder="Fin" onChange={(e: any) => onChange(endDate, e)} />
-                     </Grid>
-                  )}
-                  <Grid item xs={hasEndDate ? 6 : 12}>
-                     <CheckBoxComponent
-                        value={hasEndDate}
-                        placeholder="Date de fin"
-                        onChange={(e: boolean) => {
-                           setHasEndDate(e);
-                           if (e) {
-                              onChange(endDate, moment());
-                           } else {
-                              onChange(endDate, undefined);
-                           }
-                        }}
-                     />
-                  </Grid>
-               </Grid>
-            </Grid>
-            <Grid item xs={12}>
-               {validForm["startDate"].hasError && (
-                  <Typography className={classes.errorText} align="center">
-                     {validForm["startDate"].errorMessage}
-                  </Typography>
-               )}
-            </Grid>
-            <Grid item xs={6}>
-               <Typography variant="h4" align="center" style={{ paddingBottom: "2vh" }}>
-                  Machine
-               </Typography>
-            </Grid>
-            <Grid item xs={6}>
-               <Typography variant="h4" align="center" style={{ paddingBottom: "2vh" }}>
-                  Info
-               </Typography>
-            </Grid>
-            <Grid item xs={6}>
-               <TextComponent
-                  hasError={validForm["modele"].hasError}
-                  errorText={validForm["modele"].errorMessage}
-                  placeholder="Modèle"
-                  options={autocomplete["modeles"] as Array<string>}
-                  onChange={e => onChange(modele, e)}
-               />
-            </Grid>
-            <Grid item xs={6}>
-               <EuroComponent placeholder="Montant" onChange={(e: any) => onChange(montant, e)} />
-            </Grid>
-            <Grid item xs={6}>
-               <TextComponent
-                  hasError={validForm["accessoires"].hasError}
-                  errorText={validForm["accessoires"].errorMessage}
-                  placeholder="Accessoires"
-                  options={autocomplete["accessoires"] as Array<string>}
-                  onChange={e => onChange(accessoires, e)}
-                  multiple
-               />
-            </Grid>
-            <Grid item xs={6}>
-               <CheckBoxComponent
-                  value={isReceived.current}
-                  placeholder="Cash"
-                  onChange={(e: any) => onChange(isCash, e)}
-               />
-               <CheckBoxComponent
-                  value={isBancontact.current}
-                  placeholder="Par Bancontact"
-                  onChange={(e: any) => onChange(isBancontact, e)}
-               />
-               <CheckBoxComponent
-                  value={isReceived.current}
-                  placeholder="Reçu"
-                  onChange={(e: any) => onChange(isReceived, e)}
-               />
-            </Grid>
-            <Grid item xs={12}>
-               <Typography variant="h4" align="center" style={{ paddingTop: "5vh", paddingBottom: "2vh" }}>
-                  Chantier
-               </Typography>
-            </Grid>
-            <Grid item xs={6}>
-               <TextComponent
-                  hasError={validForm["societe"].hasError}
-                  errorText={validForm["societe"].errorMessage}
-                  placeholder="Société"
-                  onChange={e => onChange(societe, e)}
-                  options={autocomplete["societes"] as Array<string>}
-               />
-            </Grid>
-            <Grid item xs={6}></Grid>
-            <Grid item xs={12}>
-               <TextComponent
-                  hasError={validForm["address"].hasError}
-                  errorText={validForm["address"].errorMessage}
-                  placeholder="Adresse"
-                  options={autocomplete["addresses"] as Array<string>}
-                  onChange={e => onChange(address, e)}
-                  customClass={{ paddingLeft: "5%", width: "85%", paddingRight: "10%" }}
-               />
-            </Grid>
-            <Grid item xs={6}>
-               <TextComponent
-                  hasError={validForm["societe"].hasError}
-                  errorText={validForm["societe"].errorMessage}
-                  placeholder="N° de Chantier"
-                  onChange={e => onChange(societe, e)}
-                  options={autocomplete["societes"] as Array<string>}
-               />
-            </Grid>
-            <Grid item xs={6}></Grid>
-
-            <Grid item xs={12}>
-               <Typography variant="h4" align="center" style={{ paddingTop: "5vh", paddingBottom: "2vh" }}>
-                  Client
-               </Typography>
-            </Grid>
-            <Grid item xs={6}>
-               <TextComponent
-                  hasError={validForm["nom"].hasError}
-                  errorText={validForm["nom"].errorMessage}
-                  placeholder="Nom"
-                  options={autocomplete["noms"] as Array<string>}
-                  onChange={e => onChange(nom, e)}
-               />
-            </Grid>
-            <Grid item xs={6}>
-               <TextComponent
-                  hasError={validForm["prenom"].hasError}
-                  errorText={validForm["prenom"].errorMessage}
-                  placeholder="Prénom"
-                  options={autocomplete["prenoms"] as Array<string>}
-                  onChange={e => onChange(prenom, e)}
-               />
-            </Grid>
-            <Grid item xs={6}>
-               <TextComponent
-                  hasError={validForm["gsm"].hasError}
-                  errorText={validForm["gsm"].errorMessage}
-                  placeholder="Téléphone"
-                  options={autocomplete["gsms"] as Array<string>}
-                  onChange={e => onChange(gsm, e)}
-               />
-            </Grid>
-            <Grid item xs={6}>
-               <TextComponent
-                  hasError={validForm["email"].hasError}
-                  errorText={validForm["email"].errorMessage}
-                  placeholder="Email"
-                  options={autocomplete["emails"] as Array<string>}
-                  onChange={e => onChange(email, e)}
-               />
-            </Grid>
-            <Grid item xs={12}>
-               <Grid container justify="space-evenly">
-                  <Button
-                     variant="contained"
-                     type="button"
-                     className={classes.submit}
-                     onClick={e => onSubmit("reserver")}
-                     style={{ background: "#5FBE7D" }}
-                  >
-                     <Typography variant="h6">A LIVRER</Typography>
-                  </Button>
-                  <Button
-                     variant="contained"
-                     type="button"
-                     className={classes.submit}
-                     onClick={e => onSubmit("chercher")}
-                     style={{ background: "#674F78" }}
-                  >
-                     <Typography variant="h6">Vient Chercher</Typography>
-                  </Button>
-               </Grid>
-            </Grid>
-         </Grid>
-      );
-   }
-
    return (
       <Grid container alignContent="flex-start">
          <Grid item xs={4} style={{ padding: "25px" }}>
             <Typography variant="h4">Date:</Typography>
-            <DateComponent placeholder="Début" onChange={(e: any) => onChange(startDate, e)} />
+            <DateComponent placeholder="Début" onChange={(e: any) => onChange("startDate", e)} />
             <SquareButtons
                iconLeft={<DoneIcon />}
                iconRight={<ClearIcon />}
@@ -509,26 +360,26 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                value={hasEndDate}
                onClick={value => setHasEndDate(value)}
             />
-            {hasEndDate && <DateComponent placeholder="Fin" onChange={(e: any) => onChange(endDate, e)} />}
+            {hasEndDate && <DateComponent placeholder="Fin" onChange={(e: any) => onChange("endDate", e)} />}
             <Typography variant="h4" style={{ paddingTop: "25px" }}>
                Caution:
             </Typography>
-            <EuroComponent placeholder="Montant" onChange={(e: any) => onChange(montant, e)} />
+            <TextComponent placeholder="Montant" value="0" onChange={e => onChange("amount", e)} />
             <SquareButtons
                iconLeft={<AttachMoneyIcon />}
                iconRight={<PaymentIcon />}
                labelLeft="Cash"
                labelRight="Bancontact"
-               value={false}
-               onClick={value => console.log(value)}
+               value={newReservation.current["isCash"] as boolean}
+               onClick={value => onChange("isCash", value)}
             />
             <SquareButtons
                iconLeft={<DoneIcon />}
                iconRight={<ClearIcon />}
                labelLeft="Reçu"
                labelRight="Pas Reçu"
-               value={false}
-               onClick={value => console.log(value)}
+               value={newReservation.current["isReceived"] as boolean}
+               onClick={value => onChange("isReceived", value)}
             />
          </Grid>
          <Grid item xs={4} style={{ padding: "25px" }}>
@@ -537,15 +388,15 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                hasError={validForm["modele"].hasError}
                errorText={validForm["modele"].errorMessage}
                placeholder="Modèle"
-               options={autocomplete["modeles"] as Array<string>}
-               onChange={e => onChange(modele, e)}
+               options={autocomplete["modele"] as Array<string>}
+               onChange={e => onChange("modele", e)}
             />
             <TextComponent
                hasError={validForm["accessoires"].hasError}
                errorText={validForm["accessoires"].errorMessage}
                placeholder="Accessoires"
                options={autocomplete["accessoires"] as Array<string>}
-               onChange={e => onChange(accessoires, e)}
+               onChange={e => onChange("accessoires", e)}
                multiple
             />
             <Typography variant="h4" style={{ paddingTop: "25px" }}>
@@ -556,124 +407,122 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                iconRight={<ArrowDownwardIcon />}
                labelLeft="A Livrer"
                labelRight="Vient Chercher"
-               value={false}
-               onClick={value => console.log(value)}
+               value={newReservation.current["isToBeDelivered"] as boolean}
+               onClick={value => onChange("isToBeDelivered", value)}
             />
             <TextComponent
-               hasError={validForm["societe"].hasError}
-               errorText={validForm["societe"].errorMessage}
+               hasError={validForm["street"].hasError}
+               errorText={validForm["street"].errorMessage}
                placeholder="Rue"
-               onChange={e => onChange(societe, e)}
-               options={autocomplete["societes"] as Array<string>}
+               onChange={e => onChange("street", e)}
+               options={autocomplete["street"] as Array<string>}
             />
             <Grid container>
                <Grid item xs={4} style={{ paddingRight: "25px" }}>
                   <TextComponent
-                     hasError={validForm["societe"].hasError}
-                     errorText={validForm["societe"].errorMessage}
+                     hasError={validForm["postalCode"].hasError}
+                     errorText={validForm["postalCode"].errorMessage}
                      placeholder="Code Postal"
-                     onChange={e => onChange(societe, e)}
-                     options={autocomplete["societes"] as Array<string>}
+                     onChange={e => onChange("postalCode", e)}
+                     options={autocomplete["postalCode"] as Array<string>}
                   />
                </Grid>
                <Grid item xs={8}>
                   <TextComponent
-                     hasError={validForm["societe"].hasError}
-                     errorText={validForm["societe"].errorMessage}
+                     hasError={validForm["city"].hasError}
+                     errorText={validForm["city"].errorMessage}
                      placeholder="Ville"
-                     onChange={e => onChange(societe, e)}
-                     options={autocomplete["societes"] as Array<string>}
+                     onChange={e => onChange("city", e)}
+                     options={autocomplete["city"] as Array<string>}
                   />
                </Grid>
             </Grid>
             <TextComponent
-               hasError={validForm["societe"].hasError}
-               errorText={validForm["societe"].errorMessage}
+               hasError={validForm["sitePhone"].hasError}
+               errorText={validForm["sitePhone"].errorMessage}
                placeholder="N° de Chantier"
-               onChange={e => onChange(societe, e)}
-               options={autocomplete["societes"] as Array<string>}
+               onChange={e => onChange("sitePhone", e)}
+               options={autocomplete["sitePhone"] as Array<string>}
             />
          </Grid>
          <Grid item xs={4} style={{ padding: "25px" }}>
             <Typography variant="h4">Client:</Typography>
             <SquareButtons
-               iconLeft={<PersonIcon />}
-               iconRight={<BusinessIcon />}
-               labelLeft="Particulier"
-               labelRight="Société"
-               value={false}
-               onClick={value => console.log(value)}
+               iconRight={<PersonIcon />}
+               iconLeft={<BusinessIcon />}
+               labelRight="Particulier"
+               labelLeft="Société"
+               value={isCompany}
+               onClick={value => {
+                  onChange("isCompany", value);
+                  setIsCompany(value);
+               }}
             />
             <SquareButtons
                iconLeft={<ArchiveIcon />}
                iconRight={<ClearIcon />}
                labelLeft="Enregistrer"
                labelRight="Pas Enregistrer"
-               value={false}
-               onClick={value => console.log(value)}
+               value={toSave}
+               onClick={value => setToSave(value)}
             />
-            <TextComponent
-               hasError={validForm["societe"].hasError}
-               errorText={validForm["societe"].errorMessage}
-               placeholder="Société"
-               onChange={e => onChange(societe, e)}
-               options={autocomplete["societes"] as Array<string>}
-            />
-            <Grid container>
-               <Grid item xs={6} style={{ paddingRight: "25px" }}>
+            {isCompany && (
+               <TextComponent
+                  hasError={validForm["company"].hasError}
+                  errorText={validForm["company"].errorMessage}
+                  placeholder="Société"
+                  onChange={e => onChange("company", e)}
+                  options={autocomplete["company"] as Array<string>}
+               />
+            )}
+            {!isCompany && (
+               <Grid container>
+                  <Grid item xs={6} style={{ paddingRight: "25px" }}>
+                     <TextComponent
+                        hasError={validForm["lastname"].hasError}
+                        errorText={validForm["lastname"].errorMessage}
+                        placeholder="Nom"
+                        options={autocomplete["lastname"] as Array<string>}
+                        onChange={e => onChange("lastname", e)}
+                     />
+                  </Grid>
+                  <Grid item xs={6}>
+                     <TextComponent
+                        hasError={validForm["firstname"].hasError}
+                        errorText={validForm["firstname"].errorMessage}
+                        placeholder="Prénom"
+                        options={autocomplete["firstname"] as Array<string>}
+                        onChange={e => onChange("firstname", e)}
+                     />
+                  </Grid>
+               </Grid>
+            )}
+            {toSave && (
+               <Grid>
                   <TextComponent
-                     hasError={validForm["nom"].hasError}
-                     errorText={validForm["nom"].errorMessage}
-                     placeholder="Nom"
-                     options={autocomplete["noms"] as Array<string>}
-                     onChange={e => onChange(nom, e)}
+                     hasError={validForm["phone"].hasError}
+                     errorText={validForm["phone"].errorMessage}
+                     placeholder="Téléphone"
+                     options={autocomplete["phone"] as Array<string>}
+                     onChange={e => onChange("phone", e)}
+                  />
+                  <TextComponent
+                     hasError={validForm["email"].hasError}
+                     errorText={validForm["email"].errorMessage}
+                     placeholder="Email"
+                     options={autocomplete["email"] as Array<string>}
+                     onChange={e => onChange("email", e)}
                   />
                </Grid>
-               <Grid item xs={6}>
-                  <TextComponent
-                     hasError={validForm["prenom"].hasError}
-                     errorText={validForm["prenom"].errorMessage}
-                     placeholder="Prénom"
-                     options={autocomplete["prenoms"] as Array<string>}
-                     onChange={e => onChange(prenom, e)}
-                  />
-               </Grid>
-            </Grid>
-
-            <TextComponent
-               hasError={validForm["gsm"].hasError}
-               errorText={validForm["gsm"].errorMessage}
-               placeholder="Téléphone"
-               options={autocomplete["gsms"] as Array<string>}
-               onChange={e => onChange(gsm, e)}
-            />
-
-            <TextComponent
-               hasError={validForm["email"].hasError}
-               errorText={validForm["email"].errorMessage}
-               placeholder="Email"
-               options={autocomplete["emails"] as Array<string>}
-               onChange={e => onChange(email, e)}
-            />
+            )}
          </Grid>
          <Grid item xs={12} style={{ padding: "25px" }}>
             <Grid container>
                <Grid item xs={6}>
-                  <TextareaAutosize
-                     rowsMax={4}
-                     rowsMin={4}
-                     style={{
-                        borderRadius: "5px",
-                        fontSize: "16px",
-                        backgroundColor: "#E7EAED",
-                        marginTop: "-25px",
-                        width: "90%",
-                     }}
-                     placeholder="Notes"
-                  />
+                  <TextBox placeholder="Notes" onChange={e => onChange("notes", e)} />
                </Grid>
                <Grid item xs={6}>
-                  <Button variant="contained" color="secondary" className={classes.submit}>
+                  <Button variant="contained" color="secondary" className={classes.submit} onClick={() => onSubmit()}>
                      RESERVER
                   </Button>
                </Grid>

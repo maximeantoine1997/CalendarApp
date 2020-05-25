@@ -86,12 +86,12 @@ const CalendarReservation: React.FC<CalendarReservationProps> = ({ reservation, 
             <Grid container alignItems="center">
                <Grid item xs={6}>
                   <Box textOverflow="ellipsis" overflow="hidden" fontSize="0.8em" paddingBottom="3px">
-                     {reservation.reservationNumber}
+                     {reservation.varyNumber}
                   </Box>
                </Grid>
-               <Grid item xs={reservation.reservationNumber ? 6 : 12}>
+               <Grid item xs={reservation.varyNumber ? 6 : 12}>
                   <Box textOverflow="ellipsis" overflow="hidden" fontSize="0.8em" paddingBottom="3px">
-                     {reservation.societe}
+                     {reservation.company}
                   </Box>
                </Grid>
             </Grid>
@@ -111,7 +111,7 @@ const CalendarReservation: React.FC<CalendarReservationProps> = ({ reservation, 
             <Grid container>
                <Grid item xs={12}>
                   <Box textOverflow="ellipsis" overflow="hidden" fontSize="0.8em" paddingBottom="3px">
-                     {reservation.address}
+                     {reservation.city}
                   </Box>
                </Grid>
             </Grid>

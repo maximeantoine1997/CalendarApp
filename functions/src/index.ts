@@ -24,23 +24,40 @@ export type ReservationType =
    | "Transport";
 
 export interface Reservation {
-   id?: string;
-   prenom: string;
-   nom: string;
-   societe: string;
-   modele: string;
-   accessoires: Array<string>;
-   gsm: string;
-   email: string;
-   address: string;
+   // Date:
    startDate: string;
    endDate?: string;
-   montant: number;
-   isBancontact: boolean;
+
+   // Caution:
+   amount: number;
    isReceived: boolean;
    isCash: boolean;
-   reservationNumber?: string;
+
+   // Machine:
+   modele: string;
+   accessoires: Array<string>;
+
+   // Chantier:
+   isToBeDelivered: boolean;
+   street: string;
+   postalCode: string;
+   city: string;
+   sitePhone: string;
+
+   // Client:
+   isCompany: boolean;
+   toSave: boolean;
+   company?: string;
+   firstname?: string;
+   lastname?: string;
+   phone?: string;
+   email?: string;
+
+   // Extra:
+   id?: string;
+   varyNumber?: string;
    type: ReservationType;
+   notes?: string;
 }
 
 export interface IHash {
@@ -84,14 +101,17 @@ const updateAutocompleteElement = (docName: string, items: Array<unknown>): void
 };
 
 app.put("/autocomplete", (req, res) => {
-   updateAutocompleteElement("prenoms", req.body.prenoms);
-   updateAutocompleteElement("noms", req.body.noms);
-   updateAutocompleteElement("societes", req.body.societes);
-   updateAutocompleteElement("modeles", req.body.modeles);
+   updateAutocompleteElement("firstname", req.body.firstname);
+   updateAutocompleteElement("lastname", req.body.lastname);
+   updateAutocompleteElement("company", req.body.company);
+   updateAutocompleteElement("modele", req.body.modele);
    updateAutocompleteElement("accessoires", req.body.accessoires);
-   updateAutocompleteElement("gsms", req.body.gsms);
-   updateAutocompleteElement("emails", req.body.emails);
-   updateAutocompleteElement("addresses", req.body.addresses);
+   updateAutocompleteElement("phone", req.body.phone);
+   updateAutocompleteElement("email", req.body.email);
+   updateAutocompleteElement("street", req.body.street);
+   updateAutocompleteElement("postalCode", req.body.postalCode);
+   updateAutocompleteElement("city", req.body.city);
+   updateAutocompleteElement("sitePhone", req.body.sitePhone);
    return res.status(200).send({ message: "Autocomplete was updated successfuly" });
 });
 
@@ -132,23 +152,40 @@ app.post("/reservation", (req, res) => {
    const reservationRef = admin.firestore().collection("reservations").doc();
 
    const newReservation: Reservation = {
-      prenom: req.body.prenom,
-      id: reservationRef.id,
-      nom: req.body.nom,
-      societe: req.body.societe,
-      modele: req.body.modele,
-      accessoires: req.body.accessoires,
-      gsm: req.body.gsm,
-      email: req.body.email,
-      address: req.body.address,
+      // Date:
       startDate: req.body.startDate,
       endDate: req.body.endDate || "",
-      montant: req.body.montant,
-      isBancontact: req.body.isBancontact,
+
+      // Caution:
+      amount: req.body.amount,
       isReceived: req.body.isReceived,
-      isCash: req.body.isReceived,
-      reservationNumber: req.body.reservationNumber || "",
+      isCash: req.body.isCash,
+
+      // Machine:
+      modele: req.body.modele,
+      accessoires: req.body.accessoires,
+
+      // Chantier:
+      isToBeDelivered: req.body.isToBeDelivered,
+      street: req.body.street,
+      postalCode: req.body.postalCode,
+      city: req.body.city,
+      sitePhone: req.body.sitePhone,
+
+      // Client:
+      isCompany: req.body.isCompany,
+      toSave: req.body.toSave,
+      company: req.body.company || "",
+      firstname: req.body.firstname || "",
+      lastname: req.body.lastname || "",
+      phone: req.body.phone || "",
+      email: req.body.email || "",
+
+      // Extra:
+      id: reservationRef.id,
+      varyNumber: req.body.varyNumber || "",
       type: req.body.type,
+      notes: req.body.notes || "",
    };
 
    reservationRef
@@ -164,23 +201,40 @@ app.post("/reservation", (req, res) => {
 
 app.put("/reservation", (req, res) => {
    const reservation: Reservation = {
-      prenom: req.body.prenom,
-      id: req.body.id,
-      nom: req.body.nom,
-      societe: req.body.societe,
-      modele: req.body.modele,
-      accessoires: req.body.accessoires,
-      gsm: req.body.gsm,
-      email: req.body.email,
-      address: req.body.address,
+      // Date:
       startDate: req.body.startDate,
       endDate: req.body.endDate || "",
-      montant: req.body.montant,
-      isBancontact: req.body.isBancontact,
+
+      // Caution:
+      amount: req.body.amount,
       isReceived: req.body.isReceived,
       isCash: req.body.isCash,
-      reservationNumber: req.body.reservationNumber || "",
+
+      // Machine:
+      modele: req.body.modele,
+      accessoires: req.body.accessoires,
+
+      // Chantier:
+      isToBeDelivered: req.body.isToBeDelivered,
+      street: req.body.street,
+      postalCode: req.body.postalCode,
+      city: req.body.city,
+      sitePhone: req.body.sitePhone,
+
+      // Client:
+      isCompany: req.body.isCompany,
+      toSave: req.body.toSave,
+      company: req.body.company || "",
+      firstname: req.body.firstname || "",
+      lastname: req.body.lastname || "",
+      phone: req.body.phone || "",
+      email: req.body.email || "",
+
+      // Extra:
+      id: req.body.id,
+      varyNumber: req.body.varyNumber || "",
       type: req.body.type,
+      notes: req.body.notes || "",
    };
    if (reservation.id) {
       return admin
