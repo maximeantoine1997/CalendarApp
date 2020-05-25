@@ -133,16 +133,6 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
                      <Grid item xs={12}>
                         <TextComponent
                            isReadOnly={isReadOnly}
-                           placeholder="Code Postal"
-                           onChange={e => onChange("postalCode", e)}
-                           value={reservation.current.postalCode}
-                           variant="standard"
-                           customClass={{ width: "90%" }}
-                        />
-                     </Grid>
-                     <Grid item xs={12}>
-                        <TextComponent
-                           isReadOnly={isReadOnly}
                            placeholder="Ville"
                            onChange={e => onChange("city", e)}
                            value={reservation.current.city}

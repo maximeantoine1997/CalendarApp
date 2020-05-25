@@ -40,7 +40,6 @@ export interface Reservation {
    // Chantier:
    isToBeDelivered: boolean;
    street: string;
-   postalCode: string;
    city: string;
    sitePhone: string;
 
@@ -109,7 +108,6 @@ app.put("/autocomplete", (req, res) => {
    updateAutocompleteElement("phone", req.body.phone);
    updateAutocompleteElement("email", req.body.email);
    updateAutocompleteElement("street", req.body.street);
-   updateAutocompleteElement("postalCode", req.body.postalCode);
    updateAutocompleteElement("city", req.body.city);
    updateAutocompleteElement("sitePhone", req.body.sitePhone);
    return res.status(200).send({ message: "Autocomplete was updated successfuly" });
@@ -168,7 +166,6 @@ app.post("/reservation", (req, res) => {
       // Chantier:
       isToBeDelivered: req.body.isToBeDelivered,
       street: req.body.street,
-      postalCode: req.body.postalCode,
       city: req.body.city,
       sitePhone: req.body.sitePhone,
 
@@ -187,6 +184,7 @@ app.post("/reservation", (req, res) => {
       type: req.body.type,
       notes: req.body.notes || "",
    };
+   console.log("new res is:", newReservation);
 
    reservationRef
       .set(newReservation)
@@ -217,7 +215,6 @@ app.put("/reservation", (req, res) => {
       // Chantier:
       isToBeDelivered: req.body.isToBeDelivered,
       street: req.body.street,
-      postalCode: req.body.postalCode,
       city: req.body.city,
       sitePhone: req.body.sitePhone,
 

@@ -8,7 +8,7 @@ import DoneIcon from "@material-ui/icons/Done";
 import LocalShippingIcon from "@material-ui/icons/LocalShipping";
 import PaymentIcon from "@material-ui/icons/Payment";
 import PersonIcon from "@material-ui/icons/Person";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import React, { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { addReservationAsync, getAutocompleteAsync, updateAutocompleteAsync } from "../Firebase/Firebase.Utils";
@@ -63,7 +63,6 @@ export type ReservationKeys =
    | "accessoires"
    | "isToBeDelivered"
    | "street"
-   | "postalCode"
    | "city"
    | "sitePhone"
    | "isCompany"
@@ -91,7 +90,6 @@ export interface Reservation {
    // Chantier:
    isToBeDelivered: boolean;
    street: string;
-   postalCode: string;
    city: string;
    sitePhone: string;
 
@@ -152,10 +150,6 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
          hasError: false,
          errorMessage: "",
       },
-      postalCode: {
-         hasError: false,
-         errorMessage: "",
-      },
       city: {
          hasError: false,
          errorMessage: "",
@@ -199,7 +193,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    };
 
    const newReservation = useRef<KVReservation>({
-      startDate: moment().format("YYYY-MM-DD"),
+      startDate: moment(),
       amount: 0,
       isCash: true,
       isReceived: false,
@@ -207,7 +201,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
       accessoires: [],
       isToBeDelivered: true,
       street: "",
-      postalCode: "",
+
       city: "",
       sitePhone: "",
       isCompany: true,
@@ -233,12 +227,14 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    const addReservation = async (): Promise<void> => {
       const res = newReservation.current;
 
+      const date = res.startDate as Moment;
+      res.startDate = date.clone().format("YYYY-MM-DD");
+
       if (!res.isToBeDelivered) {
          res.type = "Client Vient Chercher";
       }
 
       addAutocompleteItem("street", res.street);
-      addAutocompleteItem("postalCode", res.postalCode);
       addAutocompleteItem("city", res.city);
       addAutocompleteItem("sitePhone", res.sitePhone);
 
@@ -261,8 +257,13 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
 
       updateAutocompleteAsync(autocomplete);
 
-      await addReservationAsync({ ...newReservation.current });
-      history.push("/calendrier");
+      addReservationAsync({ ...res })
+         .then(() => {
+            history.push("/calendrier");
+         })
+         .catch(error => {
+            console.log(error);
+         });
    };
 
    /**
@@ -291,9 +292,6 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
       // Address
       if (res["street"]?.length < 1) {
          updateForm("street", true, "Rue non valide");
-      }
-      if (!res["postalCode"] || res["postalCode"]?.length < 1) {
-         updateForm("postalCode", true, "Code postal non valide");
       }
       if (res["city"]?.length < 1) {
          updateForm("city", true, "Ville non valide");
@@ -417,26 +415,16 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                onChange={e => onChange("street", e)}
                options={autocomplete["street"] as Array<string>}
             />
-            <Grid container>
-               <Grid item xs={4} style={{ paddingRight: "25px" }}>
-                  <TextComponent
-                     hasError={validForm["postalCode"].hasError}
-                     errorText={validForm["postalCode"].errorMessage}
-                     placeholder="Code Postal"
-                     onChange={e => onChange("postalCode", e)}
-                     options={autocomplete["postalCode"] as Array<string>}
-                  />
-               </Grid>
-               <Grid item xs={8}>
-                  <TextComponent
-                     hasError={validForm["city"].hasError}
-                     errorText={validForm["city"].errorMessage}
-                     placeholder="Ville"
-                     onChange={e => onChange("city", e)}
-                     options={autocomplete["city"] as Array<string>}
-                  />
-               </Grid>
+            <Grid item xs={12}>
+               <TextComponent
+                  hasError={validForm["city"].hasError}
+                  errorText={validForm["city"].errorMessage}
+                  placeholder="Ville"
+                  onChange={e => onChange("city", e)}
+                  options={autocomplete["city"] as Array<string>}
+               />
             </Grid>
+
             <TextComponent
                hasError={validForm["sitePhone"].hasError}
                errorText={validForm["sitePhone"].errorMessage}
