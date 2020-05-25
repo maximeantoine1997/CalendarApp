@@ -1,7 +1,5 @@
 import {
    Button,
-   Checkbox,
-   Chip,
    createStyles,
    Dialog,
    DialogActions,
@@ -11,12 +9,18 @@ import {
    makeStyles,
    Typography,
 } from "@material-ui/core";
-import React, { ReactElement, useRef, useState } from "react";
-import { updateReservationAsync } from "../../../Firebase/Firebase.Utils";
-import CheckBoxComponent from "../../FormElements/CheckboxComponent";
-import EuroComponent from "../../FormElements/EuroComponent";
+import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
+import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
+import ClearIcon from "@material-ui/icons/Clear";
+import DoneIcon from "@material-ui/icons/Done";
+import LocalShippingIcon from "@material-ui/icons/LocalShipping";
+import PaymentIcon from "@material-ui/icons/Payment";
+import React, { useRef, useState } from "react";
+import SquareButtons from "../../FormElements/SquareButton";
+import TextBox from "../../FormElements/TextBox";
 import TextComponent from "../../FormElements/TextComponent";
-import { Reservation } from "../../reservation_form";
+import { KVReservation, Reservation } from "../../reservation_form";
+import { updateReservationAsync } from "../../../Firebase/Firebase.Utils";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -45,314 +49,245 @@ interface CalendarModalProps {
 
 const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_, open, onClose: onClose_ }) => {
    const classes = useStyles();
+   const [isReadOnly, setIsReadOnly] = useState<boolean>(true);
+   const reservation = useRef<KVReservation>({ ...reservation_ });
 
-   const [editMode, setEditMode] = useState<boolean>(false);
+   const modifiedReservation = useRef<KVReservation>({ ...reservation_ });
 
-   const reservation = useRef<Reservation>(reservation_);
-
-   const editReservation = useRef<Reservation>(reservation_);
-
-   const updateReservation = (type: string, newValue: any) => {
-      const newReservation = { ...editReservation.current };
-
-      //! Add start date and end date changes
-      switch (type) {
-         case "accessoires":
-            newReservation.accessoires = newValue;
-            break;
-         case "address":
-            newReservation.address = newValue;
-            break;
-         case "email":
-            newReservation.email = newValue;
-            break;
-         case "gsm":
-            newReservation.gsm = newValue;
-            break;
-         case "isBancontact":
-            newReservation.isBancontact = newValue;
-            break;
-         case "isReceived":
-            newReservation.isReceived = newValue;
-            break;
-         case "modele":
-            newReservation.modele = newValue;
-            break;
-         case "montant":
-            newReservation.montant = newValue;
-            break;
-         case "nom":
-            newReservation.nom = newValue;
-            break;
-         case "prenom":
-            newReservation.prenom = newValue;
-            break;
-         case "reservationNumber":
-            newReservation.reservationNumber = newValue;
-            break;
-         case "societe":
-            newReservation.societe = newValue;
-            break;
-         case "type":
-            newReservation.type = newValue;
-            break;
-         default:
-            break;
-      }
-      editReservation.current = newReservation;
+   const onModify = () => {
+      modifiedReservation.current = { ...reservation.current };
+      setIsReadOnly(false);
    };
 
-   const updateReservationFirebase = (): void => {
-      reservation.current = { ...editReservation.current };
-      setEditMode(false);
-      updateReservationAsync(reservation.current);
+   const onCancel = () => {
+      setIsReadOnly(true);
    };
 
-   const toggleToEditMode = () => {
-      setEditMode(true);
-      editReservation.current = { ...reservation.current };
+   const onSave = () => {
+      reservation.current = { ...modifiedReservation.current };
+      setIsReadOnly(true);
+      updateReservationAsync({ ...modifiedReservation.current });
    };
 
-   const renderAccessoires: Array<ReactElement> = reservation.current.accessoires
-      ? reservation.current.accessoires.map((accessoire, index) => {
-           return <Chip label={accessoire} variant="outlined" color="secondary" size="medium" key={index} />;
-        })
-      : [];
-
-   if (editMode && editReservation.current) {
-      return (
-         <Dialog open={open} onClose={() => onClose_(reservation.current)} fullWidth maxWidth="lg" scroll="paper">
-            <DialogContent>
-               <Grid container className={classes.dialog} direction="row" justify="space-between">
-                  <Grid item xs={12}>
-                     <Typography style={{ fontSize: "1.5em", fontWeight: "bold" }} variant="h5">
-                        Machine:
-                     </Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                     <TextComponent
-                        placeholder="Machine"
-                        onChange={e => updateReservation("modele", e)}
-                        value={editReservation.current.modele}
-                        variant="standard"
-                        customClass={{ width: "75%" }}
-                     />
-                  </Grid>
-                  <Grid item xs={6}>
-                     <TextComponent
-                        placeholder="Accessoires"
-                        multiple
-                        onChange={e => updateReservation("accessoires", e)}
-                        value={editReservation.current.accessoires}
-                        variant="standard"
-                        customClass={{ width: "75%" }}
-                     />
-                  </Grid>
-                  <Grid item xs={12}>
-                     <Typography className={classes.title} variant="h5">
-                        Chantier:
-                     </Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                     <TextComponent
-                        placeholder="Societé"
-                        onChange={e => updateReservation("societe", e)}
-                        value={editReservation.current.societe}
-                        variant="standard"
-                        customClass={{ width: "75%" }}
-                     />
-                  </Grid>
-                  <Grid item xs={6}>
-                     <TextComponent
-                        placeholder="Addresse"
-                        onChange={e => updateReservation("address", e)}
-                        value={editReservation.current.address}
-                        variant="standard"
-                        customClass={{ width: "75%" }}
-                     />
-                  </Grid>
-                  <Grid item xs={12}>
-                     <Typography className={classes.title} variant="h5">
-                        Client:
-                     </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
-                     <TextComponent
-                        placeholder="Prenom"
-                        onChange={e => updateReservation("prenom", e)}
-                        value={editReservation.current.prenom}
-                        variant="standard"
-                        customClass={{ width: "75%" }}
-                     />
-                  </Grid>
-                  <Grid item xs={3}>
-                     <TextComponent
-                        placeholder="Nom"
-                        onChange={e => updateReservation("nom", e)}
-                        value={editReservation.current.nom}
-                        variant="standard"
-                        customClass={{ width: "75%" }}
-                     />
-                  </Grid>
-                  <Grid item xs={3}>
-                     <TextComponent
-                        placeholder="Telephone"
-                        onChange={e => updateReservation("gsm", e)}
-                        value={editReservation.current.gsm}
-                        variant="standard"
-                        customClass={{ width: "75%" }}
-                     />
-                  </Grid>
-                  <Grid item xs={3}>
-                     <TextComponent
-                        placeholder="Email"
-                        onChange={e => updateReservation("email", e)}
-                        value={editReservation.current.email}
-                        variant="standard"
-                        customClass={{ width: "75%" }}
-                     />
-                  </Grid>
-
-                  <Grid item xs={12}>
-                     <Typography className={classes.title} variant="h5">
-                        Info:
-                     </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
-                     <TextComponent
-                        placeholder="Dossier Vary"
-                        onChange={e => updateReservation("reservationNumber", e)}
-                        value={editReservation.current.reservationNumber}
-                        variant="standard"
-                        customClass={{ width: "75%" }}
-                     />
-                  </Grid>
-                  <Grid item xs={3}>
-                     <EuroComponent
-                        variant="standard"
-                        placeholder="Montant"
-                        value={editReservation.current.montant}
-                        onChange={e => updateReservation("montant", e)}
-                     />
-                  </Grid>
-                  <Grid item xs={3}>
-                     <CheckBoxComponent
-                        placeholder="Bancontact"
-                        value={editReservation.current.isBancontact}
-                        onChange={e => updateReservation("isBancontact", e)}
-                        color="secondary"
-                     />
-                  </Grid>
-                  <Grid item xs={3}>
-                     <CheckBoxComponent
-                        placeholder="Reçu"
-                        value={editReservation.current.isReceived}
-                        onChange={e => updateReservation("isReceived", e)}
-                        color="secondary"
-                     />
-                  </Grid>
-                  <Grid item xs={3}>
-                     <CheckBoxComponent
-                        placeholder="Cash"
-                        value={editReservation.current.isCash}
-                        onChange={e => updateReservation("isCash", e)}
-                        color="secondary"
-                     />
-                  </Grid>
-               </Grid>
-            </DialogContent>
-            <Divider />
-            <DialogActions>
-               <Button onClick={() => setEditMode(false)} variant="outlined" color="secondary">
-                  Retour
-               </Button>
-               <Button onClick={updateReservationFirebase} variant="outlined">
-                  Enregistrer
-               </Button>
-            </DialogActions>
-         </Dialog>
-      );
-   }
+   const onChange = (key: keyof Reservation, value: unknown) => {
+      const res = modifiedReservation.current;
+      res[key] = value;
+   };
 
    return (
       <Dialog open={open} onClose={() => onClose_(reservation.current)} fullWidth maxWidth="lg" scroll="paper">
          <DialogContent>
-            <Grid container className={classes.dialog}>
-               <Grid item xs={12}>
-                  <Typography style={{ fontSize: "1.5em", fontWeight: "bold" }} variant="h5">
-                     Machine:
-                  </Typography>
-               </Grid>
-               <Grid item xs={3}>
-                  <Typography className={classes.subtitle}>Machine:</Typography>
-                  <Typography>{reservation.current.modele}</Typography>
-               </Grid>
-               <Grid item xs={3}>
-                  <Typography className={classes.subtitle}>Accessoires:</Typography>
-                  {renderAccessoires}
-               </Grid>
-               <Grid item xs={12}>
-                  <Typography className={classes.title} variant="h5">
-                     Chantier:
-                  </Typography>
-               </Grid>
-               <Grid item xs={3}>
-                  <Typography className={classes.subtitle}>Societé:</Typography>
-                  <Typography>{reservation.current.societe}</Typography>
-               </Grid>
-               <Grid item xs={9}>
-                  <Typography className={classes.subtitle}>Adresse:</Typography>
-                  <Typography>{reservation.current.address}</Typography>
-               </Grid>
-               <Grid item xs={12}>
-                  <Typography className={classes.title} variant="h5">
-                     Client:
-                  </Typography>
-               </Grid>
-               <Grid item xs={3}>
-                  <Typography className={classes.subtitle}>Prénom:</Typography>
-                  <Typography>{reservation.current.prenom}</Typography>
-               </Grid>
-               <Grid item xs={3}>
-                  <Typography className={classes.subtitle}>Nom:</Typography>
-                  <Typography>{reservation.current.nom}</Typography>
-               </Grid>
-               <Grid item xs={3}>
-                  <Typography className={classes.subtitle}>Téléphone:</Typography>
-                  <Typography>{reservation.current.gsm}</Typography>
-               </Grid>
-               <Grid item xs={3}>
-                  <Typography className={classes.subtitle}>Email:</Typography>
-                  <Typography>{reservation.current.email}</Typography>
-               </Grid>
-               <Grid item xs={12}>
-                  <Typography className={classes.title} variant="h5">
-                     Info:
-                  </Typography>
-               </Grid>
-               <Grid item xs={3}>
-                  <Typography className={classes.subtitle}>Dossier Vary:</Typography>
-                  <Typography>{reservation.current.reservationNumber}</Typography>
-               </Grid>
-               <Grid item xs={3}>
-                  <Typography className={classes.subtitle}>Montant:</Typography>
-                  <Typography>€{reservation.current.montant}</Typography>
-               </Grid>
-               <Grid item xs={3}>
-                  <Typography className={classes.subtitle}>Bancontact:</Typography>
-                  <Checkbox checked={reservation.current.isBancontact} disableTouchRipple disableRipple />
-               </Grid>
-               <Grid item xs={3}>
-                  <Typography className={classes.subtitle}>Reçu:</Typography>
-                  <Checkbox checked={reservation.current.isReceived} disableTouchRipple disableRipple />
+            <Grid container>
+               <Grid container className={classes.dialog} direction="row" justify="space-between">
+                  <Grid item xs={4}>
+                     <Grid item xs={12}>
+                        <Typography style={{ fontSize: "1.5em", fontWeight: "bold" }} variant="h5">
+                           Machine:
+                        </Typography>
+                     </Grid>
+                     <Grid item xs={12}>
+                        <TextComponent
+                           isReadOnly={isReadOnly}
+                           placeholder="Machine"
+                           onChange={e => onChange("modele", e)}
+                           value={reservation.current.modele}
+                           variant="standard"
+                           customClass={{ width: "90%" }}
+                        />
+                     </Grid>
+                     <Grid item xs={12}>
+                        <TextComponent
+                           isReadOnly={isReadOnly}
+                           placeholder="Accessoires"
+                           multiple
+                           onChange={e => onChange("accessoires", e)}
+                           value={reservation.current.accessoires}
+                           variant="standard"
+                           customClass={{ width: "90%" }}
+                        />
+                     </Grid>
+                  </Grid>
+                  <Grid item xs={4}>
+                     <Grid item xs={12}>
+                        <Typography variant="h5">Chantier:</Typography>
+                     </Grid>
+                     <SquareButtons
+                        iconLeft={<LocalShippingIcon />}
+                        iconRight={<ArrowDownwardIcon />}
+                        labelLeft="A Livrer"
+                        labelRight="Vient Chercher"
+                        value={reservation.current["isToBeDelivered"] as boolean}
+                        onClick={value => onChange("isToBeDelivered", value)}
+                        isReadOnly={isReadOnly}
+                     />
+                     <Grid item xs={12}>
+                        <TextComponent
+                           isReadOnly={isReadOnly}
+                           placeholder="Rue"
+                           onChange={e => onChange("street", e)}
+                           value={reservation.current.street}
+                           variant="standard"
+                           customClass={{ width: "90%" }}
+                        />
+                     </Grid>
+                     <Grid item xs={12}>
+                        <TextComponent
+                           isReadOnly={isReadOnly}
+                           placeholder="Code Postal"
+                           onChange={e => onChange("postalCode", e)}
+                           value={reservation.current.postalCode}
+                           variant="standard"
+                           customClass={{ width: "90%" }}
+                        />
+                     </Grid>
+                     <Grid item xs={12}>
+                        <TextComponent
+                           isReadOnly={isReadOnly}
+                           placeholder="Ville"
+                           onChange={e => onChange("city", e)}
+                           value={reservation.current.city}
+                           variant="standard"
+                           customClass={{ width: "90%" }}
+                        />
+                     </Grid>
+                  </Grid>
+                  <Grid item xs={4}>
+                     <Grid item xs={12}>
+                        <Typography variant="h5">Client:</Typography>
+                     </Grid>
+                     <Grid item xs={12}>
+                        <TextComponent
+                           isReadOnly={isReadOnly}
+                           placeholder="Société"
+                           onChange={e => onChange("company", e)}
+                           value={reservation.current.company}
+                           variant="standard"
+                           customClass={{ width: "90%" }}
+                        />
+                     </Grid>
+                     <Grid item xs={12}>
+                        <TextComponent
+                           isReadOnly={isReadOnly}
+                           placeholder="Prenom"
+                           onChange={e => onChange("firstname", e)}
+                           value={reservation.current.firstname}
+                           variant="standard"
+                           customClass={{ width: "90%" }}
+                        />
+                     </Grid>
+                     <Grid item xs={12}>
+                        <TextComponent
+                           isReadOnly={isReadOnly}
+                           placeholder="Nom"
+                           onChange={e => onChange("lastname", e)}
+                           value={reservation.current.lastname}
+                           variant="standard"
+                           customClass={{ width: "90%" }}
+                        />
+                     </Grid>
+                     <Grid item xs={12}>
+                        <TextComponent
+                           isReadOnly={isReadOnly}
+                           placeholder="Telephone"
+                           onChange={e => onChange("phone", e)}
+                           value={reservation.current.phone}
+                           variant="standard"
+                           customClass={{ width: "90%" }}
+                        />
+                     </Grid>
+                     <Grid item xs={12}>
+                        <TextComponent
+                           isReadOnly={isReadOnly}
+                           placeholder="Email"
+                           onChange={e => onChange("email", e)}
+                           value={reservation.current.email}
+                           variant="standard"
+                           customClass={{ width: "90%" }}
+                        />
+                     </Grid>
+                  </Grid>
+                  <Grid item xs={4}>
+                     <Grid item xs={12}>
+                        <Typography variant="h5">Info:</Typography>
+                     </Grid>
+                     <Grid item xs={12}>
+                        <TextComponent
+                           isReadOnly={isReadOnly}
+                           placeholder="Dossier Vary"
+                           onChange={e => onChange("varyNumber", e)}
+                           value={reservation.current.varyNumber}
+                           variant="standard"
+                           customClass={{ width: "90%" }}
+                        />
+                     </Grid>
+                     <Grid item xs={12}>
+                        <TextBox
+                           isReadOnly={isReadOnly}
+                           placeholder="Notes"
+                           onChange={e => onChange("notes", e)}
+                           value={reservation.current.notes}
+                           variant="white"
+                        />
+                     </Grid>
+                  </Grid>
+                  <Grid item xs={4}>
+                     <Grid item xs={12}>
+                        <Typography variant="h5">Caution:</Typography>
+                     </Grid>
+                     <Grid item xs={12}>
+                        <TextComponent
+                           isReadOnly={isReadOnly}
+                           variant="standard"
+                           placeholder="Montant"
+                           value={reservation.current.amount}
+                           onChange={e => onChange("amount", e)}
+                           customClass={{ width: "90%" }}
+                        />
+                     </Grid>
+                     <Grid item xs={12} style={{ paddingTop: isReadOnly ? "10px" : "0px" }}>
+                        <SquareButtons
+                           iconLeft={<AttachMoneyIcon />}
+                           iconRight={<PaymentIcon />}
+                           labelLeft="Cash"
+                           labelRight="Bancontact"
+                           value={reservation.current["isCash"] as boolean}
+                           onClick={value => onChange("isCash", value)}
+                           isReadOnly={isReadOnly}
+                        />
+                     </Grid>
+                     <Grid item xs={12} style={{ paddingTop: isReadOnly ? "20px" : "0px" }}>
+                        <SquareButtons
+                           iconLeft={<DoneIcon />}
+                           iconRight={<ClearIcon />}
+                           labelLeft="Reçu"
+                           labelRight="Pas Reçu"
+                           value={reservation.current["isReceived"] as boolean}
+                           onClick={value => onChange("isReceived", value)}
+                           isReadOnly={isReadOnly}
+                        />
+                     </Grid>
+                  </Grid>
+                  <Grid item xs={4}></Grid>
                </Grid>
             </Grid>
          </DialogContent>
          <Divider />
          <DialogActions>
-            <Button onClick={toggleToEditMode} variant="outlined" color="secondary">
-               Modifier
-            </Button>
+            {isReadOnly && (
+               <Button onClick={onModify} variant="outlined" color="secondary">
+                  Modifier
+               </Button>
+            )}
+            {!isReadOnly && (
+               <>
+                  <Button onClick={onCancel} variant="outlined" color="secondary">
+                     Retour
+                  </Button>
+                  <Button onClick={onSave} variant="outlined">
+                     Enregistrer
+                  </Button>
+               </>
+            )}
          </DialogActions>
       </Dialog>
    );
