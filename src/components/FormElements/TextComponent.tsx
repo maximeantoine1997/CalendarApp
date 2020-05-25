@@ -1,4 +1,4 @@
-import { createStyles, makeStyles, Typography } from "@material-ui/core";
+import { createStyles, makeStyles, Typography, Grid } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import React, { FunctionComponent, ReactElement, useState } from "react";
@@ -28,6 +28,7 @@ interface TextProps {
    customClass?: any;
    value?: any;
    variant?: "filled" | "outlined" | "standard";
+   isReadOnly?: boolean;
 }
 
 const TextComponent: FunctionComponent<TextProps> = ({
@@ -40,6 +41,7 @@ const TextComponent: FunctionComponent<TextProps> = ({
    customClass,
    value = multiple ? [] : "",
    variant = "outlined",
+   isReadOnly = false,
 }): ReactElement => {
    const classes = useStyles();
 
@@ -59,6 +61,37 @@ const TextComponent: FunctionComponent<TextProps> = ({
          setMultipleValue(value);
       }
    };
+
+   if (isReadOnly) {
+      if (value) {
+         if (multiple) {
+            return (
+               <Grid container style={{ paddingTop: "25px" }}>
+                  <Grid item xs={12}>
+                     <Typography style={{ fontWeight: "bold" }}>{placeholder.toUpperCase()}</Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                     {value.map((val: string) => {
+                        return <Typography>{val}</Typography>;
+                     })}
+                  </Grid>
+               </Grid>
+            );
+         }
+         return (
+            <Grid container style={{ paddingTop: "25px" }}>
+               <Grid item xs={12}>
+                  <Typography style={{ fontWeight: "bold" }}>{placeholder.toUpperCase()}</Typography>
+               </Grid>
+               <Grid item xs={12}>
+                  <Typography>{value}</Typography>
+               </Grid>
+            </Grid>
+         );
+      }
+
+      return <></>;
+   }
 
    return (
       <>
