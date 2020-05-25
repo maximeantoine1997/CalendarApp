@@ -25,6 +25,8 @@ interface SquareButtonProps {
    onClick: (value: boolean) => void;
 
    value: boolean;
+
+   isReadOnly?: boolean;
 }
 
 const SquareButtons: React.FunctionComponent<SquareButtonProps> = ({
@@ -34,6 +36,7 @@ const SquareButtons: React.FunctionComponent<SquareButtonProps> = ({
    labelRight,
    onClick: onClick_,
    value,
+   isReadOnly = false,
 }) => {
    const [isActive, setIsActive] = useState<boolean>(value);
 
@@ -45,6 +48,20 @@ const SquareButtons: React.FunctionComponent<SquareButtonProps> = ({
          setIsActive(newIsActive);
       }
    };
+   if (isReadOnly) {
+      return (
+         <Button variant="outlined" color="secondary" style={{ fontSize: "14px" }} disableRipple disableTouchRipple>
+            <Grid container justify="center">
+               <Grid item xs={12}>
+                  {isActive ? iconLeft : iconRight}
+               </Grid>
+               <Grid item xs={12}>
+                  {isActive ? labelLeft : labelRight}
+               </Grid>
+            </Grid>
+         </Button>
+      );
+   }
    return (
       <Grid container justify="flex-start" style={{ paddingTop: "10px", paddingBottom: "10px" }}>
          <Button
