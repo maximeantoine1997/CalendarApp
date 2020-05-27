@@ -66,7 +66,12 @@ const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day }) => {
 
    return (
       <Grid container className={classes.calendar} direction="row" alignContent="flex-start" justify="center">
-         <Grid item style={{ color: day.isSame(moment(), "date") ? "red" : "black" }} className={classes.date}>
+         <Grid
+            item
+            style={{ color: day.isSame(moment(), "date") ? "red" : "black" }}
+            className={classes.date}
+            onDoubleClick={() => (window.location.href = `/reservation?date=${day.format("YYYY-MM-DD")}`)}
+         >
             {dayName}
             <br />
             <Box className={classes.dateNumber}>{dayDate}</Box>

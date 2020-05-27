@@ -192,8 +192,10 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
       },
    };
 
+   const param = new URLSearchParams(window.location.search);
+
    const newReservation = useRef<KVReservation>({
-      startDate: moment(),
+      startDate: param.get("date") ? moment(param.get("date") as string) : moment(),
       amount: 0,
       isCash: true,
       isReceived: false,
@@ -349,7 +351,11 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
       <Grid container alignContent="flex-start">
          <Grid item xs={4} style={{ padding: "25px" }}>
             <Typography variant="h4">Date:</Typography>
-            <DateComponent placeholder="Début" onChange={(e: any) => onChange("startDate", e)} />
+            <DateComponent
+               placeholder="Début"
+               onChange={(e: any) => onChange("startDate", e)}
+               value={newReservation.current.startDate}
+            />
             <SquareButtons
                iconLeft={<DoneIcon />}
                iconRight={<ClearIcon />}
