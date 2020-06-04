@@ -29,6 +29,7 @@ interface TextProps {
    value?: any;
    variant?: "filled" | "outlined" | "standard";
    isReadOnly?: boolean;
+   isRequired?: boolean;
 }
 
 const TextComponent: FunctionComponent<TextProps> = ({
@@ -42,6 +43,7 @@ const TextComponent: FunctionComponent<TextProps> = ({
    value = multiple ? [] : "",
    variant = "outlined",
    isReadOnly = false,
+   isRequired = false,
 }): ReactElement => {
    const classes = useStyles();
 
@@ -108,7 +110,7 @@ const TextComponent: FunctionComponent<TextProps> = ({
                <TextField
                   error={hasError}
                   {...params}
-                  label={placeholder}
+                  label={isRequired ? `${placeholder} *` : placeholder}
                   fullWidth
                   margin="normal"
                   variant={variant}
