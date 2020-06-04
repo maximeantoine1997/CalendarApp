@@ -268,13 +268,10 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
 
       updateAutocompleteAsync(autocomplete);
 
-      addReservationAsync({ ...res })
-         .then(() => {
-            history.push("/calendrier");
-         })
-         .catch(error => {
-            console.log(error);
-         });
+      addReservationAsync({ ...res }).catch(error => {
+         console.log(error);
+      });
+      history.push("/calendrier");
    };
 
    /**
