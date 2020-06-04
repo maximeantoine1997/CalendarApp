@@ -263,8 +263,8 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
          addAutocompleteItem("facturationAddress", res.name);
       }
 
-      addAutocompleteItem("phone", res.phone);
-      addAutocompleteItem("email", res.email);
+      if (res.phone) addAutocompleteItem("phone", res.phone);
+      if (res.email) addAutocompleteItem("email", res.email);
 
       updateAutocompleteAsync(autocomplete);
 
