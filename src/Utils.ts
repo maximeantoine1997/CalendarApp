@@ -42,7 +42,7 @@ export const typeColors: Record<ReservationType, string> = {
    "Doit Confirmer": "#FECB6F",
    "Livraison par Transporteur": "#33BAB1",
    "Livré / Venu Chercher": "#910A19",
-   "Rendez-vous": "#FFF13A",
+   "Rendez-vous": "#FECB6F",
    "Retour": "#1C6367",
    "Transport": "#E48BB5",
 };
