@@ -47,8 +47,9 @@ export interface Reservation {
    isCompany: boolean;
    toSave: boolean;
    company?: string;
-   firstname?: string;
-   lastname?: string;
+   name: string;
+   facturationAddress?: string;
+   VATNumber?: string;
    phone?: string;
    email?: string;
 
@@ -118,7 +119,7 @@ app.put("/autocomplete", (req, res) => {
 app.get("/reservations", (req, res) => {
    const date: string = req.query.date as string;
    const day = moment(date);
-   let reservationsRef = admin.firestore().collection("reservations");
+   const reservationsRef = admin.firestore().collection("reservations");
 
    const getWeekDays = (): Array<string> => {
       const days: Array<string> = [];
@@ -155,7 +156,7 @@ app.post("/reservation", (req, res) => {
       endDate: req.body.endDate || "",
 
       // Caution:
-      amount: req.body.amount,
+      amount: req.body.amount || 0,
       isReceived: req.body.isReceived,
       isCash: req.body.isCash,
 
@@ -173,8 +174,9 @@ app.post("/reservation", (req, res) => {
       isCompany: req.body.isCompany,
       toSave: req.body.toSave,
       company: req.body.company || "",
-      firstname: req.body.firstname || "",
-      lastname: req.body.lastname || "",
+      name: req.body.name,
+      facturationAddress: req.body.facturationAddress || "",
+      VATNumber: req.body.VATNumber || "",
       phone: req.body.phone || "",
       email: req.body.email || "",
 
@@ -222,8 +224,9 @@ app.put("/reservation", (req, res) => {
       isCompany: req.body.isCompany,
       toSave: req.body.toSave,
       company: req.body.company || "",
-      firstname: req.body.firstname || "",
-      lastname: req.body.lastname || "",
+      name: req.body.name,
+      facturationAddress: req.body.facturationAddress || "",
+      VATNumber: req.body.VATNumber || "",
       phone: req.body.phone || "",
       email: req.body.email || "",
 

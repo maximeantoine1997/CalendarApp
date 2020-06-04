@@ -159,8 +159,8 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
                         <TextComponent
                            isReadOnly={isReadOnly}
                            placeholder="Prenom"
-                           onChange={e => onChange("firstname", e)}
-                           value={reservation.current.firstname}
+                           onChange={e => onChange("name", e)}
+                           value={reservation.current.name}
                            variant="standard"
                            customClass={{ width: "90%" }}
                         />
@@ -169,8 +169,8 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
                         <TextComponent
                            isReadOnly={isReadOnly}
                            placeholder="Nom"
-                           onChange={e => onChange("lastname", e)}
-                           value={reservation.current.lastname}
+                           onChange={e => onChange("name", e)}
+                           value={reservation.current.name}
                            variant="standard"
                            customClass={{ width: "90%" }}
                         />
