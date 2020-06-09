@@ -32,7 +32,7 @@ const DateComponent: FunctionComponent<DateProps> = ({
       return (
          <Grid container style={{ paddingTop: "10px" }}>
             <Grid item xs={12}>
-               <Typography style={{ fontWeight: "bold" }}>{placeholder.toUpperCase()}</Typography>
+               <Typography style={{ color: "#7C7B77" }}>{placeholder}:</Typography>
             </Grid>
             <Grid item xs={12}>
                <Typography>{moment(value).format("DD/MM/YYYY")}</Typography>

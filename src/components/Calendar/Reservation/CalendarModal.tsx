@@ -104,10 +104,10 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
       <Dialog open={open} onClose={() => onClose_(reservation.current)} fullWidth maxWidth="lg" scroll="paper">
          <DialogContent>
             <Grid container>
-               <Grid container className={classes.dialog} direction="row" justify="space-between">
+               <Grid container className={classes.dialog} direction="row" justify="center" alignContent="flex-start">
                   <Grid item xs={4}>
                      <Grid item xs={12}>
-                        <Typography style={{ fontSize: "1.5em", fontWeight: "bold" }} variant="h5">
+                        <Typography style={{ fontSize: "1.3em", fontWeight: "bold" }} variant="h5">
                            Date:
                         </Typography>
                      </Grid>
@@ -120,7 +120,7 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
                         />
                      </Grid>
                      <Grid item xs={12}>
-                        <Typography style={{ fontSize: "1.5em", fontWeight: "bold", paddingTop: "10px" }} variant="h5">
+                        <Typography style={{ fontSize: "1.3em", fontWeight: "bold", paddingTop: "10px" }} variant="h5">
                            Machine:
                         </Typography>
                      </Grid>
@@ -148,7 +148,7 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
                   </Grid>
                   <Grid item xs={4}>
                      <Grid item xs={12}>
-                        <Typography style={{ fontSize: "1.5em", fontWeight: "bold" }} variant="h5">
+                        <Typography style={{ fontSize: "1.3em", fontWeight: "bold" }} variant="h5">
                            Chantier:
                         </Typography>
                      </Grid>
@@ -184,7 +184,7 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
                   </Grid>
                   <Grid item xs={4}>
                      <Grid item xs={12}>
-                        <Typography style={{ fontSize: "1.5em", fontWeight: "bold" }} variant="h5">
+                        <Typography style={{ fontSize: "1.3em", fontWeight: "bold" }} variant="h5">
                            Client:
                         </Typography>
                      </Grid>
@@ -194,16 +194,6 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
                            placeholder="Société"
                            onChange={e => onChange("company", e)}
                            value={reservation.current.company}
-                           variant="standard"
-                           customClass={{ width: "90%" }}
-                        />
-                     </Grid>
-                     <Grid item xs={12}>
-                        <TextComponent
-                           isReadOnly={isReadOnly}
-                           placeholder="Prenom"
-                           onChange={e => onChange("name", e)}
-                           value={reservation.current.name}
                            variant="standard"
                            customClass={{ width: "90%" }}
                         />
@@ -241,7 +231,7 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
                   </Grid>
                   <Grid item xs={4}>
                      <Grid item xs={12}>
-                        <Typography style={{ fontSize: "1.5em", fontWeight: "bold", paddingTop: "10px" }} variant="h5">
+                        <Typography style={{ fontSize: "1.3em", fontWeight: "bold", paddingTop: "10px" }} variant="h5">
                            Info:
                         </Typography>
                      </Grid>
@@ -267,7 +257,7 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
                   </Grid>
                   <Grid item xs={4}>
                      <Grid item xs={12}>
-                        <Typography style={{ fontSize: "1.5em", fontWeight: "bold", paddingTop: "10px" }} variant="h5">
+                        <Typography style={{ fontSize: "1.3em", fontWeight: "bold", paddingTop: "10px" }} variant="h5">
                            Caution:
                         </Typography>
                      </Grid>

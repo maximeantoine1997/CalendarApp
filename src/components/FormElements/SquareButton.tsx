@@ -50,7 +50,13 @@ const SquareButtons: React.FunctionComponent<SquareButtonProps> = ({
    };
    if (isReadOnly) {
       return (
-         <Button variant="outlined" color="secondary" style={{ fontSize: "14px" }} disableRipple disableTouchRipple>
+         <Button
+            variant="outlined"
+            color="secondary"
+            style={{ fontSize: "14px", marginTop: "10px" }}
+            disableRipple
+            disableTouchRipple
+         >
             <Grid container justify="center">
                {/* <Grid item xs={12}>
                   {isActive ? iconLeft : iconRight}

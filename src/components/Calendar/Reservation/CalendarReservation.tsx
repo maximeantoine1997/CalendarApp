@@ -91,7 +91,7 @@ const CalendarReservation: React.FC<CalendarReservationProps> = ({ reservation, 
                </Grid>
                <Grid item xs={reservation.varyNumber ? 6 : 12}>
                   <Box textOverflow="ellipsis" overflow="hidden" fontSize="0.8em" paddingBottom="3px">
-                     {reservation.company}
+                     {reservation.company || reservation.name}
                   </Box>
                </Grid>
             </Grid>

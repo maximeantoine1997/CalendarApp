@@ -70,7 +70,7 @@ const TextComponent: FunctionComponent<TextProps> = ({
             return (
                <Grid container style={{ paddingTop: "25px" }}>
                   <Grid item xs={12}>
-                     <Typography style={{ fontWeight: "bold" }}>{placeholder.toUpperCase()}</Typography>
+                     <Typography style={{ color: "#7C7B77" }}>{placeholder}:</Typography>
                   </Grid>
                   <Grid item xs={12}>
                      {value.map((val: string) => {
@@ -83,7 +83,7 @@ const TextComponent: FunctionComponent<TextProps> = ({
          return (
             <Grid container style={{ paddingTop: "10px" }}>
                <Grid item xs={12}>
-                  <Typography style={{ fontWeight: "bold" }}>{placeholder.toUpperCase()}</Typography>
+                  <Typography style={{ color: "#7C7B77" }}>{placeholder}:</Typography>
                </Grid>
                <Grid item xs={12}>
                   <Typography>{value}</Typography>
