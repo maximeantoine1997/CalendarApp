@@ -8,7 +8,7 @@ export const checkIfConnected = (user: Optional<Nullable<firebase.User>>, path: 
    return path;
 };
 
-export interface IHash<T> {
+export interface HashMap<T> {
    [key: string]: Array<T>;
 }
 

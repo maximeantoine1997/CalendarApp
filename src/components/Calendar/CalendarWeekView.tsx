@@ -4,7 +4,7 @@ import { useSnackbar } from "notistack";
 import React, { useEffect } from "react";
 import useDateContext from "../../Contexts/DateContext";
 import { getReservationsAsync } from "../../Firebase/Firebase.Utils";
-import { IHash } from "../../Utils";
+import { HashMap } from "../../Utils";
 import { Reservation } from "../reservation_form";
 import CalendarWeekTab from "./CalendarWeekTab";
 
@@ -17,7 +17,7 @@ const CalendarWeekView: React.FC = () => {
          enqueueSnackbar("Chargement...");
          const newReservations: Array<Reservation> = await getReservationsAsync(date.format("YYYY-MM-DD"));
          console.log("reservations are: ", newReservations);
-         const hash: IHash<Reservation> = {};
+         const hash: HashMap<Reservation> = {};
          newReservations.forEach(reservation => {
             const start = reservation.startDate;
 

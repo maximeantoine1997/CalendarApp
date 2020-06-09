@@ -3,7 +3,7 @@ import * as firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
 import { Reservation } from "./../components/reservation_form";
-import { IHash } from "../Utils";
+import { HashMap } from "../Utils";
 
 const api = "https://europe-west1-antoinesprl-calendrier.cloudfunctions.net/api";
 
@@ -53,7 +53,7 @@ export const signInUserAsync = async (email: string, password: string): Promise<
 
 // Autocomplete
 
-export const getAutocompleteAsync = async (): Promise<IHash<unknown>> => {
+export const getAutocompleteAsync = async (): Promise<HashMap<unknown>> => {
    return Axios.get(`${api}/autocomplete`)
       .then(response => {
          const data = response.data;
@@ -66,7 +66,7 @@ export const getAutocompleteAsync = async (): Promise<IHash<unknown>> => {
       });
 };
 
-export const updateAutocompleteAsync = async (hash: IHash<unknown>): Promise<void> => {
+export const updateAutocompleteAsync = async (hash: HashMap<unknown>): Promise<void> => {
    console.log({ ...hash });
    Axios.put(`${api}/autocomplete`, { ...hash }, { method: "PUT" }).then(response => {
       console.log(response.data);
