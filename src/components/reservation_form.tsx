@@ -11,7 +11,7 @@ import moment, { Moment } from "moment";
 import React, { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { addReservationAsync, getAutocompleteAsync, updateAutocompleteAsync } from "../Firebase/Firebase.Utils";
-import { IHash, ReservationType } from "../Utils";
+import { HashMap, ReservationType } from "../Utils";
 import DateComponent from "./FormElements/DateComponent";
 import SquareButtons from "./FormElements/SquareButton";
 import TextBox from "./FormElements/TextBox";
@@ -224,7 +224,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    const [validForm, setValidForm] = useState<ValidReservation>({ ...initValidForm });
    const [hasEndDate, setHasEndDate] = useState<boolean>(false);
    const [isCompany, setIsCompany] = useState<boolean>(true);
-   const [autocomplete, setAutocomplete] = useState<IHash<unknown>>({});
+   const [autocomplete, setAutocomplete] = useState<HashMap<unknown>>({});
 
    const onChange = (key: keyof Reservation, value: unknown) => {
       const res = newReservation.current;
