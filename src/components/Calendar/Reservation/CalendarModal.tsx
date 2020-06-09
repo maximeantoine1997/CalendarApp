@@ -21,6 +21,8 @@ import TextBox from "../../FormElements/TextBox";
 import TextComponent from "../../FormElements/TextComponent";
 import { KVReservation, Reservation } from "../../reservation_form";
 import { updateReservationAsync } from "../../../Firebase/Firebase.Utils";
+import DateComponent from "../../FormElements/DateComponent";
+import useDateContext from "../../../Contexts/DateContext";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -51,6 +53,7 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
    const classes = useStyles();
    const [isReadOnly, setIsReadOnly] = useState<boolean>(true);
    const reservation = useRef<KVReservation>({ ...reservation_ });
+   const { setReservations, reservations } = useDateContext();
 
    const modifiedReservation = useRef<KVReservation>({ ...reservation_ });
 
@@ -64,6 +67,29 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
    };
 
    const onSave = () => {
+      const startDate = reservation.current.startDate;
+
+      if (typeof modifiedReservation.current.startDate !== "string") {
+         modifiedReservation.current.startDate = modifiedReservation.current.startDate.format("YYYY-MM-DD");
+      }
+
+      const currentDate = modifiedReservation.current.startDate;
+
+      if (startDate !== currentDate) {
+         const old = { ...reservations };
+         const start = old[startDate];
+         const current = old[currentDate] || [];
+
+         const index = start.findIndex(res => res.id === reservation.current.id);
+         if (index > -1) {
+            start.splice(index, 1);
+         }
+         current.push({ ...modifiedReservation.current });
+         old[startDate] = start;
+         old[currentDate] = current;
+
+         setReservations(old);
+      }
       reservation.current = { ...modifiedReservation.current };
       setIsReadOnly(true);
       updateReservationAsync({ ...modifiedReservation.current });
@@ -82,6 +108,19 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
                   <Grid item xs={4}>
                      <Grid item xs={12}>
                         <Typography style={{ fontSize: "1.5em", fontWeight: "bold" }} variant="h5">
+                           Date:
+                        </Typography>
+                     </Grid>
+                     <Grid item xs={12}>
+                        <DateComponent
+                           isReadOnly={isReadOnly}
+                           placeholder="Début"
+                           onChange={(e: any) => onChange("startDate", e)}
+                           value={reservation.current.startDate}
+                        />
+                     </Grid>
+                     <Grid item xs={12}>
+                        <Typography style={{ fontSize: "1.5em", fontWeight: "bold", paddingTop: "10px" }} variant="h5">
                            Machine:
                         </Typography>
                      </Grid>
@@ -109,7 +148,9 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
                   </Grid>
                   <Grid item xs={4}>
                      <Grid item xs={12}>
-                        <Typography variant="h5">Chantier:</Typography>
+                        <Typography style={{ fontSize: "1.5em", fontWeight: "bold" }} variant="h5">
+                           Chantier:
+                        </Typography>
                      </Grid>
                      <SquareButtons
                         iconLeft={<LocalShippingIcon />}
@@ -143,7 +184,9 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
                   </Grid>
                   <Grid item xs={4}>
                      <Grid item xs={12}>
-                        <Typography variant="h5">Client:</Typography>
+                        <Typography style={{ fontSize: "1.5em", fontWeight: "bold" }} variant="h5">
+                           Client:
+                        </Typography>
                      </Grid>
                      <Grid item xs={12}>
                         <TextComponent
@@ -198,7 +241,9 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
                   </Grid>
                   <Grid item xs={4}>
                      <Grid item xs={12}>
-                        <Typography variant="h5">Info:</Typography>
+                        <Typography style={{ fontSize: "1.5em", fontWeight: "bold", paddingTop: "10px" }} variant="h5">
+                           Info:
+                        </Typography>
                      </Grid>
                      <Grid item xs={12}>
                         <TextComponent
@@ -222,7 +267,9 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
                   </Grid>
                   <Grid item xs={4}>
                      <Grid item xs={12}>
-                        <Typography variant="h5">Caution:</Typography>
+                        <Typography style={{ fontSize: "1.5em", fontWeight: "bold", paddingTop: "10px" }} variant="h5">
+                           Caution:
+                        </Typography>
                      </Grid>
                      <Grid item xs={12}>
                         <TextComponent
