@@ -52,9 +52,9 @@ const SquareButtons: React.FunctionComponent<SquareButtonProps> = ({
       return (
          <Button variant="outlined" color="secondary" style={{ fontSize: "14px" }} disableRipple disableTouchRipple>
             <Grid container justify="center">
-               <Grid item xs={12}>
+               {/* <Grid item xs={12}>
                   {isActive ? iconLeft : iconRight}
-               </Grid>
+               </Grid> */}
                <Grid item xs={12}>
                   {isActive ? labelLeft : labelRight}
                </Grid>
