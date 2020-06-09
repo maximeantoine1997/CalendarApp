@@ -1,14 +1,14 @@
 import moment, { Moment } from "moment";
 import React, { createContext, ReactElement, ReactNode, useContext, useState } from "react";
-import { IHash, CalendarType } from "../Utils";
+import { HashMap, CalendarType } from "../Utils";
 import { Reservation } from "../components/reservation_form";
 
 interface IDateContext {
    date: Moment;
    setDate: React.Dispatch<React.SetStateAction<Moment>>;
-   reservations: IHash<Reservation>;
+   reservations: HashMap<Reservation>;
    updateReservations: (date: string, newReservations: Array<Reservation>) => void;
-   setReservations: React.Dispatch<React.SetStateAction<IHash<Reservation>>>;
+   setReservations: React.Dispatch<React.SetStateAction<HashMap<Reservation>>>;
    calendarType: CalendarType;
    setCalendarType: React.Dispatch<React.SetStateAction<CalendarType>>;
 }
@@ -26,7 +26,7 @@ export const DateContext = createContext<IDateContext>({
 export const DateContextProvider = (props: { children: ReactNode }): ReactElement => {
    const [date, setDate] = useState<Moment>(moment());
    const [calendarType, setCalendarType] = useState<CalendarType>("general");
-   const [reservations, setReservations] = useState<IHash<Reservation>>({});
+   const [reservations, setReservations] = useState<HashMap<Reservation>>({});
 
    const updateReservations = (date: string, newReservations: Array<Reservation>) => {
       const newHash = { ...reservations };
