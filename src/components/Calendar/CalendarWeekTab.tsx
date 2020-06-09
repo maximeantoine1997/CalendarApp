@@ -1,6 +1,6 @@
 import { Box, createStyles, Grid, makeStyles } from "@material-ui/core";
 import moment, { Moment } from "moment";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import useDateContext from "../../Contexts/DateContext";
 import { isTransport } from "../../Utils";
 import { Reservation } from "../reservation_form";
@@ -37,7 +37,7 @@ interface CalendarWeekTabProps {
 const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day }) => {
    const classes = useStyles();
    const { calendarType, reservations, updateReservations } = useDateContext();
-   const data = reservations[day.format("YYYY-MM-DD")] || [];
+   const [data, setData] = useState<Array<Reservation>>([]);
 
    const dayName = day.format("dddd").substring(0, 2).toUpperCase();
    const dayDate = day.date();
@@ -63,6 +63,10 @@ const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day }) => {
       }
       updateReservations(day.format("YYYY-MM-DD"), newData);
    };
+
+   useEffect(() => {
+      setData(reservations[day.format("YYYY-MM-DD")] || []);
+   }, [day, reservations]);
 
    return (
       <Grid container className={classes.calendar} direction="row" alignContent="flex-start" justify="center">
