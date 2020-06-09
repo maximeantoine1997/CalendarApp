@@ -81,7 +81,7 @@ const TextComponent: FunctionComponent<TextProps> = ({
             );
          }
          return (
-            <Grid container style={{ paddingTop: "25px" }}>
+            <Grid container style={{ paddingTop: "10px" }}>
                <Grid item xs={12}>
                   <Typography style={{ fontWeight: "bold" }}>{placeholder.toUpperCase()}</Typography>
                </Grid>
