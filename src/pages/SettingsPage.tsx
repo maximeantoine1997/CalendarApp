@@ -14,11 +14,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const SettingsPage = () => {
    const classes = useStyles();
 
-   return (
-      <>
-         <Grid container justify="center" alignContent="center" alignItems="center" className={classes.grid}></Grid>
-      </>
-   );
+   return <Grid container justify="center" alignContent="center" alignItems="center" className={classes.grid}></Grid>;
 };
 
 export default SettingsPage;
