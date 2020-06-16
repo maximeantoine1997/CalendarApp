@@ -1,11 +1,12 @@
-import { Menu, MenuItem, Divider } from "@material-ui/core";
-import React, { useState } from "react";
-import { Reservation } from "../../reservation_form";
-import { updateReservationAsync, deleteReservationAsync } from "../../../Firebase/Firebase.Utils";
+import { Divider, Menu, MenuItem } from "@material-ui/core";
 import { useSnackbar } from "notistack";
-import DeleteModal from "./DeleteModal";
+import React, { useState } from "react";
+import { FDBDeleteReservationAsync, FDBupdateReservationAsync } from "../../../FaunaDB/Api";
+// import { updateReservationAsync } from "../../../Firebase/Firebase.Utils";
 import { ReservationType, typeColors } from "../../../Utils";
+import { Reservation } from "../../reservation_form";
 import ColorBlock from "../Blocks/ColorBlock";
+import DeleteModal from "./DeleteModal";
 
 interface CalendarMenuProps {
    reservation: Reservation;
@@ -29,8 +30,9 @@ const CalendarMenu: React.FunctionComponent<CalendarMenuProps> = ({
    const onClick = (newType: ReservationType) => {
       reservation.type = newType;
       try {
-         updateReservationAsync(reservation);
-         enqueueSnackbar("Succes", { variant: "success" });
+         // updateReservationAsync(reservation);
+         FDBupdateReservationAsync(reservation);
+         enqueueSnackbar("Modifié", { variant: "success" });
       } catch {
          enqueueSnackbar("Erreur", { variant: "error" });
       }
@@ -40,8 +42,8 @@ const CalendarMenu: React.FunctionComponent<CalendarMenuProps> = ({
 
    const deleteReservation = () => {
       try {
-         deleteReservationAsync(reservation);
-         enqueueSnackbar("Succes", { variant: "success" });
+         FDBDeleteReservationAsync(reservation);
+         enqueueSnackbar("Supprimé", { variant: "success" });
          setOpenModal(false);
       } catch {
          enqueueSnackbar("Erreur", { variant: "error" });

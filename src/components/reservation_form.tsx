@@ -10,7 +10,8 @@ import PersonIcon from "@material-ui/icons/Person";
 import moment, { Moment } from "moment";
 import React, { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { addReservationAsync, getAutocompleteAsync, updateAutocompleteAsync } from "../Firebase/Firebase.Utils";
+import { FDBcreateReservationAsync } from "../FaunaDB/Api";
+import { getAutocompleteAsync } from "../Firebase/Firebase.Utils";
 import { HashMap, ReservationType } from "../Utils";
 import DateComponent from "./FormElements/DateComponent";
 import SquareButtons from "./FormElements/SquareButton";
@@ -105,7 +106,7 @@ export interface Reservation {
    email?: string;
 
    // Extra:
-   id?: string;
+   id?: number;
    varyNumber?: string;
    type: ReservationType;
    notes?: string;
@@ -224,6 +225,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    const [validForm, setValidForm] = useState<ValidReservation>({ ...initValidForm });
    const [hasEndDate, setHasEndDate] = useState<boolean>(false);
    const [isCompany, setIsCompany] = useState<boolean>(true);
+   const [isToBeDelivered, setIsToBeDelivered] = useState<boolean>(true);
    const [autocomplete, setAutocomplete] = useState<HashMap<unknown>>({});
 
    const onChange = (key: keyof Reservation, value: unknown) => {
@@ -231,47 +233,55 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
       res[key] = value;
    };
 
-   const addAutocompleteItem = (docName: ReservationKeys, newItem: unknown) => {
-      const items = autocomplete[docName];
-      items.push(newItem);
-   };
+   //    const addAutocompleteItem = (docName: ReservationKeys, newItem: unknown) => {
+   //       const items = autocomplete[docName];
+   //       items.push(newItem);
+   //    };
    const addReservation = async (): Promise<void> => {
       const res = newReservation.current;
 
       const date = res.startDate as Moment;
       res.startDate = date.clone().format("YYYY-MM-DD");
 
+      if (res.endDate) {
+         res.endDate = res.endDate.clone().format("YYYY-MM-DD");
+      }
+
       if (!res.isToBeDelivered) {
          res.type = "Client Vient Chercher";
       }
 
-      addAutocompleteItem("street", res.street);
-      addAutocompleteItem("city", res.city);
-      addAutocompleteItem("sitePhone", res.sitePhone);
+      //   addAutocompleteItem("street", res.street);
+      //   addAutocompleteItem("city", res.city);
+      //   addAutocompleteItem("sitePhone", res.sitePhone);
 
-      addAutocompleteItem("modele", res.modele);
-      const items = autocomplete["accessoires"];
-      res.accessoires.forEach((accessoire: string) => {
-         items.push(accessoire);
-      });
+      //   addAutocompleteItem("modele", res.modele);
+      //   const items = autocomplete["accessoires"];
+      //   res.accessoires.forEach((accessoire: string) => {
+      //      items.push(accessoire);
+      //   });
 
-      if (isCompany) {
-         addAutocompleteItem("company", res.company);
-         if (res.VATNumber) addAutocompleteItem("VATNumber", res.VATNumber);
-      } else {
-         addAutocompleteItem("name", res.name);
-         addAutocompleteItem("facturationAddress", res.name);
-      }
+      //   if (isCompany) {
+      //      addAutocompleteItem("company", res.company);
+      //      if (res.VATNumber) addAutocompleteItem("VATNumber", res.VATNumber);
+      //   } else {
+      //      addAutocompleteItem("name", res.name);
+      //      addAutocompleteItem("facturationAddress", res.name);
+      //   }
 
-      if (res.phone) addAutocompleteItem("phone", res.phone);
-      if (res.email) addAutocompleteItem("email", res.email);
+      //   if (res.phone) addAutocompleteItem("phone", res.phone);
+      //   if (res.email) addAutocompleteItem("email", res.email);
 
-      updateAutocompleteAsync(autocomplete);
+      //   updateAutocompleteAsync(autocomplete);
 
-      addReservationAsync({ ...res }).catch(error => {
-         console.log(error);
-      });
-      history.push("/calendrier");
+      //   addReservationAsync({ ...res }).catch(error => {
+      //      console.log(error);
+      //   });
+      //   history.push("/calendrier");
+
+      FDBcreateReservationAsync({ ...res })
+         .then(() => history.push("/calendrier"))
+         .catch(error => console.log(error));
    };
 
    /**
@@ -294,11 +304,13 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
       }
 
       // Address
-      if (res["street"]?.length < 1) {
-         updateForm("street", true, "Rue non valide");
-      }
-      if (res["city"]?.length < 1) {
-         updateForm("city", true, "Ville non valide");
+      if (isToBeDelivered) {
+         if (res["street"]?.length < 1) {
+            updateForm("street", true, "Rue non valide");
+         }
+         if (res["city"]?.length < 1) {
+            updateForm("city", true, "Ville non valide");
+         }
       }
       if (!res["name"] || res["name"]?.length < 1) {
          updateForm("name", true, "Au moins un caractère");
@@ -408,10 +420,13 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                labelLeft="A Livrer"
                labelRight="Vient Chercher"
                value={newReservation.current["isToBeDelivered"] as boolean}
-               onClick={value => onChange("isToBeDelivered", value)}
+               onClick={value => {
+                  onChange("isToBeDelivered", value);
+                  setIsToBeDelivered(value);
+               }}
             />
             <TextComponent
-               isRequired
+               isRequired={isToBeDelivered}
                hasError={validForm["street"].hasError}
                errorText={validForm["street"].errorMessage}
                placeholder="Rue"
@@ -420,7 +435,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
             />
             <Grid item xs={12}>
                <TextComponent
-                  isRequired
+                  isRequired={isToBeDelivered}
                   hasError={validForm["city"].hasError}
                   errorText={validForm["city"].errorMessage}
                   placeholder="Ville"

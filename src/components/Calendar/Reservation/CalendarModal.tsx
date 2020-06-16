@@ -16,13 +16,14 @@ import DoneIcon from "@material-ui/icons/Done";
 import LocalShippingIcon from "@material-ui/icons/LocalShipping";
 import PaymentIcon from "@material-ui/icons/Payment";
 import React, { useRef, useState } from "react";
+import useDateContext from "../../../Contexts/DateContext";
+import { FDBupdateReservationAsync } from "../../../FaunaDB/Api";
+import DateComponent from "../../FormElements/DateComponent";
 import SquareButtons from "../../FormElements/SquareButton";
 import TextBox from "../../FormElements/TextBox";
 import TextComponent from "../../FormElements/TextComponent";
 import { KVReservation, Reservation } from "../../reservation_form";
-import { updateReservationAsync } from "../../../Firebase/Firebase.Utils";
-import DateComponent from "../../FormElements/DateComponent";
-import useDateContext from "../../../Contexts/DateContext";
+import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -54,6 +55,7 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
    const [isReadOnly, setIsReadOnly] = useState<boolean>(true);
    const reservation = useRef<KVReservation>({ ...reservation_ });
    const { setReservations, reservations } = useDateContext();
+   const { enqueueSnackbar } = useSnackbar();
 
    const modifiedReservation = useRef<KVReservation>({ ...reservation_ });
 
@@ -92,7 +94,14 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
       }
       reservation.current = { ...modifiedReservation.current };
       setIsReadOnly(true);
-      updateReservationAsync({ ...modifiedReservation.current });
+      try {
+         FDBupdateReservationAsync({ ...modifiedReservation.current });
+         enqueueSnackbar("Modifié", { variant: "success" });
+      } catch (error) {
+         enqueueSnackbar("Erreur", { variant: "error" });
+      }
+
+      // updateReservationAsync({ ...modifiedReservation.current });
    };
 
    const onChange = (key: keyof Reservation, value: unknown) => {

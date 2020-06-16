@@ -3,8 +3,8 @@ import "firebase/functions";
 import { useSnackbar } from "notistack";
 import React, { useEffect } from "react";
 import useDateContext from "../../Contexts/DateContext";
-import { getReservationsAsync } from "../../Firebase/Firebase.Utils";
-import { HashMap } from "../../Utils";
+import { getReservations, Fauna, convertToReservation } from "../../FaunaDB/Api";
+import { getWeekDays, HashMap } from "../../Utils";
 import { Reservation } from "../reservation_form";
 import CalendarWeekTab from "./CalendarWeekTab";
 
@@ -14,37 +14,28 @@ const CalendarWeekView: React.FC = () => {
 
    useEffect(() => {
       const getData = async () => {
-         enqueueSnackbar("Chargement...");
-         const newReservations: Array<Reservation> = await getReservationsAsync(date.format("YYYY-MM-DD"));
-         console.log("reservations are: ", newReservations);
-         const hash: HashMap<Reservation> = {};
-         newReservations.forEach(reservation => {
-            const start = reservation.startDate;
+         getReservations(getWeekDays(date)).then((newReservations: any) => {
+            const hash: HashMap<Reservation> = {};
+            newReservations.forEach((res: Fauna<Reservation>) => {
+               const reservation: Reservation = convertToReservation(res);
+               const start = reservation.startDate;
+               const startData = hash[start];
 
-            const startData = hash[start];
-            if (startData) {
-               startData.push(reservation);
-               hash[start] = startData;
-            } else {
-               hash[start] = [reservation];
-            }
+               if (startData) {
+                  startData.push(reservation);
+                  hash[start] = startData;
+               } else {
+                  hash[start] = [reservation];
+               }
+            });
+
+            setReservations(hash);
          });
-
-         setReservations(hash);
       };
       getData();
    }, [date, enqueueSnackbar, setReservations]);
 
-   const getWeekDays = (): Array<string> => {
-      const days: Array<string> = [];
-      for (let i = 1; i < 8; i++) {
-         days.push(date.clone().day(i).format("YYYY-MM-DD"));
-      }
-      return days;
-   };
-   const weekDays = getWeekDays();
-
-   console.log("Weekview rendering...");
+   const weekDays = getWeekDays(date);
 
    return (
       <Grid container direction="row">

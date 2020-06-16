@@ -1,6 +1,7 @@
 import { Avatar, Button, createStyles, makeStyles, Menu, MenuItem, Theme } from "@material-ui/core";
-import * as firebase from "firebase/app";
+// import * as firebase from "firebase/app";
 import "firebase/auth";
+import { useSnackbar } from "notistack";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import useUserContext from "../../Contexts/UserContext";
@@ -56,10 +57,12 @@ interface AuthProps {}
 
 const Authentification: React.FC<AuthProps> = () => {
    const classes = useStyles();
+   const { enqueueSnackbar } = useSnackbar();
 
    const { user, setUser } = useUserContext();
 
-   const initial = user?.displayName?.charAt(0).toUpperCase();
+   // const initial = user?.displayName?.charAt(0).toUpperCase();
+   const initial = "M";
 
    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -71,10 +74,19 @@ const Authentification: React.FC<AuthProps> = () => {
       setAnchorEl(null);
    };
 
-   const signOut = () => {
+   const signOut = async () => {
       localStorage.removeItem("authUser");
-      firebase.auth().signOut();
-      setUser(null);
+      // firebase.auth().signOut();
+      //  const logout = await FDBLogout();
+      //   if (logout) {
+      //      enqueueSnackbar("Compte déconnecté", { variant: "success" });
+      //      setUser(undefined);
+      //   } else {
+      //      enqueueSnackbar("Une erreur s'est produite", { variant: "error" });
+      //   }
+
+      enqueueSnackbar("Compte déconnecté", { variant: "success" });
+      setUser(undefined);
    };
 
    if (user && initial) {
