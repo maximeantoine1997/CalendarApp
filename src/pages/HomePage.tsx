@@ -1,10 +1,10 @@
+import { createStyles, Grid, makeStyles, Typography } from "@material-ui/core";
 import React from "react";
-import { makeStyles, createStyles, Grid, Typography } from "@material-ui/core";
-import { ReactComponent as Calendar } from "../images/calendar.svg";
-import { ReactComponent as Reservation } from "../images/reservation.svg";
-import { ReactComponent as Compte } from "../images/compte.svg";
-import { ReactComponent as Settings } from "../images/settings.svg";
 import { Link } from "react-router-dom";
+import { ReactComponent as Calendar } from "../images/calendar.svg";
+import { ReactComponent as Compte } from "../images/compte.svg";
+import { ReactComponent as Reservation } from "../images/reservation.svg";
+import { ReactComponent as Settings } from "../images/settings.svg";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -36,6 +36,7 @@ const useStyles = makeStyles(() =>
 
 const HomePage = () => {
    const classes = useStyles();
+
    return (
       <Grid container alignContent="center" className={classes.grid}>
          <Grid container justify="center">
