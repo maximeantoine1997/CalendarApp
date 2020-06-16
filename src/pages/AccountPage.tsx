@@ -1,7 +1,6 @@
 import { createStyles, Grid, makeStyles } from "@material-ui/core";
 import React, { useRef } from "react";
 import TextComponent from "../components/FormElements/TextComponent";
-import useUserContext from "../Contexts/UserContext";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -15,10 +14,15 @@ const useStyles = makeStyles(() =>
 const AccountPage = () => {
    const classes = useStyles();
 
-   const { user } = useUserContext();
+   // const { user } = useUserContext();
+   //    const idk = user as any;
 
-   const email = useRef<string>(user?.email || "");
-   const username = useRef<string>(user?.displayName || "");
+   //    console.log(idk?.instance["@ref"].id);
+   //    const realUser = FDBGetUser(idk?.instance["@ref"].id);
+   //    console.log(realUser);
+
+   const email = useRef<string>("");
+   const username = useRef<string>(""); // user?.displayName || "");
 
    return (
       <Grid
