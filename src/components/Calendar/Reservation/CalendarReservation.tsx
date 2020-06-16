@@ -68,7 +68,6 @@ const CalendarReservation: React.FC<CalendarReservationProps> = ({ reservation, 
             text = text.concat(" - ", accessoire);
          }
       });
-      console.log(text);
       return text;
    };
 
