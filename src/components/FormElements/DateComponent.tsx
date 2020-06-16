@@ -18,7 +18,7 @@ interface DateProps {
 const DateComponent: FunctionComponent<DateProps> = ({
    onChange: onChange_,
    placeholder,
-   value = moment().format("DD/MM/YYYY"),
+   value = moment(),
    isReadOnly = false,
 }) => {
    const [selectedDate, handleDateChange] = useState<MaterialUiPickersDate>(moment(value));
