@@ -1,8 +1,8 @@
-import React from "react";
-import useUserContext from "./Contexts/UserContext";
-import AuthApp from "./Apps/AuthApp";
 import NotAuthApp from "./Apps/NotAuthApp";
 import { SnackbarProvider } from "notistack";
+import React from "react";
+import AuthApp from "./Apps/AuthApp";
+import useUserContext from "./Contexts/UserContext";
 
 const App: React.FunctionComponent = () => {
    const { user } = useUserContext();
