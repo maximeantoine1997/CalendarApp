@@ -1,8 +1,7 @@
-import * as functions from "firebase-functions";
-import * as moment from "moment";
-import * as admin from "firebase-admin";
-import * as express from "express";
 import * as cors from "cors";
+import * as express from "express";
+import * as admin from "firebase-admin";
+import * as functions from "firebase-functions";
 
 admin.initializeApp();
 
@@ -117,21 +116,20 @@ app.put("/autocomplete", (req, res) => {
 // Reservation
 
 app.get("/reservations", (req, res) => {
-   const date: string = req.query.date as string;
-   const day = moment(date);
+   //  const date: string = req.query.date as string;
+   //  const day = moment(date);
    const reservationsRef = admin.firestore().collection("reservations");
 
-   const getWeekDays = (): Array<string> => {
-      const days: Array<string> = [];
-      for (let i = 1; i < 8; i++) {
-         days.push(day.clone().day(i).format("YYYY-MM-DD"));
-      }
-      return days;
-   };
-   const weekdays = getWeekDays();
+   //    const getWeekDays = (): Array<string> => {
+   //       const days: Array<string> = [];
+   //       for (let i = 1; i < 8; i++) {
+   //          days.push(day.clone().day(i).format("YYYY-MM-DD"));
+   //       }
+   //       return days;
+   //    };
+   //    const weekdays = getWeekDays();
 
    reservationsRef
-      .where("startDate", "in", weekdays)
       .get()
       .then(snapshot => {
          const data: Array<Reservation> = [];
