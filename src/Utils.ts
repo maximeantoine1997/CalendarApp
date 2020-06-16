@@ -1,8 +1,10 @@
+import { Moment } from "moment";
+
 export const isFunction = (f: any): f is Function => {
    return typeof f === "function";
 };
 
-export const checkIfConnected = (user: Optional<Nullable<firebase.User>>, path: string): string => {
+export const checkIfConnected = (user: Optional<object>, path: string): string => {
    if (!user) return "/";
 
    return path;
@@ -60,4 +62,12 @@ export const isTransport: Record<ReservationType, boolean> = {
    "Rendez-vous": false,
    "Retour": true,
    "Transport": true,
+};
+
+export const getWeekDays = (day: Moment): Array<string> => {
+   const days: Array<string> = [];
+   for (let i = 1; i < 8; i++) {
+      days.push(day.clone().day(i).format("YYYY-MM-DD"));
+   }
+   return days;
 };
