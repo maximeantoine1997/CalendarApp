@@ -1,17 +1,14 @@
 import { createStyles, Grid, makeStyles, Theme } from "@material-ui/core";
-import * as firebase from "firebase/app";
 import "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import AddButton from "../components/AddButton";
 import SideBar from "../components/Navigation/Sidebar";
-import useUserContext from "../Contexts/UserContext";
 import AccountPage from "../pages/AccountPage";
 import CalendarPage from "../pages/CalendarPage";
 import HomePage from "../pages/HomePage";
 import ReservationPage from "../pages/ReservationPage";
 import SettingsPage from "../pages/SettingsPage";
-import { isFunction } from "../Utils";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -28,13 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const AuthApp: React.FC = () => {
    const classes = useStyles();
-   const { setUser } = useUserContext();
-   firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-         if (isFunction(setUser)) setUser(user);
-      } else {
-      }
-   });
+   //    const { setUser } = useUserContext();
 
    const [width, setWidth] = useState(window.innerWidth);
    const [height, setHeight] = useState(window.innerHeight);

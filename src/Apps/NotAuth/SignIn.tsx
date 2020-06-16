@@ -3,7 +3,7 @@ import "firebase/auth";
 import React, { useRef } from "react";
 import FadeIn from "../../components/Transitions/FadeIn";
 import useUserContext from "../../Contexts/UserContext";
-import { signInUserAsync } from "../../Firebase/Firebase.Utils";
+import { Account, Fauna, FDBLogin } from "../../FaunaDB/Api";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -30,9 +30,9 @@ const SignIn: React.FC<SignInProps> = ({ onChange }) => {
    };
 
    const onSignIn = async (): Promise<void> => {
-      const user = await signInUserAsync(email.current, password.current);
+      const user = await FDBLogin(email.current, password.current);
       localStorage.setItem("authUser", JSON.stringify(user));
-      setUser(user);
+      setUser(user as Fauna<Account>);
    };
    return (
       <Grid container className={classes.root} justify="center" style={{ border: "1px solid black" }}>
