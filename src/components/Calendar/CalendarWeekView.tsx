@@ -15,6 +15,7 @@ const CalendarWeekView: React.FC = () => {
    useEffect(() => {
       const getData = async () => {
          getReservations(getWeekDays(date)).then((newReservations: any) => {
+            if (!newReservations) return;
             const hash: HashMap<Reservation> = {};
             newReservations.forEach((res: Fauna<Reservation>) => {
                const reservation: Reservation = convertToReservation(res);
