@@ -2,7 +2,6 @@ import { Button, createStyles, DialogTitle, Grid, makeStyles, TextField, Theme }
 import { useSnackbar } from "notistack";
 import React, { useRef } from "react";
 import FadeIn from "../../components/Transitions/FadeIn";
-import { createUserAsync } from "../../Firebase/Firebase.Utils";
 
 const useStyles = makeStyles((theme: Theme) =>
    createStyles({
@@ -34,7 +33,7 @@ const SignUp: React.FC<SignUpProps> = ({ onChange }) => {
          console.log("passwords are not the same, please make it happen");
          return;
       }
-      const isCreated = await createUserAsync(email.current, password.current, userName.current);
+      const isCreated = true; // await createUserAsync(email.current, password.current, userName.current);
       if (isCreated) {
          enqueueSnackbar("Compte créé", { variant: "success" });
       } else {
