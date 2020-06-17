@@ -190,6 +190,16 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
                            customClass={{ width: "90%" }}
                         />
                      </Grid>
+                     <Grid item xs={12}>
+                        <TextComponent
+                           isReadOnly={isReadOnly}
+                           placeholder="N° Chantier"
+                           onChange={e => onChange("sitePhone", e)}
+                           value={reservation.current.sitePhone}
+                           variant="standard"
+                           customClass={{ width: "90%" }}
+                        />
+                     </Grid>
                   </Grid>
                   <Grid item xs={4}>
                      <Grid item xs={12}>
@@ -213,6 +223,16 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
                            placeholder="Nom"
                            onChange={e => onChange("name", e)}
                            value={reservation.current.name}
+                           variant="standard"
+                           customClass={{ width: "90%" }}
+                        />
+                     </Grid>
+                     <Grid item xs={12}>
+                        <TextComponent
+                           isReadOnly={isReadOnly}
+                           placeholder="N° TVA"
+                           onChange={e => onChange("VATNumber", e)}
+                           value={reservation.current.VATNumber}
                            variant="standard"
                            customClass={{ width: "90%" }}
                         />
