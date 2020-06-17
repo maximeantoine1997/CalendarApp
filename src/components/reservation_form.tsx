@@ -1,4 +1,4 @@
-import { Button, createStyles, Grid, makeStyles, Theme, Typography } from "@material-ui/core";
+import { Button, createStyles, Grid, makeStyles, Switch, Theme, Typography } from "@material-ui/core";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import BusinessIcon from "@material-ui/icons/Business";
@@ -10,8 +10,8 @@ import PersonIcon from "@material-ui/icons/Person";
 import moment, { Moment } from "moment";
 import React, { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { FDBcreateReservationAsync } from "../FaunaDB/Api";
-import { getAutocompleteAsync } from "../Firebase/Firebase.Utils";
+import { Autocomplete, Fauna, FDBcreateReservationAsync, getAutoCompelteAsync } from "../FaunaDB/Api";
+import { autocompleteMapping } from "../FaunaDB/FaunaDB.Utils";
 import { HashMap, ReservationType } from "../Utils";
 import DateComponent from "./FormElements/DateComponent";
 import SquareButtons from "./FormElements/SquareButton";
@@ -226,6 +226,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    const [hasEndDate, setHasEndDate] = useState<boolean>(false);
    const [isCompany, setIsCompany] = useState<boolean>(true);
    const [isToBeDelivered, setIsToBeDelivered] = useState<boolean>(true);
+   const [hasCaution, setHasCaution] = useState<boolean>(true);
    const [autocomplete, setAutocomplete] = useState<HashMap<unknown>>({});
 
    const onChange = (key: keyof Reservation, value: unknown) => {
@@ -348,8 +349,13 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
 
    useEffect(() => {
       const getAutocomplete = async () => {
-         const data = await getAutocompleteAsync();
-         setAutocomplete(data);
+         const data = ((await getAutoCompelteAsync()) as unknown) as Array<Fauna<Autocomplete>>;
+         const hash: HashMap<string> = {};
+         data.forEach(item => {
+            const name = autocompleteMapping[item.ref.id];
+            hash[name] = item.data.items;
+         });
+         setAutocomplete(hash);
       };
       getAutocomplete();
    }, []);
@@ -372,26 +378,41 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                onClick={value => setHasEndDate(value)}
             />
             {hasEndDate && <DateComponent placeholder="Fin *" onChange={(e: any) => onChange("endDate", e)} />}
-            <Typography variant="h4" style={{ paddingTop: "25px" }}>
-               Caution:
-            </Typography>
-            <TextComponent placeholder="Montant" value="0" onChange={e => onChange("amount", e)} />
-            <SquareButtons
-               iconLeft={<AttachMoneyIcon />}
-               iconRight={<PaymentIcon />}
-               labelLeft="Cash"
-               labelRight="Bancontact"
-               value={newReservation.current["isCash"] as boolean}
-               onClick={value => onChange("isCash", value)}
-            />
-            <SquareButtons
-               iconLeft={<DoneIcon />}
-               iconRight={<ClearIcon />}
-               labelLeft="Reçu"
-               labelRight="Pas Reçu"
-               value={newReservation.current["isReceived"] as boolean}
-               onClick={value => onChange("isReceived", value)}
-            />
+            <Grid container style={{ paddingTop: "25px" }} alignItems="center">
+               <Grid item>
+                  <Typography variant="h4">Caution:</Typography>
+               </Grid>
+               <Grid item style={{ paddingTop: "5px" }}>
+                  <Switch
+                     checked={hasCaution}
+                     onChange={() => setHasCaution(prev => !prev)}
+                     value="checkedCaution"
+                     color="secondary"
+                  />
+               </Grid>
+            </Grid>
+
+            {hasCaution && (
+               <>
+                  <TextComponent placeholder="Montant" value="0" onChange={e => onChange("amount", e)} />
+                  <SquareButtons
+                     iconLeft={<AttachMoneyIcon />}
+                     iconRight={<PaymentIcon />}
+                     labelLeft="Cash"
+                     labelRight="Bancontact"
+                     value={newReservation.current["isCash"] as boolean}
+                     onClick={value => onChange("isCash", value)}
+                  />
+                  <SquareButtons
+                     iconLeft={<DoneIcon />}
+                     iconRight={<ClearIcon />}
+                     labelLeft="Reçu"
+                     labelRight="Pas Reçu"
+                     value={newReservation.current["isReceived"] as boolean}
+                     onClick={value => onChange("isReceived", value)}
+                  />
+               </>
+            )}
          </Grid>
          <Grid item xs={4} style={{ padding: "25px" }}>
             <Typography variant="h4">Machine:</Typography>

@@ -1,4 +1,4 @@
-import { client, q } from "./Database";
+import { client, q, old } from "./Database";
 import { Reservation } from "../components/reservation_form";
 
 export interface Fauna<T> {
@@ -11,6 +11,10 @@ export interface Fauna<T> {
 export interface Account {
    email: string;
    username: string;
+}
+
+export interface Autocomplete {
+   items: Array<string>;
 }
 
 export const convertToReservation = (item: Fauna<Reservation>): Reservation => {
@@ -27,6 +31,17 @@ export const FDBLogin = async (email: string, password: string) => {
 export const FDBLogout = async () => {
    return client.query(q.Logout(true));
 };
+
+export const getAutoCompelteAsync = async () =>
+   client.query(q.Paginate(q.Match(q.Index("all_autocomplete")))).then((response: any) => {
+      const refs = response.data;
+      // create new query out of notes refs.
+      const getAllProductDataQuery = refs.map((ref: any) => {
+         return q.Get(ref);
+      });
+      // query the refs
+      return client.query(getAllProductDataQuery).then(data => data);
+   });
 
 export const FDBGetUser = async (id: string) => {
    return client.query(q.Get(q.Ref(q.Collection("posts"), id)));
@@ -51,6 +66,21 @@ export const getReservations = (dates: Array<string>) =>
          });
          // query the refs
          return client.query(getAllProductDataQuery).then(data => data);
+      })
+      .catch(error => console.warn("error", error.message));
+
+export const getAllOldRes = () =>
+   old
+      .query(q.Paginate(q.Match(q.Index("all_reservations"))))
+      .then((response: any) => {
+         const refs = response.data;
+         console.log(refs);
+         // create new query out of notes refs.
+         const getAllProductDataQuery = refs.map((ref: any) => {
+            return q.Get(ref);
+         });
+         // query the refs
+         return old.query(getAllProductDataQuery).then(data => data);
       })
       .catch(error => console.warn("error", error.message));
 
