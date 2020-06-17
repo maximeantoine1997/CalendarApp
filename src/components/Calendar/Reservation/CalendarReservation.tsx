@@ -110,7 +110,7 @@ const CalendarReservation: React.FC<CalendarReservationProps> = ({ reservation, 
             <Grid container>
                <Grid item xs={12}>
                   <Box textOverflow="ellipsis" overflow="hidden" fontSize="0.8em" paddingBottom="3px">
-                     {reservation.city}
+                     {reservation.city || "Vient Chercher"}
                   </Box>
                </Grid>
             </Grid>
