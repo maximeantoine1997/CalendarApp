@@ -1,5 +1,5 @@
-import { client, q, old } from "./Database";
 import { Reservation } from "../components/reservation_form";
+import { client, q } from "./Database";
 
 export interface Fauna<T> {
    ref: {
@@ -66,21 +66,6 @@ export const getReservations = (dates: Array<string>) =>
          });
          // query the refs
          return client.query(getAllProductDataQuery).then(data => data);
-      })
-      .catch(error => console.warn("error", error.message));
-
-export const getAllOldRes = () =>
-   old
-      .query(q.Paginate(q.Match(q.Index("all_reservations"))))
-      .then((response: any) => {
-         const refs = response.data;
-         console.log(refs);
-         // create new query out of notes refs.
-         const getAllProductDataQuery = refs.map((ref: any) => {
-            return q.Get(ref);
-         });
-         // query the refs
-         return old.query(getAllProductDataQuery).then(data => data);
       })
       .catch(error => console.warn("error", error.message));
 

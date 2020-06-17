@@ -1,4 +1,4 @@
-import { createStyles, Grid, makeStyles, Theme } from "@material-ui/core";
+import { Button, createStyles, Grid, makeStyles, Theme } from "@material-ui/core";
 import React from "react";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -14,7 +14,13 @@ const useStyles = makeStyles((theme: Theme) =>
 const SettingsPage = () => {
    const classes = useStyles();
 
-   return <Grid container justify="center" alignContent="center" alignItems="center" className={classes.grid}></Grid>;
+   const onClick = async () => {};
+
+   return (
+      <Grid container justify="center" alignContent="center" alignItems="center" className={classes.grid}>
+         <Button onClick={onClick}>TRANSFER DB</Button>
+      </Grid>
+   );
 };
 
 export default SettingsPage;
