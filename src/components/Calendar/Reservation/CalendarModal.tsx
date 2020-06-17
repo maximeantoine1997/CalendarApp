@@ -265,43 +265,50 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
                      </Grid>
                   </Grid>
                   <Grid item xs={4}>
-                     <Grid item xs={12}>
-                        <Typography style={{ fontSize: "1.3em", fontWeight: "bold", paddingTop: "10px" }} variant="h5">
-                           Caution:
-                        </Typography>
-                     </Grid>
-                     <Grid item xs={12}>
-                        <TextComponent
-                           isReadOnly={isReadOnly}
-                           variant="standard"
-                           placeholder="Montant"
-                           value={reservation.current.amount}
-                           onChange={e => onChange("amount", e)}
-                           customClass={{ width: "90%" }}
-                        />
-                     </Grid>
-                     <Grid item xs={12} style={{ paddingTop: isReadOnly ? "10px" : "0px" }}>
-                        <SquareButtons
-                           iconLeft={<AttachMoneyIcon />}
-                           iconRight={<PaymentIcon />}
-                           labelLeft="Cash"
-                           labelRight="Bancontact"
-                           value={reservation.current["isCash"] as boolean}
-                           onClick={value => onChange("isCash", value)}
-                           isReadOnly={isReadOnly}
-                        />
-                     </Grid>
-                     <Grid item xs={12} style={{ paddingTop: isReadOnly ? "20px" : "0px" }}>
-                        <SquareButtons
-                           iconLeft={<DoneIcon />}
-                           iconRight={<ClearIcon />}
-                           labelLeft="Reçu"
-                           labelRight="Pas Reçu"
-                           value={reservation.current["isReceived"] as boolean}
-                           onClick={value => onChange("isReceived", value)}
-                           isReadOnly={isReadOnly}
-                        />
-                     </Grid>
+                     {(reservation.current.amount > 0 || !isReadOnly) && (
+                        <>
+                           <Grid item xs={12}>
+                              <Typography
+                                 style={{ fontSize: "1.3em", fontWeight: "bold", paddingTop: "10px" }}
+                                 variant="h5"
+                              >
+                                 Caution:
+                              </Typography>
+                           </Grid>
+                           <Grid item xs={12}>
+                              <TextComponent
+                                 isReadOnly={isReadOnly}
+                                 variant="standard"
+                                 placeholder="Montant"
+                                 value={reservation.current.amount}
+                                 onChange={e => onChange("amount", e)}
+                                 customClass={{ width: "90%" }}
+                              />
+                           </Grid>
+                           <Grid item xs={12} style={{ paddingTop: isReadOnly ? "10px" : "0px" }}>
+                              <SquareButtons
+                                 iconLeft={<AttachMoneyIcon />}
+                                 iconRight={<PaymentIcon />}
+                                 labelLeft="Cash"
+                                 labelRight="Bancontact"
+                                 value={reservation.current["isCash"] as boolean}
+                                 onClick={value => onChange("isCash", value)}
+                                 isReadOnly={isReadOnly}
+                              />
+                           </Grid>
+                           <Grid item xs={12} style={{ paddingTop: isReadOnly ? "20px" : "0px" }}>
+                              <SquareButtons
+                                 iconLeft={<DoneIcon />}
+                                 iconRight={<ClearIcon />}
+                                 labelLeft="Reçu"
+                                 labelRight="Pas Reçu"
+                                 value={reservation.current["isReceived"] as boolean}
+                                 onClick={value => onChange("isReceived", value)}
+                                 isReadOnly={isReadOnly}
+                              />
+                           </Grid>
+                        </>
+                     )}
                   </Grid>
                   <Grid item xs={4}></Grid>
                </Grid>
