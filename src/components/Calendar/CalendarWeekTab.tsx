@@ -1,12 +1,11 @@
-import { Box, createStyles, Grid, makeStyles, Fab, IconButton } from "@material-ui/core";
-import moment, { Moment } from "moment";
+import { createStyles, Grid, makeStyles } from "@material-ui/core";
+import { Moment } from "moment";
 import React, { useEffect, useState } from "react";
 import useDateContext from "../../Contexts/DateContext";
 import { isTransport } from "../../Utils";
 import { Reservation } from "../reservation_form";
-import CalendarReservation from "./Reservation/CalendarReservation";
-import AddIcon from "@material-ui/icons/Add";
 import CalendarHeaderTab from "./CalendarHeaderTab";
+import CalendarReservation from "./Reservation/CalendarReservation";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -41,9 +40,6 @@ const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day }) => {
    const classes = useStyles();
    const { calendarType, reservations, updateReservations } = useDateContext();
    const [data, setData] = useState<Array<Reservation>>([]);
-
-   const dayName = day.format("dddd").substring(0, 2).toUpperCase();
-   const dayDate = day.date();
 
    const filterData = (): Array<Reservation> => {
       let newData: Array<Reservation> = data;
