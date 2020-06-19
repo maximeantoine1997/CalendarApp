@@ -1,10 +1,12 @@
-import { Box, createStyles, Grid, makeStyles } from "@material-ui/core";
+import { Box, createStyles, Grid, makeStyles, Fab, IconButton } from "@material-ui/core";
 import moment, { Moment } from "moment";
 import React, { useEffect, useState } from "react";
 import useDateContext from "../../Contexts/DateContext";
 import { isTransport } from "../../Utils";
 import { Reservation } from "../reservation_form";
 import CalendarReservation from "./Reservation/CalendarReservation";
+import AddIcon from "@material-ui/icons/Add";
+import CalendarHeaderTab from "./CalendarHeaderTab";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -18,7 +20,8 @@ const useStyles = makeStyles(() =>
          border: "1px solid #F4F4F4",
          width: "100%",
          background: "#F8F8F8",
-         padding: "20px",
+         paddingTop: "10px",
+         paddingLeft: "20px",
          fontFamily: "Arial",
          fontWeight: "bold",
          height: "13vh",
@@ -70,16 +73,7 @@ const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day }) => {
 
    return (
       <Grid container className={classes.calendar} direction="row" alignContent="flex-start" justify="center">
-         <Grid
-            item
-            style={{ color: day.isSame(moment(), "date") ? "red" : "black" }}
-            className={classes.date}
-            onDoubleClick={() => (window.location.href = `/reservation?date=${day.format("YYYY-MM-DD")}`)}
-         >
-            {dayName}
-            <br />
-            <Box className={classes.dateNumber}>{dayDate}</Box>
-         </Grid>
+         <CalendarHeaderTab day={day} />
          <Grid item className={classes.scroll}>
             {filteredData.map((reservation, index) => {
                return (
