@@ -55,7 +55,10 @@ export const getReservations = (dates: Array<string>) =>
                dates.map(date => {
                   return q.Match(q.Index("reservations_by_startDate"), date);
                })
-            )
+            ),
+            {
+               size: 200,
+            }
          )
       )
       .then((response: any) => {
