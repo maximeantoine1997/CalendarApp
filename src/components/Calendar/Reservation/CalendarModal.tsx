@@ -16,7 +16,7 @@ import DoneIcon from "@material-ui/icons/Done";
 import LocalShippingIcon from "@material-ui/icons/LocalShipping";
 import PaymentIcon from "@material-ui/icons/Payment";
 import React, { useRef, useState } from "react";
-import useDateContext from "../../../Contexts/DateContext";
+import useCalendarContext from "../../../Contexts/CalendarContext";
 import { FDBupdateReservationAsync } from "../../../FaunaDB/Api";
 import DateComponent from "../../FormElements/DateComponent";
 import SquareButtons from "../../FormElements/SquareButton";
@@ -54,7 +54,7 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
    const classes = useStyles();
    const [isReadOnly, setIsReadOnly] = useState<boolean>(true);
    const reservation = useRef<KVReservation>({ ...reservation_ });
-   const { setReservations, reservations } = useDateContext();
+   const { setReservations, reservations } = useCalendarContext();
    const { enqueueSnackbar } = useSnackbar();
 
    const modifiedReservation = useRef<KVReservation>({ ...reservation_ });

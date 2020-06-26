@@ -46,7 +46,7 @@ export const DateContextProvider = (props: { children: ReactNode }): ReactElemen
    return <DateContext.Provider value={dateContext}>{props.children}</DateContext.Provider>;
 };
 
-const useDateContext = (): IDateContext => {
+const useCalendarContext = (): IDateContext => {
    const context = useContext(DateContext);
    if (context === null) {
       throw new Error("DateContext is not provided");
@@ -54,4 +54,4 @@ const useDateContext = (): IDateContext => {
    return context;
 };
 
-export default useDateContext;
+export default useCalendarContext;

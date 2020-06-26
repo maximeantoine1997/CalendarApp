@@ -2,14 +2,14 @@ import { Grid } from "@material-ui/core";
 import "firebase/functions";
 import { useSnackbar } from "notistack";
 import React, { useEffect } from "react";
-import useDateContext from "../../Contexts/DateContext";
+import useCalendarContext from "../../Contexts/CalendarContext";
 import { getReservations, Fauna, convertToReservation } from "../../FaunaDB/Api";
 import { getWeekDays, HashMap } from "../../Utils";
 import { Reservation } from "../reservation_form";
 import CalendarWeekTab from "./CalendarWeekTab";
 
 const CalendarWeekView: React.FC = () => {
-   const { date, setReservations } = useDateContext();
+   const { date, setReservations } = useCalendarContext();
    const { enqueueSnackbar } = useSnackbar();
 
    useEffect(() => {

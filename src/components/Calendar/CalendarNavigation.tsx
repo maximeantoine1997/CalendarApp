@@ -9,7 +9,7 @@ import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import ToggleButton from "@material-ui/lab/ToggleButton";
-import useDateContext from "../../Contexts/DateContext";
+import useCalendarContext from "../../Contexts/CalendarContext";
 import { CalendarType } from "../../Utils";
 
 const useStyles = makeStyles(() =>
@@ -33,7 +33,7 @@ const useStyles = makeStyles(() =>
 const CalendarNavigation: React.FC = () => {
    const classes = useStyles();
 
-   const { date, setDate, calendarType, setCalendarType } = useDateContext();
+   const { date, setDate, calendarType, setCalendarType } = useCalendarContext();
 
    const monday = date.clone().day(1).date();
    const sunday = date.clone().day(7).date();

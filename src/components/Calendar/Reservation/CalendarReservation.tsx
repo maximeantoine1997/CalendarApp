@@ -116,13 +116,15 @@ const CalendarReservation: React.FC<CalendarReservationProps> = ({ reservation, 
             </Grid>
          </Grid>
          <CalendarModal reservation={reservation} open={expand} onClose={onModalClose} />
-         <CalendarMenu
-            reservation={reservation}
-            anchorEl={anchorEl}
-            handleClick={handleClick}
-            handleClose={handleClose}
-            handleDelete={handleDelete}
-         />
+         {reservation.type !== "Livré / Venu Chercher" && (
+            <CalendarMenu
+               reservation={reservation}
+               anchorEl={anchorEl}
+               handleClick={handleClick}
+               handleClose={handleClose}
+               handleDelete={handleDelete}
+            />
+         )}
       </>
    );
 };

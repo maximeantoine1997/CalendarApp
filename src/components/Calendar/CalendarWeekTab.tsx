@@ -1,7 +1,7 @@
 import { createStyles, Grid, makeStyles } from "@material-ui/core";
 import { Moment } from "moment";
 import React, { useEffect, useState } from "react";
-import useDateContext from "../../Contexts/DateContext";
+import useCalendarContext from "../../Contexts/CalendarContext";
 import { isTransport } from "../../Utils";
 import { Reservation } from "../reservation_form";
 import CalendarHeaderTab from "./CalendarHeaderTab";
@@ -38,7 +38,7 @@ interface CalendarWeekTabProps {
 
 const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day }) => {
    const classes = useStyles();
-   const { calendarType, reservations, updateReservations } = useDateContext();
+   const { calendarType, reservations, updateReservations } = useCalendarContext();
    const [data, setData] = useState<Array<Reservation>>([]);
 
    const filterData = (): Array<Reservation> => {
