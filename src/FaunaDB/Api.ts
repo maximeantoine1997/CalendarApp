@@ -24,6 +24,21 @@ export const convertToReservation = (item: Fauna<Reservation>): Reservation => {
    return res;
 };
 
+export interface Note {
+   id: number | string;
+   date: string;
+   name: string;
+   type: string;
+   note: string;
+}
+
+export const convertToNote = (item: Fauna<Note>): Note => {
+   const res = item.data;
+   res["id"] = item.ref.id;
+
+   return res;
+};
+
 export const FDBLogin = async (email: string, password: string) => {
    return client.query(q.Login(q.Match(q.Index("users_by_email"), email), { password })).then(res => res);
 };
@@ -72,15 +87,63 @@ export const getReservations = (dates: Array<string>) =>
       })
       .catch(error => console.warn("error", error.message));
 
-export const FDBcreateReservationAsync = (reservation: Reservation) =>
-   client.query(q.Create(q.Collection("reservations"), { data: reservation })).then(ret => console.log(ret));
-
-export const FDBupdateReservationAsync = (reservation: Reservation) => {
-   client
-      .query(q.Update(q.Ref(q.Collection("reservations"), reservation.id), { data: reservation }))
-      .then(ret => console.log(ret));
+export const FDBcreateReservationAsync = async (reservation: Reservation) => {
+   await create(reservation, "reservations");
 };
 
-export const FDBDeleteReservationAsync = (reservation: Reservation) => {
-   client.query(q.Delete(q.Ref(q.Collection("reservations"), reservation.id))).then(ret => console.log(ret));
+export const FDBupdateReservationAsync = async (reservation: Reservation) => {
+   await update(reservation, "reservations");
+};
+
+export const FDBDeleteReservationAsync = async (reservation: Reservation) => {
+   await remove(reservation, "reservations");
+};
+
+export const getNotes = (dates: Array<string>) =>
+   client
+      .query(
+         q.Paginate(
+            q.Union(
+               dates.map(date => {
+                  return q.Match(q.Index("notes_by_dates"), date);
+               })
+            ),
+            {
+               size: 200,
+            }
+         )
+      )
+      .then((response: any) => {
+         const refs = response.data;
+         // create new query out of notes refs.
+         const getAllProductDataQuery = refs.map((ref: any) => {
+            return q.Get(ref);
+         });
+         // query the refs
+         return client.query(getAllProductDataQuery).then(data => data);
+      })
+      .catch(error => console.warn("error", error.message));
+
+export const FDBcreateNotesAsync = async (note: Note) => {
+   return await create(note, "notes");
+};
+
+export const FDBupdateNotesAsync = async (note: Note) => {
+   await update(note, "notes");
+};
+
+export const FDBDeleteNotesAsync = async (note: Note) => {
+   await remove(note, "notes");
+};
+
+const create = async (element: any, collection: string) => {
+   return await client.query(q.Create(q.Collection(collection), { data: element }));
+};
+
+const update = async (element: any, collection: string) => {
+   await client.query(q.Update(q.Ref(q.Collection(collection), element.id), { data: element }));
+};
+
+const remove = async (element: any, collection: string) => {
+   await client.query(q.Delete(q.Ref(q.Collection(collection), element.id)));
 };
