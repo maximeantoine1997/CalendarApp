@@ -69,8 +69,6 @@ const HomePage = () => {
             <Grid item>
                {createCard("/reservation", "Reservation", <AddCircleOutlineIcon color="primary" fontSize="large" />)}
             </Grid>
-            <Grid item>{createCard("/note", "Note", <AddCircleOutlineIcon color="primary" fontSize="large" />)}</Grid>
-
             <Grid item>
                {createCard("/settings", "Admin", <SupervisorAccountIcon color="primary" fontSize="large" />)}
             </Grid>
