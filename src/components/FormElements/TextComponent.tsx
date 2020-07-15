@@ -30,6 +30,7 @@ interface TextProps {
    variant?: "filled" | "outlined" | "standard";
    isReadOnly?: boolean;
    isRequired?: boolean;
+   noReadOnlyText?: boolean;
 }
 
 const TextComponent: FunctionComponent<TextProps> = ({
@@ -44,6 +45,7 @@ const TextComponent: FunctionComponent<TextProps> = ({
    variant = "outlined",
    isReadOnly = false,
    isRequired = false,
+   noReadOnlyText = false,
 }): ReactElement => {
    const classes = useStyles();
 
@@ -69,9 +71,11 @@ const TextComponent: FunctionComponent<TextProps> = ({
          if (multiple) {
             return (
                <Grid container style={{ paddingTop: "25px" }}>
-                  <Grid item xs={12}>
-                     <Typography style={{ color: "#7C7B77" }}>{placeholder}:</Typography>
-                  </Grid>
+                  {!noReadOnlyText && (
+                     <Grid item xs={12}>
+                        <Typography style={{ color: "#7C7B77" }}>{placeholder}:</Typography>
+                     </Grid>
+                  )}
                   <Grid item xs={12}>
                      {value.map((val: string) => {
                         return <Typography>{val}</Typography>;
@@ -82,9 +86,11 @@ const TextComponent: FunctionComponent<TextProps> = ({
          }
          return (
             <Grid container style={{ paddingTop: "10px" }}>
-               <Grid item xs={12}>
-                  <Typography style={{ color: "#7C7B77" }}>{placeholder}:</Typography>
-               </Grid>
+               {!noReadOnlyText && (
+                  <Grid item xs={12}>
+                     <Typography style={{ color: "#7C7B77" }}>{placeholder}:</Typography>
+                  </Grid>
+               )}
                <Grid item xs={12}>
                   <Typography>{value}</Typography>
                </Grid>
