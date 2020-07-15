@@ -14,13 +14,6 @@ const useStyles = makeStyles(() =>
 const AccountPage = () => {
    const classes = useStyles();
 
-   // const { user } = useUserContext();
-   //    const idk = user as any;
-
-   //    console.log(idk?.instance["@ref"].id);
-   //    const realUser = FDBGetUser(idk?.instance["@ref"].id);
-   //    console.log(realUser);
-
    const email = useRef<string>("");
    const username = useRef<string>(""); // user?.displayName || "");
 
