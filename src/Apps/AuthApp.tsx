@@ -25,7 +25,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const AuthApp: React.FC = () => {
    const classes = useStyles();
-   //    const { setUser } = useUserContext();
 
    const [width, setWidth] = useState(window.innerWidth);
    const [height, setHeight] = useState(window.innerHeight);
