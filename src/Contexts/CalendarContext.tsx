@@ -2,6 +2,7 @@ import moment, { Moment } from "moment";
 import React, { createContext, ReactElement, ReactNode, useContext, useState } from "react";
 import { HashMap, CalendarType } from "../Utils";
 import { Reservation } from "../components/reservation_form";
+import { Note } from "../FaunaDB/Api";
 
 interface IDateContext {
    date: Moment;
@@ -11,6 +12,8 @@ interface IDateContext {
    setReservations: React.Dispatch<React.SetStateAction<HashMap<Reservation>>>;
    calendarType: CalendarType;
    setCalendarType: React.Dispatch<React.SetStateAction<CalendarType>>;
+   notes: HashMap<Note>;
+   setNotes: React.Dispatch<React.SetStateAction<HashMap<Note>>>;
 }
 
 export const DateContext = createContext<IDateContext>({
@@ -21,12 +24,15 @@ export const DateContext = createContext<IDateContext>({
    setReservations: () => {},
    calendarType: "general",
    setCalendarType: () => {},
+   notes: {},
+   setNotes: () => {},
 });
 
 export const DateContextProvider = (props: { children: ReactNode }): ReactElement => {
    const [date, setDate] = useState<Moment>(moment());
    const [calendarType, setCalendarType] = useState<CalendarType>("general");
    const [reservations, setReservations] = useState<HashMap<Reservation>>({});
+   const [notes, setNotes] = useState<HashMap<Note>>({});
 
    const updateReservations = (date: string, newReservations: Array<Reservation>) => {
       const newHash = { ...reservations };
@@ -42,6 +48,8 @@ export const DateContextProvider = (props: { children: ReactNode }): ReactElemen
       setReservations,
       calendarType,
       setCalendarType,
+      notes,
+      setNotes,
    };
    return <DateContext.Provider value={dateContext}>{props.children}</DateContext.Provider>;
 };
