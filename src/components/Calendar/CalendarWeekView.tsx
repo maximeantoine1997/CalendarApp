@@ -41,7 +41,6 @@ const CalendarWeekView: React.FC = () => {
                hashNotes[start] = [note];
             }
          });
-         console.log(hashNotes);
          setReservations(hasReservations);
          setNotes(hashNotes);
       };
