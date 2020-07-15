@@ -3,7 +3,6 @@ import { createStyles, makeStyles } from "@material-ui/core/styles";
 import moment, { Moment } from "moment";
 import React, { useState } from "react";
 import useCalendarContext from "../../Contexts/CalendarContext";
-import { Note } from "../../FaunaDB/Api";
 import NoteModal from "./Notes/NoteModal";
 
 const useStyles = makeStyles(() =>
