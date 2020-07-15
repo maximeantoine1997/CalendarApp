@@ -43,7 +43,6 @@ const SquareButtons: React.FunctionComponent<SquareButtonProps> = ({
    const onClick = (newValue: boolean, button: number) => {
       if ((newValue && button === 2) || (!newValue && button === 1)) {
          const newIsActive = !newValue;
-         console.log("newIsActive is: ", newIsActive);
          onClick_(newIsActive);
          setIsActive(newIsActive);
       }
