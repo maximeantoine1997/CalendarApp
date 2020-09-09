@@ -55,7 +55,7 @@ const NoteModal: React.FunctionComponent<NoteModalProps> = ({ open: open_, onClo
    };
 
    const onAdd = async () => {
-      const newNote: Note = { id: "", date: day_, name: "", type: "", note: "" };
+      const newNote: Note = { id: "", startDate: day_, name: "", type: "", note: "" };
       const faunaNote: Fauna<Note> = (await FDBcreateNotesAsync(newNote)) as Fauna<Note>;
       const note = convertToNote(faunaNote);
       setNotes(prev => [...prev, note]);
