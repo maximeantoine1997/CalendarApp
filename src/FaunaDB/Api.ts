@@ -26,7 +26,7 @@ export const convertToReservation = (item: Fauna<Reservation>): Reservation => {
 
 export interface Note {
    id: number | string;
-   date: string;
+   startDate: string;
    name: string;
    type: string;
    note: string;
@@ -61,6 +61,8 @@ export const getAutoCompelteAsync = async () =>
 export const FDBGetUser = async (id: string) => {
    return client.query(q.Get(q.Ref(q.Collection("posts"), id)));
 };
+
+// RESERVATION
 
 export const getReservations = (dates: Array<string>) =>
    client
@@ -99,6 +101,9 @@ export const FDBDeleteReservationAsync = async (reservation: Reservation) => {
    await remove(reservation, "reservations");
 };
 
+// ------------------------------------------------------
+
+// NOTES
 export const getNotes = (dates: Array<string>) =>
    client
       .query(
@@ -135,6 +140,8 @@ export const FDBupdateNotesAsync = async (note: Note) => {
 export const FDBDeleteNotesAsync = async (note: Note) => {
    await remove(note, "notes");
 };
+
+// ------------------------------------------------------
 
 const create = async (element: any, collection: string) => {
    return await client.query(q.Create(q.Collection(collection), { data: element }));
