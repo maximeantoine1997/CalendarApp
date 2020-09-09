@@ -32,11 +32,11 @@ const useStyles = makeStyles(() =>
    })
 );
 
-interface CalendarWeekTabProps {
+interface CalendarWeekColumnProps {
    day: Moment;
 }
 
-const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day }) => {
+const CalendarWeekColumn: React.FC<CalendarWeekColumnProps> = ({ day }) => {
    const classes = useStyles();
    const { calendarType, reservations, updateReservations } = useCalendarContext();
    const [data, setData] = useState<Array<Reservation>>([]);
@@ -85,4 +85,4 @@ const CalendarWeekTab: React.FC<CalendarWeekTabProps> = ({ day }) => {
    );
 };
 
-export default CalendarWeekTab;
+export default CalendarWeekColumn;
