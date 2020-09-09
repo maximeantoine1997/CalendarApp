@@ -1,7 +1,17 @@
 import { Moment } from "moment";
+import { Reservation } from "./components/reservation_form";
+import { Note } from "./FaunaDB/Api";
 
 export const isFunction = (f: any): f is Function => {
    return typeof f === "function";
+};
+
+export const isReservation = (element: any): element is Reservation => {
+   return element.modele !== undefined;
+};
+
+export const isNote = (element: any): element is Note => {
+   return element.note !== undefined;
 };
 
 export const checkIfConnected = (user: Optional<object>, path: string): string => {
@@ -11,7 +21,7 @@ export const checkIfConnected = (user: Optional<object>, path: string): string =
 };
 
 export interface HashMap<T> {
-   [key: string]: Array<T>;
+   [key: string]: T;
 }
 
 export type Nullable<T> = null | T;
@@ -71,3 +81,11 @@ export const getWeekDays = (day: Moment): Array<string> => {
    }
    return days;
 };
+
+// DRAG & DROP
+
+export interface IColumn {
+   id: string;
+   reservationIds: Array<string>;
+   noteIds: Array<string>;
+}
