@@ -2,8 +2,8 @@ import { Box, createStyles, makeStyles } from "@material-ui/core";
 import "firebase/functions";
 import React from "react";
 import CalendarNavigation from "../components/Calendar/CalendarNavigation";
-import CalendarWeekView from "../components/Calendar/CalendarWeekView";
-import { DateContextProvider } from "../Contexts/CalendarContext";
+import CalendarView from "../components/Calendar/CalendarView";
+import { CalendarContextProvider } from "../Contexts/CalendarContext";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -18,12 +18,12 @@ const CalendarPage: React.FC = () => {
    const classes = useStyles();
 
    return (
-      <DateContextProvider>
+      <CalendarContextProvider>
          <Box className={classes.grid}>
             <CalendarNavigation />
-            <CalendarWeekView />
+            <CalendarView />
          </Box>
-      </DateContextProvider>
+      </CalendarContextProvider>
    );
 };
 
