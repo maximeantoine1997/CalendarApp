@@ -1,9 +1,9 @@
 import { Box, Grid } from "@material-ui/core";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
-import moment, { Moment } from "moment";
-import React, { useState } from "react";
+import moment from "moment";
+import React from "react";
 import useCalendarContext from "../../Contexts/CalendarContext";
-import NoteModal from "./Notes/NoteModal";
+import useNoteContext from "../../Contexts/NoteContext";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -42,26 +42,26 @@ const useStyles = makeStyles(() =>
    })
 );
 
-interface CalendarHeaderTabProps {
-   day: Moment;
+interface CalendarColumnHeaderProps {
+   date: string;
 }
 
-const CalendarHeaderTab: React.FunctionComponent<CalendarHeaderTabProps> = ({ day }) => {
+const CalendarColumnHeader: React.FunctionComponent<CalendarColumnHeaderProps> = ({ date }) => {
    const classes = useStyles();
-   const { notes } = useCalendarContext();
+   const { columns, getNotes } = useCalendarContext();
+   const { openModal } = useNoteContext();
 
-   const [open, setOpen] = useState(false);
-
+   const day = moment(date);
    const dayName = day.format("dddd").substring(0, 2).toUpperCase();
    const dayDate = day.date();
-   const dayNotes = notes[day.format("YYYY-MM-DD")];
+   const dayNotes = getNotes(columns[date].noteIds);
+   console.log(date);
+   console.log(columns[date]);
 
-   const onClose = () => {
-      setOpen(false);
-   };
+   console.log("------------------");
 
    const onOpen = () => {
-      setOpen(true);
+      openModal(date);
    };
 
    const renderNotes = dayNotes?.length ? (
@@ -99,9 +99,8 @@ const CalendarHeaderTab: React.FunctionComponent<CalendarHeaderTabProps> = ({ da
                {renderNotes}
             </Box>
          </Grid>
-         <NoteModal open={open} onClose={onClose} day={day.format("YYYY-MM-DD")} />
       </>
    );
 };
 
-export default CalendarHeaderTab;
+export default CalendarColumnHeader;

@@ -3,6 +3,7 @@ import React from "react";
 import { Droppable } from "react-beautiful-dnd";
 import useCalendarContext from "../../Contexts/CalendarContext";
 import { IColumn } from "../../Utils";
+import CalendarColumnHeader from "./CalendarColumnHeader";
 import CalendarReservation from "./Reservation/CalendarReservation";
 
 const useStyles = makeStyles(() =>
@@ -30,12 +31,12 @@ const useStyles = makeStyles(() =>
    })
 );
 
-interface CalendarWeekColumnProps {
+interface CalendarColumnProps {
    day: string;
    column: IColumn;
 }
 
-const CalendarWeekColumn: React.FC<CalendarWeekColumnProps> = ({ day, column }) => {
+const CalendarColumn: React.FC<CalendarColumnProps> = ({ day, column }) => {
    const classes = useStyles();
 
    const { getReservations } = useCalendarContext();
@@ -44,7 +45,7 @@ const CalendarWeekColumn: React.FC<CalendarWeekColumnProps> = ({ day, column }) 
 
    return (
       <Grid container className={classes.calendar} direction="row" alignContent="flex-start" justify="center">
-         {/* <CalendarHeaderTab day={day} /> */}
+         <CalendarColumnHeader date={day} />
          <Droppable droppableId={column.id}>
             {(provided, snapshot) => (
                <div ref={provided.innerRef} className={classes.scroll} {...provided.droppableProps}>
@@ -59,4 +60,4 @@ const CalendarWeekColumn: React.FC<CalendarWeekColumnProps> = ({ day, column }) 
    );
 };
 
-export default CalendarWeekColumn;
+export default CalendarColumn;

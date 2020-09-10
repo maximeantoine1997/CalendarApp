@@ -3,11 +3,14 @@ import "firebase/functions";
 import React from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 import useCalendarContext from "../../Contexts/CalendarContext";
+import { NoteContextProvider } from "../../Contexts/NoteContext";
 import { getWeekDays, HashMap, IColumn } from "../../Utils";
-import CalendarWeekColumn from "./CalendarWeekColumn";
+import CalendarColumn from "./CalendarColumn";
+import NoteModal from "./Notes/NoteModal";
+import CalendarMenu from "./Reservation/CalendarMenu";
 import CalendarModal from "./Reservation/CalendarModal";
 
-const CalendarWeekView: React.FC = () => {
+const CalendarView: React.FC = () => {
    const { date, columns, setColumns } = useCalendarContext();
 
    const weekDays = getWeekDays(date);
@@ -60,19 +63,22 @@ const CalendarWeekView: React.FC = () => {
       }
    };
    if (Object.entries(columns).length === 0) return <> </>;
-   console.log("columns =>", columns);
    return (
       <DragDropContext onDragEnd={onDragEnd}>
-         <Grid container direction="row">
-            {weekDays.map((day: string, index) => {
-               const column = columns[day];
+         <NoteContextProvider>
+            <Grid container direction="row">
+               {weekDays.map((day: string, index) => {
+                  const column = columns[day];
 
-               return <CalendarWeekColumn key={index} day={day} column={column} />;
-            })}
-            <CalendarModal />
-         </Grid>
+                  return <CalendarColumn key={index} day={day} column={column} />;
+               })}
+               <CalendarModal />
+               <CalendarMenu />
+               <NoteModal />
+            </Grid>
+         </NoteContextProvider>
       </DragDropContext>
    );
 };
 
-export default CalendarWeekView;
+export default CalendarView;
