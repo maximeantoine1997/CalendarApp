@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box, createStyles, Grid, makeStyles } from "@material-ui/core";
-import React, { useState } from "react";
+import React from "react";
 import { Draggable } from "react-beautiful-dnd";
 import useCalendarContext from "../../../Contexts/CalendarContext";
 import { typeColors } from "../../../Utils";
@@ -36,28 +36,11 @@ interface CalendarReservationProps {
 
 const CalendarReservation: React.FC<CalendarReservationProps> = ({ reservation, index }) => {
    const classes = useStyles();
-   const { updateReservation, deleteReservation, openModal } = useCalendarContext();
-
-   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+   const { openModal, openMenu } = useCalendarContext();
 
    const handleClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       event.preventDefault();
-      setAnchorEl(event.currentTarget);
-   };
-
-   //    const onModalClose = (newReservation: Reservation) => {
-   //       updateReservation(newReservation);
-   //       setExpand(false);
-   //    };
-
-   const handleClose = () => {
-      updateReservation(reservation);
-      setAnchorEl(null);
-   };
-
-   const handleDelete = () => {
-      deleteReservation(reservation);
-      setAnchorEl(null);
+      openMenu(event.currentTarget, reservation);
    };
 
    const getAccessoires = (): string => {
@@ -76,12 +59,7 @@ const CalendarReservation: React.FC<CalendarReservationProps> = ({ reservation, 
       <Draggable draggableId={((reservation.id as unknown) as string) || ""} index={index}>
          {(provided, snapshot) => {
             return (
-               <div
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                  ref={provided.innerRef}
-                  // className={snapshot.isDragging ? classes.draggedItem : classes.item}
-               >
+               <div {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
                   <Grid
                      container
                      onClick={() => openModal(reservation)}
@@ -126,18 +104,6 @@ const CalendarReservation: React.FC<CalendarReservationProps> = ({ reservation, 
                   </Grid>
                </div>
             );
-
-            // {
-            //    reservation.type !== "Livré / Venu Chercher" && (
-            //       <CalendarMenu
-            //          reservation={reservation}
-            //          anchorEl={anchorEl}
-            //          handleClick={handleClick}
-            //          handleClose={handleClose}
-            //          handleDelete={handleDelete}
-            //       />
-            //    );
-            // }
          }}
       </Draggable>
    );
