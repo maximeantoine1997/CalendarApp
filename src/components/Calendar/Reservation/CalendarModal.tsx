@@ -15,15 +15,14 @@ import ClearIcon from "@material-ui/icons/Clear";
 import DoneIcon from "@material-ui/icons/Done";
 import LocalShippingIcon from "@material-ui/icons/LocalShipping";
 import PaymentIcon from "@material-ui/icons/Payment";
-import React, { useRef, useState } from "react";
+import { useSnackbar } from "notistack";
+import React, { useEffect, useRef, useState } from "react";
 import useCalendarContext from "../../../Contexts/CalendarContext";
-import { FDBupdateReservationAsync } from "../../../FaunaDB/Api";
 import DateComponent from "../../FormElements/DateComponent";
 import SquareButtons from "../../FormElements/SquareButton";
 import TextBox from "../../FormElements/TextBox";
 import TextComponent from "../../FormElements/TextComponent";
 import { KVReservation, Reservation } from "../../reservation_form";
-import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -44,20 +43,17 @@ const useStyles = makeStyles(() =>
       },
    })
 );
-interface CalendarModalProps {
-   reservation: Reservation;
-   open: boolean;
-   onClose: (reservation: Reservation | null) => void;
-}
+interface CalendarModalProps {}
 
-const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_, open, onClose: onClose_ }) => {
+const CalendarModal: React.FC<CalendarModalProps> = () => {
    const classes = useStyles();
-   const [isReadOnly, setIsReadOnly] = useState<boolean>(true);
-   const reservation = useRef<KVReservation>({ ...reservation_ });
-   const { setReservations, reservations } = useCalendarContext();
+   const { closeModal, modalReservation, updateReservation } = useCalendarContext();
    const { enqueueSnackbar } = useSnackbar();
 
-   const modifiedReservation = useRef<KVReservation>({ ...reservation_ });
+   const [isOpen, setIsOpen] = useState<boolean>(false);
+   const [isReadOnly, setIsReadOnly] = useState<boolean>(true);
+   const reservation = useRef<KVReservation>({ ...(modalReservation as Reservation) });
+   const modifiedReservation = useRef<KVReservation>({ ...(modalReservation as Reservation) });
 
    const onModify = () => {
       modifiedReservation.current = { ...reservation.current };
@@ -69,39 +65,19 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
    };
 
    const onSave = () => {
-      const startDate = reservation.current.startDate;
-
+      // If startDate is Moment object => change it to string
       if (typeof modifiedReservation.current.startDate !== "string") {
          modifiedReservation.current.startDate = modifiedReservation.current.startDate.format("YYYY-MM-DD");
       }
 
-      const currentDate = modifiedReservation.current.startDate;
-
-      if (startDate !== currentDate) {
-         const old = { ...reservations };
-         const start = old[startDate];
-         const current = old[currentDate] || [];
-
-         const index = start.findIndex(res => res.id === reservation.current.id);
-         if (index > -1) {
-            start.splice(index, 1);
-         }
-         current.push({ ...modifiedReservation.current });
-         old[startDate] = start;
-         old[currentDate] = current;
-
-         setReservations(old);
-      }
+      // Update previous reservation with the new modified one
       reservation.current = { ...modifiedReservation.current };
-      setIsReadOnly(true);
-      try {
-         FDBupdateReservationAsync({ ...modifiedReservation.current });
-         enqueueSnackbar("Modifié", { variant: "success" });
-      } catch (error) {
-         enqueueSnackbar("Erreur", { variant: "error" });
-      }
 
-      // updateReservationAsync({ ...modifiedReservation.current });
+      // Make the Modal read-only again
+      setIsReadOnly(true);
+
+      updateReservation({ ...modifiedReservation.current });
+      enqueueSnackbar("Modifié", { variant: "success" });
    };
 
    const onChange = (key: keyof Reservation, value: unknown) => {
@@ -109,8 +85,21 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ reservation: reservation_
       res[key] = value;
    };
 
+   const onClose = (reservation: Reservation) => {
+      closeModal(reservation);
+      setIsOpen(false);
+   };
+
+   useEffect(() => {
+      if (modalReservation) {
+         // Change reservation.current to the new modalReservation
+         reservation.current = modalReservation;
+         setIsOpen(true);
+      }
+   }, [modalReservation]);
+
    return (
-      <Dialog open={open} onClose={() => onClose_(reservation.current)} fullWidth maxWidth="lg" scroll="paper">
+      <Dialog open={isOpen} onClose={() => onClose(reservation.current)} fullWidth maxWidth="lg" scroll="paper">
          <DialogContent>
             <Grid container>
                <Grid container className={classes.dialog} direction="row" justify="center" alignContent="flex-start">
