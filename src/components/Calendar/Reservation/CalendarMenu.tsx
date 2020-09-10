@@ -1,56 +1,58 @@
 import { Divider, Menu, MenuItem } from "@material-ui/core";
 import { useSnackbar } from "notistack";
-import React, { useState } from "react";
-import { FDBDeleteReservationAsync, FDBupdateReservationAsync } from "../../../FaunaDB/Api";
-// import { updateReservationAsync } from "../../../Firebase/Firebase.Utils";
+import React, { useEffect, useState } from "react";
+import useCalendarContext from "../../../Contexts/CalendarContext";
 import { ReservationType, typeColors } from "../../../Utils";
 import { Reservation } from "../../reservation_form";
 import ColorBlock from "../Blocks/ColorBlock";
 import DeleteModal from "./DeleteModal";
 
-interface CalendarMenuProps {
-   reservation: Reservation;
-   anchorEl: null | HTMLElement;
-   handleClick: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-   handleClose: () => void;
-   handleDelete: () => void;
-}
+interface CalendarMenuProps {}
 
-const CalendarMenu: React.FunctionComponent<CalendarMenuProps> = ({
-   reservation,
-   anchorEl,
-   handleClick,
-   handleClose,
-   handleDelete,
-}) => {
+const CalendarMenu: React.FunctionComponent<CalendarMenuProps> = () => {
    const { enqueueSnackbar } = useSnackbar();
+   const { updateReservation, deleteReservation, closeMenu, menuReservation, anchorEl } = useCalendarContext();
 
    const [openModal, setOpenModal] = useState<boolean>(false);
+   const [isopen, setIsOpen] = useState<boolean>(false);
 
    const onClick = (newType: ReservationType) => {
-      reservation.type = newType;
+      const newReservation: Reservation = {
+         ...(menuReservation as Reservation),
+         type: newType,
+      };
+
       try {
-         // updateReservationAsync(reservation);
-         FDBupdateReservationAsync(reservation);
+         updateReservation(newReservation);
+         onClosMenu();
          enqueueSnackbar("Modifié", { variant: "success" });
       } catch {
          enqueueSnackbar("Erreur", { variant: "error" });
       }
-
-      handleClose();
    };
 
-   const deleteReservation = () => {
+   const onDeleteReservation = () => {
       try {
-         FDBDeleteReservationAsync(reservation);
+         deleteReservation(menuReservation as Reservation);
+         onClosMenu();
          enqueueSnackbar("Supprimé", { variant: "success" });
-         setOpenModal(false);
       } catch {
          enqueueSnackbar("Erreur", { variant: "error" });
       }
-
-      handleDelete();
    };
+
+   const onClosMenu = () => {
+      setIsOpen(false);
+      console.log("CLOSE MENY");
+      closeMenu();
+   };
+
+   useEffect(() => {
+      if (anchorEl) {
+         console.log("ANCHOR CHANGED");
+         setIsOpen(Boolean(anchorEl));
+      }
+   }, [anchorEl]);
 
    return (
       <>
@@ -58,11 +60,11 @@ const CalendarMenu: React.FunctionComponent<CalendarMenuProps> = ({
             id="simple-menu"
             anchorEl={anchorEl}
             keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
+            open={isopen}
+            onClose={onClosMenu}
             onContextMenu={e => {
                e.preventDefault();
-               handleClose();
+               onClosMenu();
             }}
          >
             <MenuItem onClick={() => setOpenModal(true)}>Supprimer </MenuItem>
@@ -107,9 +109,9 @@ const CalendarMenu: React.FunctionComponent<CalendarMenuProps> = ({
          <DeleteModal
             onClose={() => {
                setOpenModal(false);
-               handleDelete();
+               deleteReservation(menuReservation as Reservation);
             }}
-            onDelete={deleteReservation}
+            onDelete={onDeleteReservation}
             open={openModal}
          />
       </>
