@@ -104,7 +104,7 @@ export const FDBDeleteReservationAsync = async (reservation: Reservation) => {
 // ------------------------------------------------------
 
 // NOTES
-export const getNotes = (dates: Array<string>) =>
+export const FDBGetNotes = (dates: Array<string>) =>
    client
       .query(
          q.Paginate(
