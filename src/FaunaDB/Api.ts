@@ -26,7 +26,7 @@ export const convertToReservation = (item: Fauna<Reservation>): Reservation => {
 
 export interface Note {
    id: number | string;
-   startDate: string;
+   date: string;
    name: string;
    type: string;
    note: string;
@@ -64,7 +64,7 @@ export const FDBGetUser = async (id: string) => {
 
 // RESERVATION
 
-export const getReservations = (dates: Array<string>) =>
+export const FDBgetReservations = (dates: Array<string>) =>
    client
       .query(
          q.Paginate(

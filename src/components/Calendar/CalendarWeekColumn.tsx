@@ -1,10 +1,8 @@
 import { createStyles, Grid, makeStyles } from "@material-ui/core";
-import { Moment } from "moment";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { Droppable } from "react-beautiful-dnd";
 import useCalendarContext from "../../Contexts/CalendarContext";
-import { isTransport } from "../../Utils";
-import { Reservation } from "../reservation_form";
-import CalendarHeaderTab from "./CalendarHeaderTab";
+import { IColumn } from "../../Utils";
 import CalendarReservation from "./Reservation/CalendarReservation";
 
 const useStyles = makeStyles(() =>
@@ -33,54 +31,30 @@ const useStyles = makeStyles(() =>
 );
 
 interface CalendarWeekColumnProps {
-   day: Moment;
+   day: string;
+   column: IColumn;
 }
 
-const CalendarWeekColumn: React.FC<CalendarWeekColumnProps> = ({ day }) => {
+const CalendarWeekColumn: React.FC<CalendarWeekColumnProps> = ({ day, column }) => {
    const classes = useStyles();
-   const { calendarType, reservations, updateReservations } = useCalendarContext();
-   const [data, setData] = useState<Array<Reservation>>([]);
 
-   const filterData = (): Array<Reservation> => {
-      let newData: Array<Reservation> = data;
+   const { getReservations } = useCalendarContext();
 
-      if (calendarType === "transport") {
-         newData = data.filter(reservation => isTransport[reservation.type]);
-      }
-
-      return newData;
-   };
-
-   const filteredData = filterData();
-
-   const onUpdate = (newReservation: Reservation | null, index: number) => {
-      const newData = [...data];
-      if (newReservation) {
-         newData[index] = newReservation;
-      } else {
-         newData.splice(index, 1);
-      }
-      updateReservations(day.format("YYYY-MM-DD"), newData);
-   };
-
-   useEffect(() => {
-      setData(reservations[day.format("YYYY-MM-DD")] || []);
-   }, [day, reservations]);
+   const reservations = getReservations(column.reservationIds);
 
    return (
       <Grid container className={classes.calendar} direction="row" alignContent="flex-start" justify="center">
-         <CalendarHeaderTab day={day} />
-         <Grid item className={classes.scroll}>
-            {filteredData.map((reservation, index) => {
-               return (
-                  <CalendarReservation
-                     reservation={reservation}
-                     key={index}
-                     onUpdate={newReservation => onUpdate(newReservation, index)}
-                  />
-               );
-            })}
-         </Grid>
+         {/* <CalendarHeaderTab day={day} /> */}
+         <Droppable droppableId={column.id}>
+            {(provided, snapshot) => (
+               <div ref={provided.innerRef} className={classes.scroll} {...provided.droppableProps}>
+                  {reservations.map((reservation, index) => {
+                     return <CalendarReservation reservation={reservation} key={reservation.id} index={index} />;
+                  })}
+                  {provided.placeholder}
+               </div>
+            )}
+         </Droppable>
       </Grid>
    );
 };
