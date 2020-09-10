@@ -1,28 +1,22 @@
 import {
+   Box,
    Button,
+   createStyles,
    Dialog,
    DialogActions,
    DialogContent,
    Divider,
    Grid,
-   Typography,
    makeStyles,
-   createStyles,
-   Box,
+   Typography,
 } from "@material-ui/core";
+import DeleteIcon from "@material-ui/icons/Delete";
 import { useSnackbar } from "notistack";
 import React, { ReactNode, useEffect, useState } from "react";
 import useCalendarContext from "../../../Contexts/CalendarContext";
-import {
-   convertToNote,
-   Fauna,
-   FDBcreateNotesAsync,
-   FDBupdateNotesAsync,
-   Note,
-   FDBDeleteNotesAsync,
-} from "../../../FaunaDB/Api";
+import useNoteContext from "../../../Contexts/NoteContext";
+import { convertToNote, Fauna, FDBcreateNotesAsync, Note } from "../../../FaunaDB/Api";
 import TextComponent from "../../FormElements/TextComponent";
-import DeleteIcon from "@material-ui/icons/Delete";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -33,20 +27,19 @@ const useStyles = makeStyles(() =>
    })
 );
 
-interface NoteModalProps {
-   open: boolean;
-   onClose: () => void;
-   day: string;
-}
+interface NoteModalProps {}
 
-const NoteModal: React.FunctionComponent<NoteModalProps> = ({ open: open_, onClose: onClose_, day: day_ }) => {
+const NoteModal: React.FunctionComponent<NoteModalProps> = () => {
    const classes = useStyles();
    const { enqueueSnackbar } = useSnackbar();
-   const { notes: notes_, setNotes: setNotes_ } = useCalendarContext();
+   const { getNotes, updateNote, deleteNote, columns } = useCalendarContext();
+   const { modalDate, closeModal, isOpenModal } = useNoteContext();
 
    const [isReadOnly, setIsReadOnly] = useState<boolean>(true);
-   const [notes, setNotes] = useState<Array<Note>>(notes_[day_] || []);
 
+   // get the array of notes specific from that day
+   const [notes, setNotes] = useState<Array<Note>>([]);
+   console.log("NOTES", notes);
    const onModify = async () => {
       if (!notes.length) {
          await onAdd();
@@ -55,7 +48,7 @@ const NoteModal: React.FunctionComponent<NoteModalProps> = ({ open: open_, onClo
    };
 
    const onAdd = async () => {
-      const newNote: Note = { id: "", startDate: day_, name: "", type: "", note: "" };
+      const newNote: Note = { id: "", date: modalDate, name: "", type: "", note: "" };
       const faunaNote: Fauna<Note> = (await FDBcreateNotesAsync(newNote)) as Fauna<Note>;
       const note = convertToNote(faunaNote);
       setNotes(prev => [...prev, note]);
@@ -64,13 +57,7 @@ const NoteModal: React.FunctionComponent<NoteModalProps> = ({ open: open_, onClo
    const onSave = () => {
       // Update notes from DB
       notes.forEach(note => {
-         FDBupdateNotesAsync(note);
-      });
-
-      // Update notes from React Context
-      setNotes_(prev => {
-         prev[day_] = notes;
-         return prev;
+         updateNote(note);
       });
       enqueueSnackbar("Modifié", { variant: "success" });
       setIsReadOnly(true);
@@ -90,13 +77,13 @@ const NoteModal: React.FunctionComponent<NoteModalProps> = ({ open: open_, onClo
       });
    };
 
-   const onDelete = async (id: string) => {
-      const index = notes.findIndex(element => element.id === id);
+   const onDelete = async (note: Note) => {
+      const index = notes.findIndex(element => element.id === note.id);
       if (index < 0) return;
-      // Remove note from DB
-      await FDBDeleteNotesAsync(notes[index]);
+      // Remove note from DB & Context
+      deleteNote(note);
 
-      // Remove note from React
+      // Remove note from array
       setNotes(prev => {
          prev.splice(index, 1);
          return [...prev];
@@ -107,14 +94,16 @@ const NoteModal: React.FunctionComponent<NoteModalProps> = ({ open: open_, onClo
 
    const onClose = () => {
       setIsReadOnly(true);
-      onClose_();
+      closeModal();
    };
 
    useEffect(() => {
-      if (notes_[day_]) {
-         setNotes(notes_[day_]);
+      if (modalDate) {
+         const newNotes = getNotes(columns[modalDate].noteIds);
+         setNotes(newNotes);
       }
-   }, [day_, notes_]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [modalDate]);
 
    const renderNote = (note: Note): ReactNode => {
       return (
@@ -153,7 +142,7 @@ const NoteModal: React.FunctionComponent<NoteModalProps> = ({ open: open_, onClo
             </Grid>
             {!isReadOnly && (
                <Grid item xs={1}>
-                  <DeleteIcon className={classes.delete} onClick={() => onDelete(note.id as string)} />
+                  <DeleteIcon className={classes.delete} onClick={() => onDelete(note)} />
                </Grid>
             )}
          </Grid>
@@ -183,7 +172,7 @@ const NoteModal: React.FunctionComponent<NoteModalProps> = ({ open: open_, onClo
 
    return (
       <>
-         <Dialog open={open_} onClose={onClose} fullWidth maxWidth="md" scroll="paper">
+         <Dialog open={isOpenModal} onClose={onClose} fullWidth maxWidth="md" scroll="paper">
             <DialogContent>
                {renderNoteDescription}
                {notes?.map((note, index) =>
