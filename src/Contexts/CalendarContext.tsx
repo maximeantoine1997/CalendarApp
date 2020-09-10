@@ -5,14 +5,17 @@ import {
    convertToNote,
    convertToReservation,
    Fauna,
+   FDBDeleteNotesAsync,
+   FDBDeleteReservationAsync,
+   FDBGetNotes,
    FDBgetReservations,
+   FDBupdateNotesAsync,
    FDBupdateReservationAsync,
-   getNotes,
    Note,
 } from "../FaunaDB/Api";
 import { getWeekDays, HashMap, IColumn, isNote, isReservation } from "../Utils";
 
-interface IDateContext {
+interface ICalendarContext {
    date: Moment;
    setDate: React.Dispatch<React.SetStateAction<Moment>>;
    reservations: HashMap<Reservation>;
@@ -29,9 +32,16 @@ interface IDateContext {
    openModal: (reservation: Reservation) => void;
    closeModal: (reservation: Reservation) => void;
    modalReservation: Reservation | undefined;
+   anchorEl: null | HTMLElement;
+   menuReservation: Reservation | undefined;
+   openMenu: (anchor: HTMLElement, reservation: Reservation) => void;
+   closeMenu: () => void;
+   getNotes: (ids: Array<string>) => Array<Note>;
+   updateNote: (newNote: Note) => void;
+   deleteNote: (note: Note) => void;
 }
 
-export const DateContext = createContext<IDateContext>({
+export const CalendarContext = createContext<ICalendarContext>({
    date: moment(),
    setDate: () => {},
    reservations: {},
@@ -48,9 +58,16 @@ export const DateContext = createContext<IDateContext>({
    openModal: () => {},
    closeModal: () => {},
    modalReservation: undefined,
+   anchorEl: null,
+   menuReservation: undefined,
+   openMenu: () => {},
+   closeMenu: () => {},
+   getNotes: () => [],
+   updateNote: () => {},
+   deleteNote: () => {},
 });
 
-export const DateContextProvider = (props: { children: ReactNode }): ReactElement => {
+export const CalendarContextProvider = (props: { children: ReactNode }): ReactElement => {
    const [date, setDate] = useState<Moment>(moment());
    const [reservations, setReservations] = useState<HashMap<Reservation>>({});
    const [notes, setNotes] = useState<HashMap<Note>>({});
@@ -90,8 +107,9 @@ export const DateContextProvider = (props: { children: ReactNode }): ReactElemen
                res.push((id as unknown) as string);
             }
             if (isNote(element)) {
+               console.log(element);
                const day = element.date;
-               const res = Array.from(cols[day].noteIds);
+               const res = cols[day].noteIds;
                res.push(id as string);
             }
          });
@@ -107,12 +125,10 @@ export const DateContextProvider = (props: { children: ReactNode }): ReactElemen
 
          // Get the elements from Fauna DB
          const newReservations: any = await FDBgetReservations(getWeekDays(date));
-         const newNotes: any = await getNotes(getWeekDays(date));
+         const newNotes: any = await FDBGetNotes(getWeekDays(date));
 
          // If no elements => error => return
          if (!newReservations || !newNotes) return;
-         console.log(newReservations);
-         console.log(newNotes);
          // creates the different necessary hashs for the frontend
          populateHash(newReservations, convertToReservation, cols);
          populateHash(newNotes, convertToNote, cols);
@@ -152,6 +168,8 @@ export const DateContextProvider = (props: { children: ReactNode }): ReactElemen
    const deleteReservation = (reservation: Reservation): void => {
       if (!reservation.id) return;
       delete reservations[reservation.id];
+
+      FDBDeleteReservationAsync(reservation);
    };
 
    //#endregion
@@ -172,10 +190,59 @@ export const DateContextProvider = (props: { children: ReactNode }): ReactElemen
 
    //#endregion
 
-   //#region RIGHT CLICK MODAL
+   //#region RIGHT CLICK MENU
+
+   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+   const [menuReservation, setMenuReservation] = useState<Reservation | undefined>(undefined);
+
+   const openMenu = (anchor: HTMLElement, reservation: Reservation): void => {
+      console.log("OPENING...", anchor, reservation);
+      setAnchorEl(anchor);
+      setMenuReservation(reservation);
+   };
+
+   const closeMenu = (): void => {
+      setAnchorEl(null);
+      setMenuReservation(undefined);
+   };
 
    //#endregion
-   const dateContext = {
+
+   //#region NOTES
+   const getNotes = (ids: Array<string>): Array<Note> => {
+      const res: Array<Note> = [];
+      ids.forEach(id => {
+         const element = notes[id];
+         res.push(element);
+      });
+      return res;
+   };
+
+   const updateNote = (newNote: Note): void => {
+      const newHash = { ...notes };
+      const id = newNote.id;
+      if (!id) return;
+      newHash[id] = newNote;
+
+      // Update the modified Reservation in the hash
+      setNotes(newHash);
+
+      // Update the modified Reservation in the DB too
+      try {
+         FDBupdateNotesAsync({ ...newNote });
+      } catch (error) {
+         console.log(error);
+      }
+   };
+
+   const deleteNote = (note: Note): void => {
+      if (!note.id) return;
+      delete notes[note.id];
+
+      FDBDeleteNotesAsync(note);
+   };
+   //#endregion
+   const calendarContext = {
       date,
       setDate,
       notes,
@@ -192,12 +259,19 @@ export const DateContextProvider = (props: { children: ReactNode }): ReactElemen
       openModal,
       closeModal,
       modalReservation,
+      anchorEl,
+      openMenu,
+      closeMenu,
+      menuReservation,
+      getNotes,
+      updateNote,
+      deleteNote,
    };
-   return <DateContext.Provider value={dateContext}>{props.children}</DateContext.Provider>;
+   return <CalendarContext.Provider value={calendarContext}>{props.children}</CalendarContext.Provider>;
 };
 
-const useCalendarContext = (): IDateContext => {
-   const context = useContext(DateContext);
+const useCalendarContext = (): ICalendarContext => {
+   const context = useContext(CalendarContext);
    if (context === null) {
       throw new Error("DateContext is not provided");
    }
