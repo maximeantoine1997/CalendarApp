@@ -350,7 +350,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    useEffect(() => {
       const getAutocomplete = async () => {
          const data = ((await getAutoCompelteAsync()) as unknown) as Array<Fauna<Autocomplete>>;
-         const hash: HashMap<string> = {};
+         const hash: HashMap<Array<string>> = {};
          data.forEach(item => {
             const name = autocompleteMapping[item.ref.id];
             hash[name] = item.data.items;
