@@ -1,16 +1,13 @@
-import React, { useState } from "react";
-import { Moment } from "moment";
-import { Grid, Typography, Button, Dialog, makeStyles, createStyles } from "@material-ui/core";
-import InsertInvitationIcon from "@material-ui/icons/InsertInvitation";
-import { MuiPickersUtilsProvider, Calendar } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
+import { Button, createStyles, Dialog, Grid, makeStyles, Typography } from "@material-ui/core";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
+import InsertInvitationIcon from "@material-ui/icons/InsertInvitation";
+import { Calendar, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
-import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
-import ToggleButton from "@material-ui/lab/ToggleButton";
+import { Moment } from "moment";
+import React, { useState } from "react";
 import useCalendarContext from "../../Contexts/CalendarContext";
-import { CalendarType } from "../../Utils";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -33,7 +30,7 @@ const useStyles = makeStyles(() =>
 const CalendarNavigation: React.FC = () => {
    const classes = useStyles();
 
-   const { date, setDate, calendarType, setCalendarType } = useCalendarContext();
+   const { date, setDate } = useCalendarContext();
 
    const monday = date.clone().day(1).date();
    const sunday = date.clone().day(7).date();
@@ -59,9 +56,6 @@ const CalendarNavigation: React.FC = () => {
       setDate(newDate as Moment);
    };
 
-   const onChangeCalendarType = (type: CalendarType) => {
-      setCalendarType(type);
-   };
    return (
       <Grid container className={classes.root} direction="row">
          <Grid item xs={4}>
@@ -80,12 +74,7 @@ const CalendarNavigation: React.FC = () => {
             </Grid>
          </Grid>
          <Grid item xs={4}>
-            <Grid container justify="center">
-               <ToggleButtonGroup value={calendarType} exclusive onChange={(_, v) => onChangeCalendarType(v)}>
-                  <ToggleButton value="general">GENERAL</ToggleButton>
-                  <ToggleButton value="transport">TRANSPORT</ToggleButton>
-               </ToggleButtonGroup>
-            </Grid>
+            <Grid container justify="center"></Grid>
          </Grid>
          <Grid item xs={4}>
             <Grid container justify="center">
