@@ -54,11 +54,7 @@ const CalendarColumnHeader: React.FunctionComponent<CalendarColumnHeaderProps> =
    const day = moment(date);
    const dayName = day.format("dddd").substring(0, 2).toUpperCase();
    const dayDate = day.date();
-   const dayNotes = getNotes(columns[date].noteIds);
-   console.log(date);
-   console.log(columns[date]);
-
-   console.log("------------------");
+   const dayNotes = columns[date] ? getNotes(columns[date].noteIds) : [];
 
    const onOpen = () => {
       openModal(date);

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import AddButton from "../components/AddButton";
 import SideBar from "../components/Navigation/Sidebar";
+import { CalendarContextProvider } from "../Contexts/CalendarContext";
 import AccountPage from "../pages/AccountPage";
 import CalendarPage from "../pages/CalendarPage";
 import HomePage from "../pages/HomePage";
@@ -39,33 +40,86 @@ const AuthApp: React.FC = () => {
       return () => window.removeEventListener("resize", updateWidthAndHeight);
    });
 
+   useEffect(() => {
+      //   const onClick = async () => {
+      //      const reservations: any = await FDBGetAllReservations();
+      //      console.log(reservations);
+      //      if (!reservations) return;
+      //      const hash: HashMap<Array<Reservation>> = {};
+      //      const data = reservations.data as Array<Fauna<Reservation>>;
+      //      // store all reservations in a hash
+      //      data.forEach(fReservation => {
+      //         const reservation = convertToReservation(fReservation);
+      //         const date = reservation.startDate;
+      //         // add new element to existing array
+      //         if (hash[date]) {
+      //            const newHash = Array.from(hash[date]);
+      //            newHash.push(reservation);
+      //            hash[date] = newHash;
+      //            return;
+      //         }
+      //         // hash has nothing stored yet so create array
+      //         hash[date] = [reservation];
+      //      });
+      //      for (let date in hash) {
+      //         const res = hash[date];
+      //         for (let i = 0; i < res.length - 1; i++) {
+      //            const currentReservation = res[i];
+      //            const nextReservation = res[i + 1];
+      //            let previousId = (currentReservation.id as unknown) as string;
+      //            let nextId = (nextReservation.id as unknown) as string;
+      //            if (!previousId || !nextId) return;
+      //            // Asign next ID to current item
+      //            res[i] = {
+      //               ...currentReservation,
+      //               next: nextId,
+      //            };
+      //            // Assign previous ID to the next item
+      //            res[i + 1] = {
+      //               ...nextReservation,
+      //               previous: previousId,
+      //            };
+      //         }
+      //         res[0] = { ...res[0], previous: "FIRST" };
+      //         res[res.length - 1] = { ...res[res.length - 1], next: "LAST" };
+      //         res.forEach(element => {
+      //            FDBupdateReservationAsync(element);
+      //         });
+      //      }
+      //      console.log("DONE");
+      //   };
+      // onClick();
+   }, []);
+
    return (
       <Router>
-         <Grid container style={{ width: width, height: height, overflowX: "hidden" }}>
-            <Grid item xs={12} className={classes.menu}>
-               <SideBar />
+         <CalendarContextProvider>
+            <Grid container style={{ width: width, height: height, overflowX: "hidden" }}>
+               <Grid item xs={12} className={classes.menu}>
+                  <SideBar />
+               </Grid>
+               <Grid item xs={12}>
+                  <Switch>
+                     <Route path="/reservation">
+                        <ReservationPage />
+                     </Route>
+                     <Route path="/calendrier">
+                        <CalendarPage />
+                     </Route>
+                     <Route path="/account">
+                        <AccountPage />
+                     </Route>
+                     <Route path="/settings">
+                        <SettingsPage />
+                     </Route>
+                     <Route exact path="/">
+                        <HomePage />
+                     </Route>
+                  </Switch>
+                  <AddButton />
+               </Grid>
             </Grid>
-            <Grid item xs={12}>
-               <Switch>
-                  <Route path="/reservation">
-                     <ReservationPage />
-                  </Route>
-                  <Route path="/calendrier">
-                     <CalendarPage />
-                  </Route>
-                  <Route path="/account">
-                     <AccountPage />
-                  </Route>
-                  <Route path="/settings">
-                     <SettingsPage />
-                  </Route>
-                  <Route exact path="/">
-                     <HomePage />
-                  </Route>
-               </Switch>
-               <AddButton />
-            </Grid>
-         </Grid>
+         </CalendarContextProvider>
       </Router>
    );
 };

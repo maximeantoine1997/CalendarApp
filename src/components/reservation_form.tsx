@@ -10,8 +10,9 @@ import PersonIcon from "@material-ui/icons/Person";
 import moment, { Moment } from "moment";
 import React, { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { Autocomplete, Fauna, FDBcreateReservationAsync, getAutoCompelteAsync } from "../FaunaDB/Api";
+import { Autocomplete, Fauna, getAutoCompelteAsync } from "../FaunaDB/Api";
 import { autocompleteMapping } from "../FaunaDB/FaunaDB.Utils";
+import UseDragDrop from "../Hooks/UseDragDrop";
 import { HashMap, ReservationType } from "../Utils";
 import DateComponent from "./FormElements/DateComponent";
 import SquareButtons from "./FormElements/SquareButton";
@@ -110,6 +111,10 @@ export interface Reservation {
    varyNumber?: string;
    type: ReservationType;
    notes?: string;
+
+   // Drag & Drop
+   previous?: string;
+   next?: string;
 }
 
 export type KVReservation = {
@@ -119,6 +124,8 @@ export type KVReservation = {
 const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    const classes = useStyles();
    const history = useHistory();
+
+   const { addDragDrop } = UseDragDrop();
 
    const initValidForm: ValidReservation = {
       company: {
@@ -220,13 +227,14 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
       isCompany: true,
       toSave: true,
       type: "A Livrer",
+      varyNumber: "",
    });
 
    const [validForm, setValidForm] = useState<ValidReservation>({ ...initValidForm });
    const [hasEndDate, setHasEndDate] = useState<boolean>(false);
    const [isCompany, setIsCompany] = useState<boolean>(true);
    const [isToBeDelivered, setIsToBeDelivered] = useState<boolean>(true);
-   const [hasCaution, setHasCaution] = useState<boolean>(true);
+   const [hasCaution, setHasCaution] = useState<boolean>(false);
    const [autocomplete, setAutocomplete] = useState<HashMap<unknown>>({});
 
    const onChange = (key: keyof Reservation, value: unknown) => {
@@ -250,6 +258,11 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
 
       if (!res.isToBeDelivered) {
          res.type = "Client Vient Chercher";
+      }
+
+      // If "Caution" change type
+      if (res.amount > 0) {
+         res.type = "Attente Caution";
       }
 
       //   addAutocompleteItem("street", res.street);
@@ -280,9 +293,9 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
       //   });
       //   history.push("/calendrier");
 
-      FDBcreateReservationAsync({ ...res })
-         .then(() => history.push("/calendrier"))
-         .catch(error => console.log(error));
+      addDragDrop(res).then(() => {
+         history.push("/calendrier");
+      });
    };
 
    /**

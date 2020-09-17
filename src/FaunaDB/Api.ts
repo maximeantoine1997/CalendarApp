@@ -17,13 +17,6 @@ export interface Autocomplete {
    items: Array<string>;
 }
 
-export const convertToReservation = (item: Fauna<Reservation>): Reservation => {
-   const res = item.data;
-   res["id"] = item.ref.id;
-
-   return res;
-};
-
 export interface Note {
    id: number | string;
    date: string;
@@ -32,12 +25,25 @@ export interface Note {
    note: string;
 }
 
+//#region CONVERSION
+
+export const convertToReservation = (item: Fauna<Reservation>): Reservation => {
+   const res = item.data;
+   res["id"] = item.ref.id;
+
+   return res;
+};
+
 export const convertToNote = (item: Fauna<Note>): Note => {
    const res = item.data;
    res["id"] = item.ref.id;
 
    return res;
 };
+
+//#endregion
+
+//#region  LOGIN
 
 export const FDBLogin = async (email: string, password: string) => {
    return client.query(q.Login(q.Match(q.Index("users_by_email"), email), { password })).then(res => res);
@@ -46,6 +52,12 @@ export const FDBLogin = async (email: string, password: string) => {
 export const FDBLogout = async () => {
    return client.query(q.Logout(true));
 };
+
+export const FDBGetUser = async (id: string) => {
+   return client.query(q.Get(q.Ref(q.Collection("posts"), id)));
+};
+
+//#endregion
 
 export const getAutoCompelteAsync = async () =>
    client.query(q.Paginate(q.Match(q.Index("all_autocomplete")))).then((response: any) => {
@@ -58,11 +70,7 @@ export const getAutoCompelteAsync = async () =>
       return client.query(getAllProductDataQuery).then(data => data);
    });
 
-export const FDBGetUser = async (id: string) => {
-   return client.query(q.Get(q.Ref(q.Collection("posts"), id)));
-};
-
-// RESERVATION
+//#region RESERVATION
 
 export const FDBgetReservations = (dates: Array<string>) =>
    client
@@ -89,8 +97,19 @@ export const FDBgetReservations = (dates: Array<string>) =>
       })
       .catch(error => console.warn("error", error.message));
 
+export const FDBGetAllReservations = async () =>
+   client.query(
+      q.Map(
+         q.Paginate(q.Match(q.Index("all_reservations")), { size: 2000 }),
+         q.Lambda(x => q.Get(x))
+      )
+   );
+
 export const FDBcreateReservationAsync = async (reservation: Reservation) => {
-   await create(reservation, "reservations");
+   const newReservation = (await create(reservation, "reservations")) as Fauna<Reservation>;
+
+   // Return the newly created reservation with its ID
+   return convertToReservation(newReservation);
 };
 
 export const FDBupdateReservationAsync = async (reservation: Reservation) => {
@@ -101,9 +120,20 @@ export const FDBDeleteReservationAsync = async (reservation: Reservation) => {
    await remove(reservation, "reservations");
 };
 
+export const FDBGetReservationWith = async (date: string, index: string, value: string) => {
+   return client.query(
+      q.Map(
+         q.Paginate(
+            q.Intersection(q.Match(q.Index(index), value), q.Match(q.Index("reservations_by_startDate"), date))
+         ),
+         q.Lambda(x => q.Get(x))
+      )
+   );
+};
+//#endregion
 // ------------------------------------------------------
 
-// NOTES
+//#region NOTES
 export const FDBGetNotes = (dates: Array<string>) =>
    client
       .query(
@@ -140,6 +170,8 @@ export const FDBupdateNotesAsync = async (note: Note) => {
 export const FDBDeleteNotesAsync = async (note: Note) => {
    await remove(note, "notes");
 };
+
+//#endregion
 
 // ------------------------------------------------------
 

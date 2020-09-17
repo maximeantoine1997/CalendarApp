@@ -27,7 +27,7 @@ const useStyles = makeStyles(() =>
       dateNumber: {
          fontSize: "2em",
       },
-      scroll: {},
+      droppable: { backgroundColor: "red" },
    })
 );
 
@@ -41,21 +41,27 @@ const CalendarColumn: React.FC<CalendarColumnProps> = ({ day, column }) => {
 
    const { getReservations } = useCalendarContext();
 
-   const reservations = getReservations(column.reservationIds);
-
    return (
       <Grid container className={classes.calendar} direction="row" alignContent="flex-start" justify="center">
          <CalendarColumnHeader date={day} />
-         <Droppable droppableId={column.id}>
-            {(provided, snapshot) => (
-               <div ref={provided.innerRef} className={classes.scroll} {...provided.droppableProps}>
-                  {reservations.map((reservation, index) => {
-                     return <CalendarReservation reservation={reservation} key={reservation.id} index={index} />;
-                  })}
-                  {provided.placeholder}
-               </div>
-            )}
-         </Droppable>
+         {column ? (
+            <Droppable droppableId={column.id}>
+               {(provided, snapshot) => {
+                  const reservations = getReservations(column.reservationIds);
+
+                  return (
+                     <div ref={provided.innerRef} {...provided.droppableProps}>
+                        {reservations.map((reservation, index) => {
+                           return <CalendarReservation reservation={reservation} key={reservation.id} index={index} />;
+                        })}
+                        {provided.placeholder}
+                     </div>
+                  );
+               }}
+            </Droppable>
+         ) : (
+            <></>
+         )}
       </Grid>
    );
 };

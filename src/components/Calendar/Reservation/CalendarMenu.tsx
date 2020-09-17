@@ -2,6 +2,7 @@ import { Divider, Menu, MenuItem } from "@material-ui/core";
 import { useSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
 import useCalendarContext from "../../../Contexts/CalendarContext";
+import UseDragDrop from "../../../Hooks/UseDragDrop";
 import { ReservationType, typeColors } from "../../../Utils";
 import { Reservation } from "../../reservation_form";
 import ColorBlock from "../Blocks/ColorBlock";
@@ -11,7 +12,8 @@ interface CalendarMenuProps {}
 
 const CalendarMenu: React.FunctionComponent<CalendarMenuProps> = () => {
    const { enqueueSnackbar } = useSnackbar();
-   const { updateReservation, deleteReservation, closeMenu, menuReservation, anchorEl } = useCalendarContext();
+   const { updateReservation, closeMenu, menuReservation, anchorEl } = useCalendarContext();
+   const { deleteDragDrop } = UseDragDrop();
 
    const [openModal, setOpenModal] = useState<boolean>(false);
    const [isopen, setIsOpen] = useState<boolean>(false);
@@ -31,19 +33,17 @@ const CalendarMenu: React.FunctionComponent<CalendarMenuProps> = () => {
       }
    };
 
-   const onDeleteReservation = () => {
-      try {
-         deleteReservation(menuReservation as Reservation);
-         onClosMenu();
+   const onDeleteReservation = async () => {
+      await deleteDragDrop(menuReservation as Reservation).then(() => {
          enqueueSnackbar("Supprimé", { variant: "success" });
-      } catch {
-         enqueueSnackbar("Erreur", { variant: "error" });
-      }
+         onClosMenu();
+      });
    };
 
    const onClosMenu = () => {
       setIsOpen(false);
-      console.log("CLOSE MENY");
+      setOpenModal(false);
+      console.log("CLOSE MENU");
       closeMenu();
    };
 
@@ -109,7 +109,6 @@ const CalendarMenu: React.FunctionComponent<CalendarMenuProps> = () => {
          <DeleteModal
             onClose={() => {
                setOpenModal(false);
-               deleteReservation(menuReservation as Reservation);
             }}
             onDelete={onDeleteReservation}
             open={openModal}

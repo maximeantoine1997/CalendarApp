@@ -39,7 +39,6 @@ const NoteModal: React.FunctionComponent<NoteModalProps> = () => {
 
    // get the array of notes specific from that day
    const [notes, setNotes] = useState<Array<Note>>([]);
-   console.log("NOTES", notes);
    const onModify = async () => {
       if (!notes.length) {
          await onAdd();

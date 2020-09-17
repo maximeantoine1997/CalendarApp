@@ -5,6 +5,7 @@ import {
    convertToNote,
    convertToReservation,
    Fauna,
+   FDBcreateReservationAsync,
    FDBDeleteNotesAsync,
    FDBDeleteReservationAsync,
    FDBGetNotes,
@@ -19,14 +20,16 @@ interface ICalendarContext {
    date: Moment;
    setDate: React.Dispatch<React.SetStateAction<Moment>>;
    reservations: HashMap<Reservation>;
-   updateReservation: (newReservation: Reservation) => void;
+   addReservation: (newReservation: Reservation) => Promise<Reservation | undefined>;
+   updateReservation: (newReservation: Reservation) => Promise<void>;
    setReservations: React.Dispatch<React.SetStateAction<HashMap<Reservation>>>;
    notes: HashMap<Note>;
    setNotes: React.Dispatch<React.SetStateAction<HashMap<Note>>>;
    columns: HashMap<IColumn>;
    setColumns: React.Dispatch<React.SetStateAction<HashMap<IColumn>>>;
+   getReservation: (ids: string) => Reservation | undefined;
    getReservations: (ids: Array<string>) => Array<Reservation>;
-   deleteReservation: (reservation: Reservation) => void;
+   deleteReservation: (reservation: Reservation) => Promise<void>;
    isOpenModal: boolean;
    setIsOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
    openModal: (reservation: Reservation) => void;
@@ -39,20 +42,23 @@ interface ICalendarContext {
    getNotes: (ids: Array<string>) => Array<Note>;
    updateNote: (newNote: Note) => void;
    deleteNote: (note: Note) => void;
+   setNewReservationId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const CalendarContext = createContext<ICalendarContext>({
    date: moment(),
    setDate: () => {},
    reservations: {},
-   updateReservation: () => {},
+   addReservation: async () => undefined,
+   updateReservation: async () => {},
    setReservations: () => {},
    notes: {},
    setNotes: () => {},
    columns: {},
    setColumns: () => {},
+   getReservation: () => undefined,
    getReservations: () => [],
-   deleteReservation: () => {},
+   deleteReservation: async () => {},
    isOpenModal: false,
    setIsOpenModal: () => {},
    openModal: () => {},
@@ -65,6 +71,7 @@ export const CalendarContext = createContext<ICalendarContext>({
    getNotes: () => [],
    updateNote: () => {},
    deleteNote: () => {},
+   setNewReservationId: () => {},
 });
 
 export const CalendarContextProvider = (props: { children: ReactNode }): ReactElement => {
@@ -72,6 +79,8 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
    const [reservations, setReservations] = useState<HashMap<Reservation>>({});
    const [notes, setNotes] = useState<HashMap<Note>>({});
    const [columns, setColumns] = useState<HashMap<IColumn>>({});
+
+   const [newReservationId, setNewReservationId] = useState("");
 
    // Whenever the date changes, get the data from DB & recreate the columns based on the new date
    useEffect(() => {
@@ -85,6 +94,49 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
                noteIds: [],
             };
          });
+         return cols;
+      };
+      const reorderColumns = (cols: HashMap<IColumn>, reservations: HashMap<Reservation>): HashMap<IColumn> => {
+         for (let i in cols) {
+            const unorderedIds = [...cols[i].reservationIds];
+            const orderedIds = [];
+
+            if (unorderedIds.length === 0) continue;
+
+            const firstId = unorderedIds.find(id => {
+               const res = reservations[id];
+
+               return res?.previous === "FIRST";
+            });
+
+            if (!firstId) continue;
+
+            orderedIds.push(firstId);
+
+            const firstRes = reservations[firstId];
+            if (!firstRes) continue;
+
+            let nextId = firstRes.next;
+
+            while (nextId && nextId !== "LAST") {
+               const nextRes = reservations[nextId];
+
+               if (!nextRes) {
+                  throw Error("No Next reservation was found");
+               }
+               orderedIds.push((nextRes.id as unknown) as string);
+               if (nextId === nextRes.next) {
+                  throw Error("Current and next have the same ID");
+               }
+               nextId = nextRes.next;
+
+               if (!nextId) {
+                  break;
+               }
+            }
+
+            cols[i].reservationIds = orderedIds;
+         }
          return cols;
       };
       const populateHash = (
@@ -107,17 +159,25 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
                res.push((id as unknown) as string);
             }
             if (isNote(element)) {
-               console.log(element);
                const day = element.date;
                const res = cols[day].noteIds;
                res.push(id as string);
             }
          });
 
+         // At least 1 item
+         if (!items.length) return;
+
          const element: Reservation | Note = conversion(items[0]);
-         if (isReservation(element)) setReservations(hashElements as HashMap<Reservation>);
-         if (isNote(element)) setNotes(hashElements as HashMap<Note>);
-         setColumns(cols);
+         if (isReservation(element)) {
+            setReservations(hashElements as HashMap<Reservation>);
+            const reorderedColumns = { ...reorderColumns(cols, hashElements as HashMap<Reservation>) };
+            setColumns(reorderedColumns);
+         }
+         if (isNote(element)) {
+            setNotes(hashElements as HashMap<Note>);
+            setColumns(cols);
+         }
       };
       const getData = async () => {
          // We first create the columns to store the items from the DB
@@ -130,25 +190,50 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
          // If no elements => error => return
          if (!newReservations || !newNotes) return;
          // creates the different necessary hashs for the frontend
-         populateHash(newReservations, convertToReservation, cols);
          populateHash(newNotes, convertToNote, cols);
+         populateHash(newReservations, convertToReservation, cols);
       };
-      // We get the data from Fauna DB and push them in the respective columns
+
       getData();
-      console.log("HASH POPULATION...");
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [date]);
+
+      console.log("getData DONE");
+   }, [date, newReservationId]);
 
    //#region RESERVATIONS
+
+   const getReservation = (id: string): Reservation | undefined => {
+      return reservations[id];
+   };
+
    const getReservations = (ids: Array<string>): Array<Reservation> => {
       const res: Array<Reservation> = [];
       ids.forEach(id => {
-         const element = reservations[id];
-         res.push(element);
+         const element = getReservation(id);
+         if (element) {
+            res.push(element);
+         }
       });
       return res;
    };
-   const updateReservation = (newReservation: Reservation): void => {
+
+   const addReservation = async (newReservation: Reservation): Promise<Reservation | undefined> => {
+      const newHash = { ...reservations };
+
+      // Add the new Reservation in the DB
+      // MUST BE DONE FIRST TO RETRIEVE ID
+      const newDBRes = await FDBcreateReservationAsync({ ...newReservation });
+
+      const id = newDBRes.id;
+      if (!id) throw Error("No id found");
+      newHash[id] = newDBRes;
+
+      // Add the new Reservation in the hash
+      setReservations(newHash);
+
+      return newDBRes;
+   };
+
+   const updateReservation = async (newReservation: Reservation): Promise<void> => {
       const newHash = { ...reservations };
       const id = newReservation.id;
       if (!id) return;
@@ -158,18 +243,16 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
       setReservations(newHash);
 
       // Update the modified Reservation in the DB too
-      try {
-         FDBupdateReservationAsync({ ...newReservation });
-      } catch (error) {
-         console.log(error);
-      }
+      await FDBupdateReservationAsync({ ...newReservation });
    };
 
-   const deleteReservation = (reservation: Reservation): void => {
+   const deleteReservation = async (reservation: Reservation): Promise<void> => {
       if (!reservation.id) return;
-      delete reservations[reservation.id];
+      const newHash = { ...reservations };
+      delete newHash[reservation.id];
+      setReservations(newHash);
 
-      FDBDeleteReservationAsync(reservation);
+      await FDBDeleteReservationAsync(reservation);
    };
 
    //#endregion
@@ -179,6 +262,7 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
    const [modalReservation, setModalReservation] = useState<Reservation | undefined>(undefined);
 
    const openModal = (reservation: Reservation): void => {
+      console.log(reservation);
       setIsOpenModal(true);
       setModalReservation(reservation);
    };
@@ -196,7 +280,6 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
    const [menuReservation, setMenuReservation] = useState<Reservation | undefined>(undefined);
 
    const openMenu = (anchor: HTMLElement, reservation: Reservation): void => {
-      console.log("OPENING...", anchor, reservation);
       setAnchorEl(anchor);
       setMenuReservation(reservation);
    };
@@ -251,7 +334,9 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
       setColumns,
       reservations,
       setReservations,
+      getReservation,
       getReservations,
+      addReservation,
       updateReservation,
       deleteReservation,
       isOpenModal,
@@ -266,6 +351,7 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
       getNotes,
       updateNote,
       deleteNote,
+      setNewReservationId,
    };
    return <CalendarContext.Provider value={calendarContext}>{props.children}</CalendarContext.Provider>;
 };

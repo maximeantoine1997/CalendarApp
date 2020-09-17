@@ -3,7 +3,6 @@ import "firebase/functions";
 import React from "react";
 import CalendarNavigation from "../components/Calendar/CalendarNavigation";
 import CalendarView from "../components/Calendar/CalendarView";
-import { CalendarContextProvider } from "../Contexts/CalendarContext";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -18,12 +17,10 @@ const CalendarPage: React.FC = () => {
    const classes = useStyles();
 
    return (
-      <CalendarContextProvider>
-         <Box className={classes.grid}>
-            <CalendarNavigation />
-            <CalendarView />
-         </Box>
-      </CalendarContextProvider>
+      <Box className={classes.grid}>
+         <CalendarNavigation />
+         <CalendarView />
+      </Box>
    );
 };
 
