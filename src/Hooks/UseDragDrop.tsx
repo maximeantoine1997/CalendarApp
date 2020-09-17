@@ -1,3 +1,4 @@
+import { useSnackbar } from "notistack";
 import { Reservation } from "../components/reservation_form";
 import useCalendarContext from "../Contexts/CalendarContext";
 import { convertToReservation, Fauna, FDBGetReservationWith } from "../FaunaDB/Api";
@@ -22,6 +23,8 @@ const UseDragDrop = (): UseDragDropProps => {
       columns,
    } = useCalendarContext();
 
+   const { enqueueSnackbar } = useSnackbar();
+
    const updateDragDrop = (source: IDroppable, destination: IDroppable, draggableId: string): void => {
       const reservation = getReservation(draggableId);
       if (!reservation?.previous || !reservation?.next) return;
@@ -31,7 +34,7 @@ const UseDragDrop = (): UseDragDropProps => {
 
       // For the destination
       const destinationIds = columns[destination.droppableId].reservationIds;
-      const destinationCurrent = getReservation(destinationIds[destination.index]);
+      let destinationCurrent = getReservation(destinationIds[destination.index]);
 
       // Came back to the same place, don't do anything
       if (reservation.id === destinationCurrent?.id) return;
@@ -136,6 +139,10 @@ const UseDragDrop = (): UseDragDropProps => {
       } else {
          // Gets the reservation that is currently on the destination index
 
+         // Destination and source are the same column, so update destinationCurrent to make it work
+         if (source.droppableId === destination.droppableId && source.index < destination.index) {
+            destinationCurrent = getReservation(destinationIds[destination.index + 1]);
+         }
          if (!destinationCurrent) return;
 
          // The id of the previous of the destination current
@@ -163,6 +170,8 @@ const UseDragDrop = (): UseDragDropProps => {
       }
 
       updateReservation(reservation);
+
+      enqueueSnackbar("Modifié", { variant: "success" });
    };
 
    const addDragDrop = async (newReservation: Reservation): Promise<void> => {
@@ -197,6 +206,7 @@ const UseDragDrop = (): UseDragDropProps => {
          await updateReservation(reservation);
 
          setNewReservationId((reservation.id as unknown) as string);
+         enqueueSnackbar("Ajouté", { variant: "success" });
       }
    };
 
@@ -222,6 +232,7 @@ const UseDragDrop = (): UseDragDropProps => {
       }
 
       await deleteReservation(reservation);
+      enqueueSnackbar("Supprimé", { variant: "success" });
    };
 
    return { updateDragDrop, addDragDrop, deleteDragDrop };
