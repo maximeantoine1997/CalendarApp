@@ -8,7 +8,7 @@ interface IDroppable {
    droppableId: string;
 }
 interface UseDragDropProps {
-   updateDragDrop: (source: IDroppable, destination: IDroppable, draggableId: string) => void;
+   updateDragDrop: (source: IDroppable, destination: IDroppable, draggableId: string) => Promise<void>;
    addDragDrop: (newReservation: Reservation) => Promise<void>;
    deleteDragDrop: (reservation: Reservation) => Promise<void>;
 }
@@ -25,7 +25,7 @@ const UseDragDrop = (): UseDragDropProps => {
 
    const { enqueueSnackbar } = useSnackbar();
 
-   const updateDragDrop = (source: IDroppable, destination: IDroppable, draggableId: string): void => {
+   const updateDragDrop = async (source: IDroppable, destination: IDroppable, draggableId: string): Promise<void> => {
       const reservation = getReservation(draggableId);
       if (!reservation?.previous || !reservation?.next) return;
 
@@ -46,11 +46,11 @@ const UseDragDrop = (): UseDragDropProps => {
       if (reservation.previous === "FIRST" && reservation.next !== "LAST") {
          if (!sourceNext) throw Error("No sourceNext");
          sourceNext.previous = "FIRST";
-         updateReservation(sourceNext);
+         await updateReservation(sourceNext);
       } else if (reservation.next === "LAST" && reservation.previous !== "FIRST") {
          if (!sourcePrevious) throw Error("No sourcePrevious");
          sourcePrevious.next = "LAST";
-         updateReservation(sourcePrevious);
+         await updateReservation(sourcePrevious);
       } else if (reservation.next === "LAST" && reservation.previous === "FIRST") {
          // DO NOTHING
       } else {
@@ -58,8 +58,8 @@ const UseDragDrop = (): UseDragDropProps => {
 
          sourcePrevious.next = (sourceNext.id as unknown) as string;
          sourceNext.previous = (sourcePrevious.id as unknown) as string;
-         updateReservation(sourcePrevious);
-         updateReservation(sourceNext);
+         await updateReservation(sourcePrevious);
+         await updateReservation(sourceNext);
       }
 
       // --------------------
@@ -78,7 +78,7 @@ const UseDragDrop = (): UseDragDropProps => {
          lastDestination.next = draggableId;
          reservation.previous = (lastDestination.id as unknown) as string;
          reservation.next = "LAST";
-         updateReservation(lastDestination);
+         await updateReservation(lastDestination);
       }
       // There is just no destination Current (IMPOSSIBLE)
       else if (!destinationCurrent) {
@@ -90,7 +90,7 @@ const UseDragDrop = (): UseDragDropProps => {
          destinationCurrent.previous = draggableId;
          reservation.next = (destinationCurrent.id as unknown) as string;
          reservation.previous = "FIRST";
-         updateReservation(destinationCurrent);
+         await updateReservation(destinationCurrent);
       }
       // Dropped reservation at the bottom (last one)
       else if (destination.index === destinationIds.length) {
@@ -99,7 +99,7 @@ const UseDragDrop = (): UseDragDropProps => {
          destinationLast.next = draggableId;
          reservation.previous = (destinationLast.id as unknown) as string;
          reservation.next = "LAST";
-         updateReservation(destinationLast);
+         await updateReservation(destinationLast);
       }
       // Switched with the one under him
       else if (destinationCurrent.id === sourceNext?.id) {
@@ -112,12 +112,12 @@ const UseDragDrop = (): UseDragDropProps => {
          // So if Next != LAST
          if (destinationNext) {
             destinationNext.previous = draggableId;
-            updateReservation(destinationNext);
+            await updateReservation(destinationNext);
          }
 
          reservation.previous = (destinationCurrent.id as unknown) as string;
          reservation.next = oldNext;
-         updateReservation(destinationCurrent);
+         await updateReservation(destinationCurrent);
       }
       // Switched with the one above him
       else if (destinationCurrent!.id === sourcePrevious?.id) {
@@ -130,12 +130,12 @@ const UseDragDrop = (): UseDragDropProps => {
          // So if Previous != FIRST
          if (destinationPrevious) {
             destinationPrevious.next = draggableId;
-            updateReservation(destinationPrevious);
+            await updateReservation(destinationPrevious);
          }
 
          destinationCurrent.previous = draggableId;
          destinationCurrent.next = oldNext;
-         updateReservation(destinationCurrent);
+         await updateReservation(destinationCurrent);
       } else {
          // Gets the reservation that is currently on the destination index
 
@@ -161,17 +161,17 @@ const UseDragDrop = (): UseDragDropProps => {
          reservation.previous = (destinationPrevious.id as unknown) as string;
          reservation.next = (destinationCurrent.id as unknown) as string;
 
-         updateReservation(destinationPrevious);
-         updateReservation(destinationCurrent);
+         await updateReservation(destinationPrevious);
+         await updateReservation(destinationCurrent);
       }
       // Update startDate if source != destination
       if (source.droppableId !== destination.droppableId) {
          reservation.startDate = destination.droppableId;
       }
 
-      updateReservation(reservation);
-
-      enqueueSnackbar("Modifié", { variant: "success" });
+      await updateReservation(reservation).then(() => {
+         enqueueSnackbar("Modifié", { variant: "success" });
+      });
    };
 
    const addDragDrop = async (newReservation: Reservation): Promise<void> => {
@@ -231,8 +231,9 @@ const UseDragDrop = (): UseDragDropProps => {
          updateReservation(nextReservation);
       }
 
-      await deleteReservation(reservation);
-      enqueueSnackbar("Supprimé", { variant: "success" });
+      await deleteReservation(reservation).then(() => {
+         enqueueSnackbar("Supprimé", { variant: "success" });
+      });
    };
 
    return { updateDragDrop, addDragDrop, deleteDragDrop };
