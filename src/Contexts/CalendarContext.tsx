@@ -12,6 +12,7 @@ import {
    FDBgetReservations,
    FDBupdateNotesAsync,
    FDBupdateReservationAsync,
+   FDBUpdateReservationsAsync,
    Note,
 } from "../FaunaDB/Api";
 import { getWeekDays, HashMap, IColumn, isNote, isReservation } from "../Utils";
@@ -21,6 +22,7 @@ interface ICalendarContext {
    setDate: React.Dispatch<React.SetStateAction<Moment>>;
    reservations: HashMap<Reservation>;
    addReservation: (newReservation: Reservation) => Promise<Reservation | undefined>;
+   updateReservations: (newReservations: Array<Reservation>) => Promise<void>;
    updateReservation: (newReservation: Reservation) => Promise<void>;
    setReservations: React.Dispatch<React.SetStateAction<HashMap<Reservation>>>;
    notes: HashMap<Note>;
@@ -51,6 +53,7 @@ export const CalendarContext = createContext<ICalendarContext>({
    reservations: {},
    addReservation: async () => undefined,
    updateReservation: async () => {},
+   updateReservations: async () => {},
    setReservations: () => {},
    notes: {},
    setNotes: () => {},
@@ -246,6 +249,20 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
       await FDBupdateReservationAsync({ ...newReservation });
    };
 
+   const updateReservations = async (newReservations: Array<Reservation>) => {
+      const newHash = { ...reservations };
+      newReservations.forEach(newReservation => {
+         const id = newReservation.id;
+         if (!id) return;
+         newHash[id] = newReservation;
+      });
+
+      // Update the modified Reservation in the hash
+      setReservations(newHash);
+
+      await FDBUpdateReservationsAsync(newReservations);
+   };
+
    const deleteReservation = async (reservation: Reservation): Promise<void> => {
       if (!reservation.id) return;
       const newHash = { ...reservations };
@@ -338,6 +355,7 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
       getReservations,
       addReservation,
       updateReservation,
+      updateReservations,
       deleteReservation,
       isOpenModal,
       setIsOpenModal,

@@ -18,6 +18,7 @@ const UseDragDrop = (): UseDragDropProps => {
       setNewReservationId,
       addReservation,
       updateReservation,
+      updateReservations,
       getReservation,
       deleteReservation,
       columns,
@@ -39,139 +40,228 @@ const UseDragDrop = (): UseDragDropProps => {
       // Came back to the same place, don't do anything
       if (reservation.id === destinationCurrent?.id) return;
 
-      // --------------------
-      // SOURCE
+      // ON SAME COLUMN
+      if (source.droppableId === destination.droppableId) {
+         console.log("source", source.index);
+         console.log("destination", destination.index);
+         console.log(destinationIds.length);
 
-      // For the source column
-      if (reservation.previous === "FIRST" && reservation.next !== "LAST") {
-         if (!sourceNext) throw Error("No sourceNext");
-         sourceNext.previous = "FIRST";
-         await updateReservation(sourceNext);
-      } else if (reservation.next === "LAST" && reservation.previous !== "FIRST") {
-         if (!sourcePrevious) throw Error("No sourcePrevious");
-         sourcePrevious.next = "LAST";
-         await updateReservation(sourcePrevious);
-      } else if (reservation.next === "LAST" && reservation.previous === "FIRST") {
-         // DO NOTHING
-      } else {
-         if (!sourcePrevious?.id || !sourceNext?.id) return;
+         const resToUpdate: Array<Reservation> = [];
 
-         sourcePrevious.next = (sourceNext.id as unknown) as string;
-         sourceNext.previous = (sourcePrevious.id as unknown) as string;
-         await updateReservation(sourcePrevious);
-         await updateReservation(sourceNext);
-      }
+         switch (destination.index) {
+            case 0:
+               console.log("first one");
+               if (sourcePrevious) {
+                  sourcePrevious.next = reservation.next;
+                  resToUpdate.push(sourcePrevious);
+               }
+               if (sourceNext) {
+                  sourceNext.previous = reservation.previous;
+                  resToUpdate.push(sourceNext);
+               }
 
-      // --------------------
-      // DESTINATION
+               reservation.next = destinationIds[0];
 
-      // No element in that column yet
-      if (destinationIds.length === 0) {
-         reservation.previous = "FIRST";
-         reservation.next = "LAST";
-      }
-      // Reservation was dropped at bottom of column
-      else if (!destinationCurrent && destinationIds.length === destination.index) {
-         const lastDestination = getReservation(destinationIds[destinationIds.length - 1]);
-         if (!lastDestination) throw Error("No last destination was found");
+               reservation.previous = "FIRST";
+               destinationCurrent!.previous = draggableId;
+               resToUpdate.push(destinationCurrent!);
+               break;
+            case destinationIds.length - 1:
+               console.log("last one");
+               if (sourcePrevious) {
+                  sourcePrevious.next = reservation.next;
+                  resToUpdate.push(sourcePrevious);
+               }
+               if (sourceNext) {
+                  sourceNext.previous = reservation.previous;
+                  resToUpdate.push(sourceNext);
+               }
 
-         lastDestination.next = draggableId;
-         reservation.previous = (lastDestination.id as unknown) as string;
-         reservation.next = "LAST";
-         await updateReservation(lastDestination);
-      }
-      // There is just no destination Current (IMPOSSIBLE)
-      else if (!destinationCurrent) {
-         throw Error("No destination Current was found");
-      }
-      // Dropped reservation at the top (first one)
-      else if (destination.index === 0) {
-         if (!destinationCurrent) throw Error("No destination Current");
-         destinationCurrent.previous = draggableId;
-         reservation.next = (destinationCurrent.id as unknown) as string;
-         reservation.previous = "FIRST";
-         await updateReservation(destinationCurrent);
-      }
-      // Dropped reservation at the bottom (last one)
-      else if (destination.index === destinationIds.length) {
-         const destinationLast = getReservation(destinationIds[destinationIds.length - 1]);
-         if (!destinationLast) throw Error("No destinationLast");
-         destinationLast.next = draggableId;
-         reservation.previous = (destinationLast.id as unknown) as string;
-         reservation.next = "LAST";
-         await updateReservation(destinationLast);
-      }
-      // Switched with the one under him
-      else if (destinationCurrent.id === sourceNext?.id) {
-         const oldNext = destinationCurrent.next;
+               reservation.next = "LAST";
+               reservation.previous = destinationIds[destinationIds.length - 1];
+               destinationCurrent!.next = (reservation.id as unknown) as string;
+               resToUpdate.push(destinationCurrent!);
+               break;
+            case source.index + 1:
+               console.log("under him");
+               const oldPrev_1 = reservation.previous;
+               const oldNext_1 = destinationCurrent!.next;
+               reservation.previous = destinationIds[destination.index];
+               reservation.next = destinationCurrent!.next;
 
-         destinationCurrent.previous = reservation.previous;
-         destinationCurrent.next = draggableId;
+               const reservationPrevious = getReservation(oldPrev_1!);
+               // So if Previous != FIRST
+               if (reservationPrevious) {
+                  reservationPrevious.next = destinationIds[destination.index];
+                  resToUpdate.push(reservationPrevious);
+               }
 
-         const destinationNext = getReservation(oldNext!);
-         // So if Next != LAST
-         if (destinationNext) {
-            destinationNext.previous = draggableId;
-            await updateReservation(destinationNext);
+               const destinationNext = getReservation(oldNext_1!);
+               // So if Previous != LAST
+               if (destinationNext) {
+                  destinationNext.previous = draggableId;
+                  resToUpdate.push(destinationNext);
+               }
+
+               destinationCurrent!.previous = oldPrev_1;
+               destinationCurrent!.next = (reservation.id as unknown) as string;
+               resToUpdate.push(destinationCurrent!);
+               break;
+            case source.index - 1:
+               console.log("above him");
+               const oldNext_2 = reservation.next;
+               const oldPrev_2 = destinationCurrent!.previous;
+               reservation.previous = destinationCurrent!.previous;
+               reservation.next = destinationIds[destination.index];
+
+               const destinationPrevious = getReservation(oldPrev_2!);
+               // So if Previous != FIRST
+               if (destinationPrevious) {
+                  destinationPrevious.next = draggableId;
+                  resToUpdate.push(destinationPrevious);
+               }
+
+               const reservationNext = getReservation(oldNext_2!);
+               // So if Previous != LAST
+               if (reservationNext) {
+                  reservationNext.previous = destinationIds[destination.index];
+                  resToUpdate.push(reservationNext);
+               }
+
+               destinationCurrent!.previous = (reservation.id as unknown) as string;
+               destinationCurrent!.next = oldNext_2;
+               resToUpdate.push(destinationCurrent!);
+               break;
+
+            default:
+               console.log("default");
+               let currentDestinationindex = destination.index;
+               if (destination.index > source.index) {
+                  currentDestinationindex = destination.index + 1;
+                  destinationCurrent = getReservation(destinationIds[currentDestinationindex]);
+               }
+               if (sourcePrevious) {
+                  sourcePrevious.next = reservation.next;
+                  resToUpdate.push(sourcePrevious);
+               }
+               if (sourceNext) {
+                  sourceNext.previous = reservation.previous;
+                  resToUpdate.push(sourceNext);
+               }
+               reservation.previous = destinationCurrent!.previous;
+
+               const destinationPrevious_2 = getReservation(destinationCurrent!.previous!);
+               // So if Previous != FIRST
+               if (destinationPrevious_2) {
+                  destinationPrevious_2.next = draggableId;
+                  resToUpdate.push(destinationPrevious_2);
+               }
+
+               reservation.next = destinationIds[currentDestinationindex];
+               destinationCurrent!.previous = (reservation.id as unknown) as string;
+               resToUpdate.push(destinationCurrent!);
          }
-
-         reservation.previous = (destinationCurrent.id as unknown) as string;
-         reservation.next = oldNext;
-         await updateReservation(destinationCurrent);
+         resToUpdate.push(reservation);
+         await updateReservations(resToUpdate).then(() => {
+            enqueueSnackbar("Modifié", { variant: "success" });
+         });
       }
-      // Switched with the one above him
-      else if (destinationCurrent!.id === sourcePrevious?.id) {
-         const oldNext = reservation.next;
+      // TO DIFFERENT COLUMN
+      else {
+        const sourceIds = columns[source.droppableId].reservationIds;
+        const resToUpdate: Array<Reservation> = [];
 
-         reservation.previous = destinationCurrent.previous;
-         reservation.next = (destinationCurrent.id as unknown) as string;
+        // SOURCE
+        switch(source.index){
+            // From First
+            case 0: {
+                console.log("From First")
+                if (sourceNext) {
+                    sourceNext.previous = "FIRST";
+                    resToUpdate.push(sourceNext);
+                }
+                break;
+            }
+            // From Last
+            case sourceIds.length - 1: {
+                console.log("From Last")
+                if (sourcePrevious) {
+                    sourcePrevious.next = "LAST";
+                    resToUpdate.push(sourcePrevious);
+                }
+                break;
+            }
+            // From Middle
+            default: {
+                console.log("From Middle")
+                if (sourcePrevious) {
+                    sourcePrevious.next = reservation.next;
+                    resToUpdate.push(sourcePrevious);
+                }
+                if (sourceNext) {
+                    sourceNext.previous = reservation.previous;
+                    resToUpdate.push(sourceNext);
+                }
+                break;
+            }
+        }
 
-         const destinationPrevious = getReservation(destinationCurrent.previous!);
-         // So if Previous != FIRST
-         if (destinationPrevious) {
-            destinationPrevious.next = draggableId;
-            await updateReservation(destinationPrevious);
-         }
-
-         destinationCurrent.previous = draggableId;
-         destinationCurrent.next = oldNext;
-         await updateReservation(destinationCurrent);
-      } else {
-         // Gets the reservation that is currently on the destination index
-
-         // Destination and source are the same column, so update destinationCurrent to make it work
-         if (source.droppableId === destination.droppableId && source.index < destination.index) {
-            destinationCurrent = getReservation(destinationIds[destination.index + 1]);
-         }
-         if (!destinationCurrent) return;
-
-         // The id of the previous of the destination current
-         const destinationCurrPrevId = destinationCurrent.previous;
-         if (!destinationCurrPrevId) return;
-
-         // Previous of destination
-         const destinationPrevious = getReservation(destinationCurrPrevId);
-         if (!destinationPrevious) return;
-
-         // His next becomes the moved item
-         destinationPrevious.next = draggableId;
-
-         destinationCurrent.previous = draggableId;
-
-         reservation.previous = (destinationPrevious.id as unknown) as string;
-         reservation.next = (destinationCurrent.id as unknown) as string;
-
-         await updateReservation(destinationPrevious);
-         await updateReservation(destinationCurrent);
+        // DESTINATION
+        switch(destination.index){
+            // To First
+            case 0: {
+                console.log("To First")
+                reservation.previous = "FIRST"
+                if (destinationCurrent) {
+                    reservation.next = destinationCurrent.id as unknown as string
+                    destinationCurrent.previous = draggableId
+                    resToUpdate.push(destinationCurrent)
+                } else {
+                    // No destinationCurrent so no reservations on that day
+                    reservation.next = "LAST"
+                }
+                break;
+            }
+            // To Last
+            case destinationIds.length: {
+                console.log("To Last")
+                // destinationCurr is undefined here so we need
+                // to find it manually
+                const last = getReservation(destinationIds[destinationIds.length - 1]);
+                reservation.next = "LAST"
+                if (last) {
+                    reservation.previous = last.id as unknown as string
+                    last.next = draggableId;
+                    resToUpdate.push(last)
+                }
+                break;
+            }
+            // To Middle
+            default: {
+                console.log("To Middle")
+                if(destinationCurrent?.previous) {
+                    const destinationPrevious = getReservation(destinationCurrent.previous)
+                    if (destinationPrevious) {
+                        destinationPrevious.next = draggableId;
+                        reservation.previous = destinationPrevious.id as unknown as string;
+                        resToUpdate.push(destinationPrevious)
+                    }
+                }
+                if (destinationCurrent){
+                    destinationCurrent.previous = draggableId;
+                    reservation.next = destinationCurrent.id as unknown as string;
+                    resToUpdate.push(destinationCurrent)
+                }
+                break;
+            }
+        }
+        // Update startdate reservation
+        reservation.startDate = destination.droppableId
+        resToUpdate.push(reservation);
+        await updateReservations(resToUpdate).then(() => {
+            enqueueSnackbar("Modifié", { variant: "success" });
+         });
       }
-      // Update startDate if source != destination
-      if (source.droppableId !== destination.droppableId) {
-         reservation.startDate = destination.droppableId;
-      }
-
-      await updateReservation(reservation).then(() => {
-         enqueueSnackbar("Modifié", { variant: "success" });
-      });
    };
 
    const addDragDrop = async (newReservation: Reservation): Promise<void> => {

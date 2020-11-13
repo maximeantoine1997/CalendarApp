@@ -116,6 +116,15 @@ export const FDBupdateReservationAsync = async (reservation: Reservation) => {
    await update(reservation, "reservations");
 };
 
+export const FDBUpdateReservationsAsync = async (reservations: Array<Reservation>) => {
+   return Promise.all(
+      reservations.map(reservation => {
+         update(reservation, "reservations");
+         return "";
+      })
+   ).then(() => console.log("DONE WITH UPDATES"));
+};
+
 export const FDBDeleteReservationAsync = async (reservation: Reservation) => {
    await remove(reservation, "reservations");
 };
@@ -180,7 +189,7 @@ const create = async (element: any, collection: string) => {
 };
 
 const update = async (element: any, collection: string) => {
-   await client.query(q.Update(q.Ref(q.Collection(collection), element.id), { data: element }));
+   client.query(q.Update(q.Ref(q.Collection(collection), element.id), { data: element }));
 };
 
 const remove = async (element: any, collection: string) => {
