@@ -50,7 +50,7 @@ const AuthApp: React.FC = () => {
 
    useEffect(() => {
     //   const onClick = async () => {
-    //      const data: Array<Fauna<Reservation>> = (await FDBgetReservations(["2020-11-14"])) as Array<
+    //      const data: Array<Fauna<Reservation>> = (await FDBgetReservations(["2020-11-22"])) as Array<
     //         Fauna<Reservation>
     //      >;
     //      console.log(data);
@@ -97,7 +97,7 @@ const AuthApp: React.FC = () => {
     //      }
     //      console.log("DONE");
     //   };
-      //onClick();
+    //   onClick();
    }, []);
 
    return (

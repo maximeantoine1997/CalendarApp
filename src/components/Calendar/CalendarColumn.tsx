@@ -64,7 +64,7 @@ const CalendarColumn: React.FC<CalendarColumnProps> = ({ day, column }) => {
                 }}
                 </Droppable>
          ) : (
-            <></>
+            <div style={{flexGrow: 1, paddingBottom: "25px"}}></div>
          )}
       </Grid>
    );
