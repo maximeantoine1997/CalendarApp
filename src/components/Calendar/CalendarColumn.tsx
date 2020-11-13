@@ -1,4 +1,4 @@
-import { Box, createStyles, Grid, makeStyles } from "@material-ui/core";
+import { createStyles, Grid, makeStyles } from "@material-ui/core";
 import React from "react";
 import { Droppable } from "react-beautiful-dnd";
 import useCalendarContext from "../../Contexts/CalendarContext";
