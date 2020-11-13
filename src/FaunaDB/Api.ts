@@ -59,6 +59,8 @@ export const FDBGetUser = async (id: string) => {
 
 //#endregion
 
+//#region AUTOCOMPLETE
+
 export const getAutoCompelteAsync = async () =>
    client.query(q.Paginate(q.Match(q.Index("all_autocomplete")))).then((response: any) => {
       const refs = response.data;
@@ -69,6 +71,13 @@ export const getAutoCompelteAsync = async () =>
       // query the refs
       return client.query(getAllProductDataQuery).then(data => data);
    });
+
+export const updateAutoCompleteAsync = async () => {
+
+}
+
+   //#endregion
+
 
 //#region RESERVATION
 
