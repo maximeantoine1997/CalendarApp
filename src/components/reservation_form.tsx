@@ -242,10 +242,11 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
       res[key] = value;
    };
 
-   //    const addAutocompleteItem = (docName: ReservationKeys, newItem: unknown) => {
-   //       const items = autocomplete[docName];
-   //       items.push(newItem);
-   //    };
+    const addAutocompleteItem = (docName: ReservationKeys, newItem: unknown) => {
+        const items = autocomplete[docName] as Array<string>;
+        items.push(newItem as string);
+    };
+
    const addReservation = async (): Promise<void> => {
       const res = newReservation.current;
 
@@ -265,7 +266,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
          res.type = "Attente Caution";
       }
 
-      //   addAutocompleteItem("street", res.street);
+     addAutocompleteItem("street", res.street);
       //   addAutocompleteItem("city", res.city);
       //   addAutocompleteItem("sitePhone", res.sitePhone);
 
@@ -286,7 +287,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
       //   if (res.phone) addAutocompleteItem("phone", res.phone);
       //   if (res.email) addAutocompleteItem("email", res.email);
 
-      //   updateAutocompleteAsync(autocomplete);
+        //updateAutocompleteAsync(autocomplete);
 
       //   addReservationAsync({ ...res }).catch(error => {
       //      console.log(error);
@@ -338,16 +339,6 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
             updateForm("facturationAddress", true, "Adresse non valide");
          }
       }
-
-      //   // startDate & endDate
-      //   if (endDate.current && !startDate.current?.isSameOrBefore(endDate.current, "day")) {
-      //      updateForm(
-      //         "startDate",
-      //         true,
-      //         "la date de fin ne peut pas être avant celle du début, veuillez ajuster en conséquence"
-      //      );
-      //   }
-      // #endregion
 
       const hasError = Object.values(newValidForm).find(value => {
          return value.hasError === true;
