@@ -17,11 +17,9 @@ const CalendarView: React.FC = () => {
 
    const weekDays = getWeekDays(date);
 
-   const onDragEnd = (result: any) => {
+   const onDragEnd = async (result: any) => {
       const { destination, source, draggableId } = result;
       if (!destination) return;
-
-      updateDragDrop(source, destination, draggableId);
 
       if (destination.droppableId === source.droppableId && destination.index === source.index) return;
       const start = columns[source.droppableId];
@@ -66,6 +64,8 @@ const CalendarView: React.FC = () => {
 
          setColumns(newColumns);
       }
+
+      await updateDragDrop(source, destination, draggableId);
    };
    if (Object.entries(columns).length === 0) return <> </>;
    return (
