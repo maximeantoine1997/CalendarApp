@@ -10,7 +10,7 @@ import PersonIcon from "@material-ui/icons/Person";
 import moment, { Moment } from "moment";
 import React, { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { Autocomplete, Fauna, getAutoCompelteAsync } from "../FaunaDB/Api";
+import { Autocomplete, Fauna, getAutoCompelteAsync, updateAutoCompleteAsync } from "../FaunaDB/Api";
 import { autocompleteMapping } from "../FaunaDB/FaunaDB.Utils";
 import UseDragDrop from "../Hooks/UseDragDrop";
 import { HashMap, ReservationType } from "../Utils";
@@ -235,7 +235,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    const [isCompany, setIsCompany] = useState<boolean>(true);
    const [isToBeDelivered, setIsToBeDelivered] = useState<boolean>(true);
    const [hasCaution, setHasCaution] = useState<boolean>(false);
-   const [autocomplete, setAutocomplete] = useState<HashMap<unknown>>({});
+   const [autocomplete, setAutocomplete] = useState<HashMap<Array<string>>>({});
 
    const onChange = (key: keyof Reservation, value: unknown) => {
       const res = newReservation.current;
@@ -265,38 +265,32 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
       if (res.amount > 0) {
          res.type = "Attente Caution";
       }
+    //#region Autocomplete
 
-     addAutocompleteItem("street", res.street);
-      //   addAutocompleteItem("city", res.city);
-      //   addAutocompleteItem("sitePhone", res.sitePhone);
+    addAutocompleteItem("street", res.street);
+    addAutocompleteItem("city", res.city);
+    if(res.sitePhone) addAutocompleteItem("sitePhone", res.sitePhone);
 
-      //   addAutocompleteItem("modele", res.modele);
-      //   const items = autocomplete["accessoires"];
-      //   res.accessoires.forEach((accessoire: string) => {
-      //      items.push(accessoire);
-      //   });
+    addAutocompleteItem("modele", res.modele);
+    const accItems = autocomplete["accessoires"];
+    res.accessoires.forEach((accessoire: string) => {
+        accItems.push(accessoire);
+    });
 
-      //   if (isCompany) {
-      //      addAutocompleteItem("company", res.company);
-      //      if (res.VATNumber) addAutocompleteItem("VATNumber", res.VATNumber);
-      //   } else {
-      //      addAutocompleteItem("name", res.name);
-      //      addAutocompleteItem("facturationAddress", res.name);
-      //   }
+    if (isCompany) {
+        addAutocompleteItem("company", res.company);
+        if (res.VATNumber) addAutocompleteItem("VATNumber", res.VATNumber);
+    } else {
+        addAutocompleteItem("name", res.name);
+        addAutocompleteItem("facturationAddress", res.name);
+    }
+    updateAutoCompleteAsync(autocomplete);
 
-      //   if (res.phone) addAutocompleteItem("phone", res.phone);
-      //   if (res.email) addAutocompleteItem("email", res.email);
+    //#endregion
 
-        //updateAutocompleteAsync(autocomplete);
-
-      //   addReservationAsync({ ...res }).catch(error => {
-      //      console.log(error);
-      //   });
-      //   history.push("/calendrier");
-
-      addDragDrop(res).then(() => {
-         history.push("/calendrier");
-      });
+    addDragDrop(res).then(() => {
+        history.push("/calendrier");
+    });
    };
 
    /**
@@ -382,6 +376,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                onClick={value => setHasEndDate(value)}
             />
             {hasEndDate && <DateComponent placeholder="Fin *" onChange={(e: any) => onChange("endDate", e)} />}
+            <TextComponent placeholder="Dossier Vary" value="" onChange={e => onChange("varyNumber", e)} />
             <Grid container style={{ paddingTop: "25px" }} alignItems="center">
                <Grid item>
                   <Typography variant="h4">Caution:</Typography>
