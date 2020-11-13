@@ -1,5 +1,7 @@
 import { Reservation } from "../components/reservation_form";
+import { HashMap } from './../Utils';
 import { client, q } from "./Database";
+import { autocompleteReverseMapping } from './FaunaDB.Utils';
 
 export interface Fauna<T> {
    ref: {
@@ -72,7 +74,17 @@ export const getAutoCompelteAsync = async () =>
       return client.query(getAllProductDataQuery).then(data => data);
    });
 
-export const updateAutoCompleteAsync = async () => {
+export const updateAutoCompleteAsync = async (autocomplete: HashMap<Array<string>>) => {
+    const categories = Object.keys(autocomplete)
+    categories.forEach(category => {
+        if (autocomplete[category].length){
+            const id = autocompleteReverseMapping[category]
+            const uniqueItems = Array.from(new Set(autocomplete[category]))
+            const items = { "items": uniqueItems}
+            client.query(q.Update(q.Ref(q.Collection("autocomplete"), id), { data: items }));
+        }
+    });
+
 
 }
 
