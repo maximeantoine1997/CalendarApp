@@ -1,13 +1,13 @@
 import {
-   Button,
-   createStyles,
-   Dialog,
-   DialogActions,
-   DialogContent,
-   Divider,
-   Grid,
-   makeStyles,
-   Typography,
+    Button,
+    createStyles,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    Divider,
+    Grid,
+    makeStyles,
+    Typography
 } from "@material-ui/core";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
@@ -18,6 +18,7 @@ import PaymentIcon from "@material-ui/icons/Payment";
 import { useSnackbar } from "notistack";
 import React, { useEffect, useRef, useState } from "react";
 import useCalendarContext from "../../../Contexts/CalendarContext";
+import UseDragDrop, { IDroppable } from "../../../Hooks/UseDragDrop";
 import DateComponent from "../../FormElements/DateComponent";
 import SquareButtons from "../../FormElements/SquareButton";
 import TextBox from "../../FormElements/TextBox";
@@ -47,7 +48,8 @@ interface CalendarModalProps {}
 
 const CalendarModal: React.FC<CalendarModalProps> = () => {
    const classes = useStyles();
-   const { closeModal, modalReservation, updateReservation } = useCalendarContext();
+   const { closeModal, modalReservation, columns } = useCalendarContext();
+   const { updateDragDrop } = UseDragDrop();
    const { enqueueSnackbar } = useSnackbar();
 
    const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -64,11 +66,43 @@ const CalendarModal: React.FC<CalendarModalProps> = () => {
       setIsReadOnly(true);
    };
 
-   const onSave = () => {
+   const onSave = async () => {
       // If startDate is Moment object => change it to string
       if (typeof modifiedReservation.current.startDate !== "string") {
          modifiedReservation.current.startDate = modifiedReservation.current.startDate.format("YYYY-MM-DD");
       }
+
+      const oldDate = reservation.current.startDate
+      const newDate = modifiedReservation.current.startDate
+
+      if (oldDate !== newDate) {
+        console.log("Change DragDrop here");
+        const from = oldDate
+        const to = newDate
+
+        const sourceIds = columns[from].reservationIds;
+        const sourceIndex = sourceIds.findIndex(id => id === reservation.current.id)
+
+        console.log("SourceIndex: ",sourceIndex)
+        if(sourceIndex < 0) throw Error("No Source Index");
+
+        const destinationIds = columns[to].reservationIds;
+        const destinationIndex = destinationIds.length;
+        console.log("DestinationIndex: ",destinationIndex)
+
+
+        const source: IDroppable = {
+            index: sourceIndex,
+            droppableId: from
+        }
+        const destination: IDroppable = {
+            index: destinationIndex,
+            droppableId: to
+        }
+
+        updateDragDrop(source, destination, reservation.current.id)
+
+    }
 
       // Update previous reservation with the new modified one
       reservation.current = { ...modifiedReservation.current };
@@ -76,7 +110,9 @@ const CalendarModal: React.FC<CalendarModalProps> = () => {
       // Make the Modal read-only again
       setIsReadOnly(true);
 
-      updateReservation({ ...modifiedReservation.current });
+      //updateReservation({ ...modifiedReservation.current });
+
+
       enqueueSnackbar("Modifié", { variant: "success" });
    };
 

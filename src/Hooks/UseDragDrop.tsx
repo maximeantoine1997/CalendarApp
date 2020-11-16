@@ -3,7 +3,7 @@ import { Reservation } from "../components/reservation_form";
 import useCalendarContext from "../Contexts/CalendarContext";
 import { convertToReservation, Fauna, FDBGetReservationWith } from "../FaunaDB/Api";
 
-interface IDroppable {
+export interface IDroppable {
    index: number;
    droppableId: string;
 }
@@ -27,6 +27,8 @@ const UseDragDrop = (): UseDragDropProps => {
    const { enqueueSnackbar } = useSnackbar();
 
    const updateDragDrop = async (source: IDroppable, destination: IDroppable, draggableId: string): Promise<void> => {
+       console.log(source)
+       console.log(destination)
       const reservation = getReservation(draggableId);
       if (!reservation?.previous || !reservation?.next) return;
 
