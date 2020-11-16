@@ -53,7 +53,6 @@ const AuthApp: React.FC = () => {
     //      const data: Array<Fauna<Reservation>> = (await FDBgetReservations(["2020-11-22"])) as Array<
     //         Fauna<Reservation>
     //      >;
-    //      console.log(data);
     //      if (!data) return;
     //      const hash: HashMap<Array<Reservation>> = {};
     //      // store all reservations in a hash
@@ -97,7 +96,7 @@ const AuthApp: React.FC = () => {
     //      }
     //      console.log("DONE");
     //   };
-    //   onClick();
+      // onClick();
    }, []);
 
    return (
