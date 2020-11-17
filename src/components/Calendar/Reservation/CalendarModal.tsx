@@ -48,7 +48,7 @@ interface CalendarModalProps {}
 
 const CalendarModal: React.FC<CalendarModalProps> = () => {
    const classes = useStyles();
-   const { closeModal, modalReservation, columns, updateReservation } = useCalendarContext();
+   const { closeModal, modalReservation, columns, updateReservation, getReservation } = useCalendarContext();
    const { updateDragDrop } = UseDragDrop();
    const { enqueueSnackbar } = useSnackbar();
 
@@ -100,8 +100,14 @@ const CalendarModal: React.FC<CalendarModalProps> = () => {
             droppableId: to
         }
 
-        updateDragDrop(source, destination, reservation.current.id)
+        await updateDragDrop(source, destination, reservation.current.id)
 
+        const newRes = getReservation(reservation.current.id);
+        if(newRes) {
+            console.log(newRes)
+            modifiedReservation.current.previous = newRes.previous
+            modifiedReservation.current.next = newRes.next
+        }
     }
 
       // Update previous reservation with the new modified one
