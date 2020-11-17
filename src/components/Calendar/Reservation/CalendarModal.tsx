@@ -48,7 +48,7 @@ interface CalendarModalProps {}
 
 const CalendarModal: React.FC<CalendarModalProps> = () => {
    const classes = useStyles();
-   const { closeModal, modalReservation, columns } = useCalendarContext();
+   const { closeModal, modalReservation, columns, updateReservation } = useCalendarContext();
    const { updateDragDrop } = UseDragDrop();
    const { enqueueSnackbar } = useSnackbar();
 
@@ -110,7 +110,7 @@ const CalendarModal: React.FC<CalendarModalProps> = () => {
       // Make the Modal read-only again
       setIsReadOnly(true);
 
-      //updateReservation({ ...modifiedReservation.current });
+      updateReservation({ ...modifiedReservation.current });
 
 
       enqueueSnackbar("Modifié", { variant: "success" });
