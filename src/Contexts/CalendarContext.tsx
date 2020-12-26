@@ -2,8 +2,8 @@ import moment, { Moment } from "moment";
 import React, { createContext, ReactElement, ReactNode, useContext, useEffect, useState } from "react";
 import { Reservation } from "../components/reservation_form";
 import {
-   convertToNote,
-   convertToReservation,
+   FDBconvertToNote,
+   FDBconvertToReservation,
    Fauna,
    FDBcreateReservationAsync,
    FDBDeleteNotesAsync,
@@ -84,6 +84,7 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
    const [columns, setColumns] = useState<HashMap<IColumn>>({});
 
    const [newReservationId, setNewReservationId] = useState("");
+   const [resUpdate, setResUpdate] = useState(false)
 
    // Whenever the date changes, get the data from DB & recreate the columns based on the new date
    useEffect(() => {
@@ -193,14 +194,14 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
          // If no elements => error => return
          if (!newReservations || !newNotes) return;
          // creates the different necessary hashs for the frontend
-         populateHash(newNotes, convertToNote, cols);
-         populateHash(newReservations, convertToReservation, cols);
+         populateHash(newNotes, FDBconvertToNote, cols);
+         populateHash(newReservations, FDBconvertToReservation, cols);
       };
 
       getData();
 
       console.log("getData DONE");
-   }, [date, newReservationId]);
+   }, [date, newReservationId, resUpdate ]);
 
    //#region RESERVATIONS
 
@@ -250,17 +251,22 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
    };
 
    const updateReservations = async (newReservations: Array<Reservation>) => {
-      const newHash = { ...reservations };
-      newReservations.forEach(newReservation => {
-         const id = newReservation.id;
-         if (!id) return;
-         newHash[id] = newReservation;
-      });
+
 
       // Update the modified Reservation in the hash
-      setReservations(newHash);
+      setReservations(res => {
+        const newHash = { ...res };
+        newReservations.forEach(newReservation => {
+           const id = newReservation.id;
+           if (!id) return;
+           newHash[id] = newReservation;
+        });
+        return newHash
+      });
 
       await FDBUpdateReservationsAsync(newReservations);
+
+      setResUpdate(prev => !prev)
    };
 
    const deleteReservation = async (reservation: Reservation): Promise<void> => {
