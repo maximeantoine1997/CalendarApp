@@ -107,7 +107,7 @@ export interface Reservation {
    email?: string;
 
    // Extra:
-   id?: number;
+   id?: number | string;
    varyNumber?: string;
    type: ReservationType;
    notes?: string;
