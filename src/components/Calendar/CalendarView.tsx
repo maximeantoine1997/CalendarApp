@@ -67,6 +67,7 @@ const CalendarView: React.FC = () => {
 
       await updateDragDrop(source, destination, draggableId);
    };
+
    if (Object.entries(columns).length === 0) return <> </>;
    return (
       <DragDropContext onDragEnd={onDragEnd}>

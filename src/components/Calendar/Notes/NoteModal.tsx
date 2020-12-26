@@ -15,7 +15,7 @@ import { useSnackbar } from "notistack";
 import React, { ReactNode, useEffect, useState } from "react";
 import useCalendarContext from "../../../Contexts/CalendarContext";
 import useNoteContext from "../../../Contexts/NoteContext";
-import { convertToNote, Fauna, FDBcreateNotesAsync, Note } from "../../../FaunaDB/Api";
+import { FDBconvertToNote, Fauna, FDBcreateNotesAsync, Note } from "../../../FaunaDB/Api";
 import TextComponent from "../../FormElements/TextComponent";
 
 const useStyles = makeStyles(() =>
@@ -49,7 +49,7 @@ const NoteModal: React.FunctionComponent<NoteModalProps> = () => {
    const onAdd = async () => {
       const newNote: Note = { id: "", date: modalDate, name: "", type: "", note: "" };
       const faunaNote: Fauna<Note> = (await FDBcreateNotesAsync(newNote)) as Fauna<Note>;
-      const note = convertToNote(faunaNote);
+      const note = FDBconvertToNote(faunaNote);
       setNotes(prev => [...prev, note]);
    };
 

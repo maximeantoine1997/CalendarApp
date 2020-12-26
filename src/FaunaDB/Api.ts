@@ -29,14 +29,14 @@ export interface Note {
 
 //#region CONVERSION
 
-export const convertToReservation = (item: Fauna<Reservation>): Reservation => {
+export const FDBconvertToReservation = (item: Fauna<Reservation>): Reservation => {
    const res = item.data;
    res["id"] = item.ref.id;
 
    return res;
 };
 
-export const convertToNote = (item: Fauna<Note>): Note => {
+export const FDBconvertToNote = (item: Fauna<Note>): Note => {
    const res = item.data;
    res["id"] = item.ref.id;
 
@@ -130,7 +130,7 @@ export const FDBcreateReservationAsync = async (reservation: Reservation) => {
    const newReservation = (await create(reservation, "reservations")) as Fauna<Reservation>;
 
    // Return the newly created reservation with its ID
-   return convertToReservation(newReservation);
+   return FDBconvertToReservation(newReservation);
 };
 
 export const FDBupdateReservationAsync = async (reservation: Reservation) => {

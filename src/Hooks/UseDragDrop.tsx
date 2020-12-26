@@ -1,7 +1,7 @@
 import { useSnackbar } from "notistack";
 import { Reservation } from "../components/reservation_form";
 import useCalendarContext from "../Contexts/CalendarContext";
-import { convertToReservation, Fauna, FDBGetReservationWith } from "../FaunaDB/Api";
+import { FDBconvertToReservation, Fauna, FDBGetReservationWith } from "../FaunaDB/Api";
 
 export interface IDroppable {
    index: number;
@@ -286,7 +286,7 @@ const UseDragDrop = (): UseDragDropProps => {
          const reservation = await addReservation(newReservation);
          if (!reservation) throw Error("No reservation returned");
 
-         const lastReservation = convertToReservation(data[0]);
+         const lastReservation = FDBconvertToReservation(data[0]);
 
          lastReservation.next = (reservation.id as unknown) as string;
 
