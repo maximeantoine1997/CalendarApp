@@ -7,7 +7,7 @@ import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
 import moment, { Moment } from "moment";
 import React, { useState } from "react";
 import useCalendarContext from "../../../Contexts/CalendarContext";
-import { Fauna, FDBgetReservations, FDBconvertToReservation, FDBUpdateReservationsAsync } from "../../../FaunaDB/Api";
+import { Fauna, FDBconvertToReservation, FDBgetReservations } from "../../../FaunaDB/Api";
 import { HashMap } from "../../../Utils";
 import { Reservation } from "../../reservation_form";
 
