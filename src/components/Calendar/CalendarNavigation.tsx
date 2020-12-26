@@ -8,6 +8,8 @@ import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
 import { Moment } from "moment";
 import React, { useState } from "react";
 import useCalendarContext from "../../Contexts/CalendarContext";
+import SettingsIcon from '@material-ui/icons/Settings';
+import SettingsModal from "./Settings/SettingsModal";
 
 const useStyles = makeStyles(() =>
    createStyles({
@@ -24,6 +26,10 @@ const useStyles = makeStyles(() =>
       pointer: {
          cursor: "pointer",
       },
+      settings: {
+        cursor: "pointer",
+        paddingTop: "7px"
+     },
    })
 );
 
@@ -38,6 +44,8 @@ const CalendarNavigation: React.FC = () => {
    const fullWeek = `${monday}-${sunday} ${month}`;
 
    const [calendarOpen, setCalendarOpen] = useState<boolean>(false);
+   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
+
 
    const onNextWeek = () => {
       const newDate = date.clone().add(7, "day");
@@ -77,7 +85,7 @@ const CalendarNavigation: React.FC = () => {
             <Grid container justify="center"></Grid>
          </Grid>
          <Grid item xs={4}>
-            <Grid container justify="center">
+            <Grid container justify="space-evenly">
                <Button
                   variant="outlined"
                   color="secondary"
@@ -86,6 +94,10 @@ const CalendarNavigation: React.FC = () => {
                >
                   Choisir Date
                </Button>
+               <SettingsIcon
+                    className={classes.settings}
+                    onClick={() => setSettingsOpen(true)}
+                />
             </Grid>
          </Grid>
          {calendarOpen && (
@@ -95,6 +107,9 @@ const CalendarNavigation: React.FC = () => {
                </MuiPickersUtilsProvider>
             </Dialog>
          )}
+         {settingsOpen &&
+            <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)}/>
+         }
       </Grid>
    );
 };
