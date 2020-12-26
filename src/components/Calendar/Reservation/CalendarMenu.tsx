@@ -35,7 +35,6 @@ const CalendarMenu: React.FunctionComponent<CalendarMenuProps> = () => {
 
    const onDeleteReservation = async () => {
       await deleteDragDrop(menuReservation as Reservation).then(() => {
-         enqueueSnackbar("Supprimé", { variant: "success" });
          onClosMenu();
       });
    };
@@ -49,7 +48,6 @@ const CalendarMenu: React.FunctionComponent<CalendarMenuProps> = () => {
 
    useEffect(() => {
       if (anchorEl) {
-         console.log("ANCHOR CHANGED");
          setIsOpen(Boolean(anchorEl));
       }
    }, [anchorEl]);
