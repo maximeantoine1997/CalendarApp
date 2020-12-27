@@ -68,13 +68,14 @@ const CalendarView: React.FC = () => {
       await updateDragDrop(source, destination, draggableId);
    };
 
-   if (Object.entries(columns).length === 0) return <> </>;
+   console.log("columns:",columns)
+
    return (
       <DragDropContext onDragEnd={onDragEnd}>
          <NoteContextProvider>
             <Grid container direction="row">
                {weekDays.map((day: string, index) => {
-                  const column = columns[day];
+                  const column = columns[day] || null;
 
                   return <CalendarColumn key={index} day={day} column={column} />;
                })}

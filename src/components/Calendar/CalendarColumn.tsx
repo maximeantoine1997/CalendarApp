@@ -35,7 +35,7 @@ const useStyles = makeStyles(() =>
 
 interface CalendarColumnProps {
    day: string;
-   column: IColumn;
+   column: IColumn | null;
 }
 
 const CalendarColumn: React.FC<CalendarColumnProps> = ({ day, column }) => {
