@@ -37,7 +37,7 @@ interface SettingsModalProps {
 const SettingsModal: React.FunctionComponent<SettingsModalProps> = ({ open, onClose }) => {
     const classes = useStyles();
 
-    const {updateReservations} = useCalendarContext()
+    const {updateReservations, setResUpdate} = useCalendarContext()
 
 
     const [date, setDate] = useState<Moment>(moment())
@@ -91,6 +91,9 @@ const SettingsModal: React.FunctionComponent<SettingsModalProps> = ({ open, onCl
             res[0] = { ...res[0], previous: "FIRST" };
 
             updateReservations(res)
+
+            // Makes sure that we call FaunaDB again
+            setResUpdate(prev => !prev)
 
             if (onClose) {
                 onClose()

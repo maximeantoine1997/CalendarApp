@@ -45,6 +45,7 @@ interface ICalendarContext {
    updateNote: (newNote: Note) => void;
    deleteNote: (note: Note) => void;
    setNewReservationId: React.Dispatch<React.SetStateAction<string>>;
+   setResUpdate: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const CalendarContext = createContext<ICalendarContext>({
@@ -75,6 +76,7 @@ export const CalendarContext = createContext<ICalendarContext>({
    updateNote: () => {},
    deleteNote: () => {},
    setNewReservationId: () => {},
+   setResUpdate: () => {},
 });
 
 export const CalendarContextProvider = (props: { children: ReactNode }): ReactElement => {
@@ -88,6 +90,8 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
 
    // Whenever the date changes, get the data from DB & recreate the columns based on the new date
    useEffect(() => {
+
+
       const createColumns = (): HashMap<IColumn> => {
          const dates = getWeekDays(date);
          const cols: HashMap<IColumn> = {};
@@ -251,8 +255,6 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
    };
 
    const updateReservations = async (newReservations: Array<Reservation>) => {
-
-
       // Update the modified Reservation in the hash
       setReservations(res => {
         const newHash = { ...res };
@@ -265,8 +267,6 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
       });
 
       await FDBUpdateReservationsAsync(newReservations);
-
-      setResUpdate(prev => !prev)
    };
 
    const deleteReservation = async (reservation: Reservation): Promise<void> => {
@@ -348,6 +348,7 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
       FDBDeleteNotesAsync(note);
    };
    //#endregion
+
    const calendarContext = {
       date,
       setDate,
@@ -376,6 +377,7 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
       updateNote,
       deleteNote,
       setNewReservationId,
+      setResUpdate
    };
    return <CalendarContext.Provider value={calendarContext}>{props.children}</CalendarContext.Provider>;
 };
