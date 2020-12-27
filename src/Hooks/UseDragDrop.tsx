@@ -168,102 +168,102 @@ const UseDragDrop = (): UseDragDropProps => {
             enqueueSnackbar("Modifié", { variant: "success" });
          });
       }
-      // TO DIFFERENT COLUMN
-      else {
-        const sourceIds = columns[source.droppableId].reservationIds;
-        const resToUpdate: Array<Reservation> = [];
+    //   // TO DIFFERENT COLUMN
+    //   else {
+    //     const sourceIds = columns[source.droppableId].reservationIds;
+    //     const resToUpdate: Array<Reservation> = [];
 
-        // SOURCE
-        switch(source.index){
-            // From First
-            case 0: {
-                console.log("From First")
-                if (sourceNext) {
-                    sourceNext.previous = "FIRST";
-                    resToUpdate.push(sourceNext);
-                }
-                break;
-            }
-            // From Last
-            case sourceIds.length - 1: {
-                console.log("From Last")
-                if (sourcePrevious) {
-                    sourcePrevious.next = "LAST";
-                    resToUpdate.push(sourcePrevious);
-                }
-                break;
-            }
-            // From Middle
-            default: {
-                console.log("From Middle")
-                if (sourcePrevious) {
-                    sourcePrevious.next = reservation.next;
-                    resToUpdate.push(sourcePrevious);
-                }
-                if (sourceNext) {
-                    sourceNext.previous = reservation.previous;
-                    resToUpdate.push(sourceNext);
-                }
-                break;
-            }
-        }
+    //     // SOURCE
+    //     switch(source.index){
+    //         // From First
+    //         case 0: {
+    //             console.log("From First")
+    //             if (sourceNext) {
+    //                 sourceNext.previous = "FIRST";
+    //                 resToUpdate.push(sourceNext);
+    //             }
+    //             break;
+    //         }
+    //         // From Last
+    //         case sourceIds.length - 1: {
+    //             console.log("From Last")
+    //             if (sourcePrevious) {
+    //                 sourcePrevious.next = "LAST";
+    //                 resToUpdate.push(sourcePrevious);
+    //             }
+    //             break;
+    //         }
+    //         // From Middle
+    //         default: {
+    //             console.log("From Middle")
+    //             if (sourcePrevious) {
+    //                 sourcePrevious.next = reservation.next;
+    //                 resToUpdate.push(sourcePrevious);
+    //             }
+    //             if (sourceNext) {
+    //                 sourceNext.previous = reservation.previous;
+    //                 resToUpdate.push(sourceNext);
+    //             }
+    //             break;
+    //         }
+    //     }
 
-        // DESTINATION
-        switch(destination.index){
-            // To First
-            case 0: {
-                console.log("To First")
-                reservation.previous = "FIRST"
-                if (destinationCurrent) {
-                    reservation.next = destinationCurrent.id as unknown as string
-                    destinationCurrent.previous = draggableId
-                    resToUpdate.push(destinationCurrent)
-                } else {
-                    // No destinationCurrent so no reservations on that day
-                    reservation.next = "LAST"
-                }
-                break;
-            }
-            // To Last
-            case destinationIds.length: {
-                console.log("To Last")
-                // destinationCurr is undefined here so we need
-                // to find it manually
-                const last = getReservation(destinationIds[destinationIds.length - 1]);
-                reservation.next = "LAST"
-                if (last) {
-                    reservation.previous = last.id as unknown as string
-                    last.next = draggableId;
-                    resToUpdate.push(last)
-                }
-                break;
-            }
-            // To Middle
-            default: {
-                console.log("To Middle")
-                if(destinationCurrent?.previous) {
-                    const destinationPrevious = getReservation(destinationCurrent.previous)
-                    if (destinationPrevious) {
-                        destinationPrevious.next = draggableId;
-                        reservation.previous = destinationPrevious.id as unknown as string;
-                        resToUpdate.push(destinationPrevious)
-                    }
-                }
-                if (destinationCurrent){
-                    destinationCurrent.previous = draggableId;
-                    reservation.next = destinationCurrent.id as unknown as string;
-                    resToUpdate.push(destinationCurrent)
-                }
-                break;
-            }
-        }
-        // Update startdate reservation
-        reservation.startDate = destination.droppableId
-        resToUpdate.push(reservation);
-        await updateReservations(resToUpdate).then(() => {
-            enqueueSnackbar("Modifié", { variant: "success" });
-         });
-      }
+    //     // DESTINATION
+    //     switch(destination.index){
+    //         // To First
+    //         case 0: {
+    //             console.log("To First")
+    //             reservation.previous = "FIRST"
+    //             if (destinationCurrent) {
+    //                 reservation.next = destinationCurrent.id as unknown as string
+    //                 destinationCurrent.previous = draggableId
+    //                 resToUpdate.push(destinationCurrent)
+    //             } else {
+    //                 // No destinationCurrent so no reservations on that day
+    //                 reservation.next = "LAST"
+    //             }
+    //             break;
+    //         }
+    //         // To Last
+    //         case destinationIds.length: {
+    //             console.log("To Last")
+    //             // destinationCurr is undefined here so we need
+    //             // to find it manually
+    //             const last = getReservation(destinationIds[destinationIds.length - 1]);
+    //             reservation.next = "LAST"
+    //             if (last) {
+    //                 reservation.previous = last.id as unknown as string
+    //                 last.next = draggableId;
+    //                 resToUpdate.push(last)
+    //             }
+    //             break;
+    //         }
+    //         // To Middle
+    //         default: {
+    //             console.log("To Middle")
+    //             if(destinationCurrent?.previous) {
+    //                 const destinationPrevious = getReservation(destinationCurrent.previous)
+    //                 if (destinationPrevious) {
+    //                     destinationPrevious.next = draggableId;
+    //                     reservation.previous = destinationPrevious.id as unknown as string;
+    //                     resToUpdate.push(destinationPrevious)
+    //                 }
+    //             }
+    //             if (destinationCurrent){
+    //                 destinationCurrent.previous = draggableId;
+    //                 reservation.next = destinationCurrent.id as unknown as string;
+    //                 resToUpdate.push(destinationCurrent)
+    //             }
+    //             break;
+    //         }
+    //     }
+    //     // Update startdate reservation
+    //     reservation.startDate = destination.droppableId
+    //     resToUpdate.push(reservation);
+    //     await updateReservations(resToUpdate).then(() => {
+    //         enqueueSnackbar("Modifié", { variant: "success" });
+    //      });
+    //   }
    };
 
    const addDragDrop = async (newReservation: Reservation): Promise<void> => {
