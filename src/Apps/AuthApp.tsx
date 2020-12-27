@@ -9,6 +9,7 @@ import AccountPage from "../pages/AccountPage";
 import CalendarPage from "../pages/CalendarPage";
 import HomePage from "../pages/HomePage";
 import ReservationPage from "../pages/ReservationPage";
+import RetourPage from "../pages/RetourPage";
 import SettingsPage from "../pages/SettingsPage";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -65,6 +66,9 @@ const AuthApp: React.FC = () => {
                      </Route>
                      <Route path="/settings">
                         <SettingsPage />
+                     </Route>
+                     <Route path="/retour">
+                        <RetourPage />
                      </Route>
                      <Route exact path="/">
                         <HomePage />
