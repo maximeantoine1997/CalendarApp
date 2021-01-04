@@ -90,7 +90,7 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
 
    // Whenever the date changes, get the data from DB & recreate the columns based on the new date
    useEffect(() => {
-
+        console.log("getData TRIGGERED...");
 
       const createColumns = (): HashMap<IColumn> => {
          const dates = getWeekDays(date);
@@ -127,17 +127,25 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
             let nextId = firstRes.next;
 
             while (nextId && nextId !== "LAST") {
+               console.log("here")
                const nextRes = reservations[nextId];
 
                if (!nextRes) {
                   throw Error("No Next reservation was found");
                }
                orderedIds.push((nextRes.id as unknown) as string);
+
                if (nextId === nextRes.next) {
                   throw Error("Current and next have the same ID");
                }
-               nextId = nextRes.next;
 
+               if (nextRes.next && reservations[nextRes.next].next === nextRes.id) {
+                throw Error(`Infinite loop on ${nextRes.startDate}`);
+             }
+
+
+               nextId = nextRes.next;
+               console.log(nextId)
                if (!nextId) {
                   break;
                }

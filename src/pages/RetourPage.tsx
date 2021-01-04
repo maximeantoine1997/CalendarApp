@@ -1,8 +1,6 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import { Box } from "@material-ui/core";
-import CalendarNavigation from "../components/Calendar/CalendarNavigation";
-import CalendarView from "../components/Calendar/CalendarView";
+import { makeStyles } from "@material-ui/core/styles";
+import React from "react";
 
 const useStyles = makeStyles(() => ({
     grid: {
@@ -23,8 +21,8 @@ const RetourPage: React.FunctionComponent<RetourPageProps> = ({ identifier }) =>
 
     return (
         <Box className={classes.grid}>
-           <CalendarNavigation />
-           <CalendarView />
+           {/* <CalendarNavigation />
+           <CalendarView /> */}
         </Box>
      );
 };
