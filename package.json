@@ -15,7 +15,7 @@
       "@types/node": "^12.12.24",
       "@types/react-beautiful-dnd": "^12.1.3",
       "@types/react-redux": "^7.1.7",
-      "axios": "^0.19.2",
+      "axios": "^0.21.1",
       "dotenv": "^8.2.0",
       "eslint-plugin-flowtype": "^3.13.0",
       "faunadb": "^2.14.2",
