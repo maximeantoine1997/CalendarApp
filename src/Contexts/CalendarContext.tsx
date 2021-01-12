@@ -133,19 +133,19 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
                if (!nextRes) {
                   throw Error("No Next reservation was found");
                }
+
                orderedIds.push((nextRes.id as unknown) as string);
 
                if (nextId === nextRes.next) {
                   throw Error("Current and next have the same ID");
                }
 
-               if (nextRes.next && reservations[nextRes.next].next === nextRes.id) {
-                throw Error(`Infinite loop on ${nextRes.startDate}`);
-             }
-
+            //    if (nextRes && nextRes.next && reservations[nextRes.next].next === nextRes.id) {
+            //     throw Error(`Infinite loop on ${nextRes.startDate}`);
+            //    }
 
                nextId = nextRes.next;
-               console.log(nextId)
+
                if (!nextId) {
                   break;
                }

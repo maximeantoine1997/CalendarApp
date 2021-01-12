@@ -107,7 +107,7 @@ const SettingsModal: React.FunctionComponent<SettingsModalProps> = ({ open, onCl
 
 
 
-    return <Dialog open={open} className={classes.calendar} maxWidth="sm" fullWidth >
+    return <Dialog open={open} onClose={onClose} className={classes.calendar} maxWidth="sm" fullWidth >
                 <Box minHeight="30vh">
                     <Grid container justify="space-evenly" alignItems="center" style={{height: "30vh"}}>
                         <Grid item >
