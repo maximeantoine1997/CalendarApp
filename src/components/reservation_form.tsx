@@ -112,6 +112,8 @@ export interface Reservation {
    type: ReservationType;
    notes?: string;
 
+   columnIndex?: number;
+
    // Drag & Drop
    previous?: string;
    next?: string;
@@ -288,6 +290,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
 
     //#endregion
 
+    // Will add the reservation and make it drag and droppable
     addDragDrop(res).then(() => {
         history.push("/calendrier");
     });

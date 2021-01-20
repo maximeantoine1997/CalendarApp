@@ -27,6 +27,7 @@ const CalendarView: React.FC = () => {
       if (start === finish) {
          // Item changes position in the same column
          const reservationIds = Array.from(start.reservationIds);
+         console.log(reservationIds);
          reservationIds.splice(source.index, 1);
          reservationIds.splice(destination.index, 0, draggableId);
          const newColumn: IColumn = {
@@ -38,35 +39,65 @@ const CalendarView: React.FC = () => {
             [newColumn.id]: newColumn,
          };
          setColumns(newColumns);
+         await updateDragDrop(reservationIds);
+      } else {
+         // Item moves to another column
+         const startReservationIds = Array.from(start.reservationIds);
+
+         // Removes element from start column
+         startReservationIds.splice(source.index, 1);
+
+         const finishReservationIds = Array.from(finish.reservationIds);
+
+         // Places the res at indicated index
+         finishReservationIds.splice(destination.index, 0, draggableId);
+
+         const newStart: IColumn = {
+            ...start,
+            reservationIds: startReservationIds,
+         };
+         const newFinish: IColumn = {
+            ...finish,
+            reservationIds: finishReservationIds,
+         };
+
+         const newColumns = {
+            ...columns,
+            [newStart.id]: newStart,
+            [newFinish.id]: newFinish,
+         };
+
+         setColumns(newColumns);
+         await updateDragDrop(startReservationIds, finishReservationIds, draggableId, finish.id);
       }
-    //   else {
-    //      // Item moves to another list
-    //      const startReservationIds = Array.from(start.reservationIds);
-    //      startReservationIds.splice(source.index, 1);
+      //   else {
+      //      // Item moves to another list
+      //      const startReservationIds = Array.from(start.reservationIds);
+      //      startReservationIds.splice(source.index, 1);
 
-    //      const newStart: IColumn = {
-    //         ...start,
-    //         reservationIds: startReservationIds,
-    //      };
+      //      const newStart: IColumn = {
+      //         ...start,
+      //         reservationIds: startReservationIds,
+      //      };
 
-    //      const finishReservationIds = Array.from(finish.reservationIds);
-    //      finishReservationIds.splice(destination.index, 0, draggableId);
+      //      const finishReservationIds = Array.from(finish.reservationIds);
+      //      finishReservationIds.splice(destination.index, 0, draggableId);
 
-    //      const newFinish: IColumn = {
-    //         ...finish,
-    //         reservationIds: finishReservationIds,
-    //      };
+      //      const newFinish: IColumn = {
+      //         ...finish,
+      //         reservationIds: finishReservationIds,
+      //      };
 
-    //      const newColumns = {
-    //         ...columns,
-    //         [newStart.id]: newStart,
-    //         [newFinish.id]: newFinish,
-    //      };
+      //      const newColumns = {
+      //         ...columns,
+      //         [newStart.id]: newStart,
+      //         [newFinish.id]: newFinish,
+      //      };
 
-    //      setColumns(newColumns);
-    //   }
+      //      setColumns(newColumns);
+      //   }
 
-      await updateDragDrop(source, destination, draggableId);
+      // await updateDragDrop(source, destination, draggableId);
    };
 
    return (

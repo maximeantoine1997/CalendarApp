@@ -1,7 +1,7 @@
 import { Button, createStyles, Grid, makeStyles, Theme } from "@material-ui/core";
 import React from "react";
 import { Reservation } from "../components/reservation_form";
-import { FDBconvertToReservation, Fauna, FDBgetReservations, FDBupdateReservationAsync } from "../FaunaDB/Api";
+import { FDBconvertToReservation, Fauna, FDBgetReservationsAsync, FDBupdateReservationAsync } from "../FaunaDB/Api";
 import { HashMap } from "../Utils";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -20,7 +20,7 @@ const SettingsPage = () => {
 
 
     const onClick = async () => {
-       const data: Array<Fauna<Reservation>> = (await FDBgetReservations(["2020-11-28"])) as Array<
+       const data: Array<Fauna<Reservation>> = (await FDBgetReservationsAsync(["2020-11-28"])) as Array<
           Fauna<Reservation>
        >;
        if (!data) return;

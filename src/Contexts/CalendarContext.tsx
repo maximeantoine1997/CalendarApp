@@ -9,7 +9,7 @@ import {
    FDBDeleteNotesAsync,
    FDBDeleteReservationAsync,
    FDBGetNotes,
-   FDBgetReservations,
+   FDBgetReservationsAsync,
    FDBupdateNotesAsync,
    FDBupdateReservationAsync,
    FDBUpdateReservationsAsync,
@@ -86,11 +86,11 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
    const [columns, setColumns] = useState<HashMap<IColumn>>({});
 
    const [newReservationId, setNewReservationId] = useState("");
-   const [resUpdate, setResUpdate] = useState(false)
+   const [resUpdate, setResUpdate] = useState(false);
 
    // Whenever the date changes, get the data from DB & recreate the columns based on the new date
    useEffect(() => {
-        console.log("getData TRIGGERED...");
+      console.log("getData TRIGGERED...");
 
       const createColumns = (): HashMap<IColumn> => {
          const dates = getWeekDays(date);
@@ -106,50 +106,77 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
       };
       const reorderColumns = (cols: HashMap<IColumn>, reservations: HashMap<Reservation>): HashMap<IColumn> => {
          for (let i in cols) {
+            console.log(i);
             const unorderedIds = [...cols[i].reservationIds];
-            const orderedIds = [];
+            const orderedIds: Array<string> = [];
 
             if (unorderedIds.length === 0) continue;
 
             const firstId = unorderedIds.find(id => {
                const res = reservations[id];
 
-               return res?.previous === "FIRST";
+               return res?.columnIndex === 0;
             });
 
             if (!firstId) continue;
 
             orderedIds.push(firstId);
+            console.log(unorderedIds);
+            for (let i = 1; i < unorderedIds.length; i++) {
+               const currId = unorderedIds.find(id => {
+                  const res = reservations[id];
 
-            const firstRes = reservations[firstId];
-            if (!firstRes) continue;
+                  return res?.columnIndex === i;
+               });
 
-            let nextId = firstRes.next;
-
-            while (nextId && nextId !== "LAST") {
-               console.log("here")
-               const nextRes = reservations[nextId];
-
-               if (!nextRes) {
-                  throw Error("No Next reservation was found");
+               if (!currId) {
+                  throw Error(`ID at index ${i} not found`);
                }
 
-               orderedIds.push((nextRes.id as unknown) as string);
+               orderedIds.push(currId);
+            }
 
-               if (nextId === nextRes.next) {
-                  throw Error("Current and next have the same ID");
-               }
+            //#region  old version
+            // const firstId = unorderedIds.find(id => {
+            //    const res = reservations[id];
 
-            //    if (nextRes && nextRes.next && reservations[nextRes.next].next === nextRes.id) {
-            //     throw Error(`Infinite loop on ${nextRes.startDate}`);
+            //    return res?.previous === "FIRST";
+            // });
+
+            // if (!firstId) continue;
+
+            // orderedIds.push(firstId);
+
+            // const firstRes = reservations[firstId];
+            // if (!firstRes) continue;
+
+            // let nextId = firstRes.next;
+
+            // while (nextId && nextId !== "LAST") {
+            //    console.log("here")
+            //    const nextRes = reservations[nextId];
+
+            //    if (!nextRes) {
+            //       throw Error("No Next reservation was found");
             //    }
 
-               nextId = nextRes.next;
+            //    orderedIds.push((nextRes.id as unknown) as string);
 
-               if (!nextId) {
-                  break;
-               }
-            }
+            //    if (nextId === nextRes.next) {
+            //       throw Error("Current and next have the same ID");
+            //    }
+
+            // //    if (nextRes && nextRes.next && reservations[nextRes.next].next === nextRes.id) {
+            // //     throw Error(`Infinite loop on ${nextRes.startDate}`);
+            // //    }
+
+            //    nextId = nextRes.next;
+
+            //    if (!nextId) {
+            //       break;
+            //    }
+            // }
+            //#endregion
 
             cols[i].reservationIds = orderedIds;
          }
@@ -187,6 +214,7 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
          const element: Reservation | Note = conversion(items[0]);
          if (isReservation(element)) {
             setReservations(hashElements as HashMap<Reservation>);
+            console.log("reordering columns...");
             const reorderedColumns = { ...reorderColumns(cols, hashElements as HashMap<Reservation>) };
             setColumns(reorderedColumns);
          }
@@ -200,7 +228,7 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
          const cols = createColumns();
 
          // Get the elements from Fauna DB
-         const newReservations: any = await FDBgetReservations(getWeekDays(date));
+         const newReservations: any = await FDBgetReservationsAsync(getWeekDays(date));
          const newNotes: any = await FDBGetNotes(getWeekDays(date));
 
          // If no elements => error => return
@@ -213,7 +241,7 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
       getData();
 
       console.log("getData DONE");
-   }, [date, newReservationId, resUpdate ]);
+   }, [date, newReservationId, resUpdate]);
 
    //#region RESERVATIONS
 
@@ -265,13 +293,13 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
    const updateReservations = async (newReservations: Array<Reservation>) => {
       // Update the modified Reservation in the hash
       setReservations(res => {
-        const newHash = { ...res };
-        newReservations.forEach(newReservation => {
-           const id = newReservation.id;
-           if (!id) return;
-           newHash[id] = newReservation;
-        });
-        return newHash
+         const newHash = { ...res };
+         newReservations.forEach(newReservation => {
+            const id = newReservation.id;
+            if (!id) return;
+            newHash[id] = newReservation;
+         });
+         return newHash;
       });
 
       await FDBUpdateReservationsAsync(newReservations);
@@ -385,7 +413,7 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
       updateNote,
       deleteNote,
       setNewReservationId,
-      setResUpdate
+      setResUpdate,
    };
    return <CalendarContext.Provider value={calendarContext}>{props.children}</CalendarContext.Provider>;
 };

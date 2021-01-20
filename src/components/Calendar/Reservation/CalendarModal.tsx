@@ -1,13 +1,13 @@
 import {
-    Button,
-    createStyles,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    Divider,
-    Grid,
-    makeStyles,
-    Typography
+   Button,
+   createStyles,
+   Dialog,
+   DialogActions,
+   DialogContent,
+   Divider,
+   Grid,
+   makeStyles,
+   Typography,
 } from "@material-ui/core";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
@@ -72,43 +72,42 @@ const CalendarModal: React.FC<CalendarModalProps> = () => {
          modifiedReservation.current.startDate = modifiedReservation.current.startDate.format("YYYY-MM-DD");
       }
 
-      const oldDate = reservation.current.startDate
-      const newDate = modifiedReservation.current.startDate
+      const oldDate = reservation.current.startDate;
+      const newDate = modifiedReservation.current.startDate;
 
       if (oldDate !== newDate) {
-        console.log("Change DragDrop here");
-        const from = oldDate
-        const to = newDate
+         console.log("Change DragDrop here");
+         const from = oldDate;
+         const to = newDate;
 
-        const sourceIds = columns[from].reservationIds;
-        const sourceIndex = sourceIds.findIndex(id => id === reservation.current.id)
+         const sourceIds = columns[from].reservationIds;
+         const sourceIndex = sourceIds.findIndex(id => id === reservation.current.id);
 
-        console.log("SourceIndex: ",sourceIndex)
-        if(sourceIndex < 0) throw Error("No Source Index");
+         console.log("SourceIndex: ", sourceIndex);
+         if (sourceIndex < 0) throw Error("No Source Index");
 
-        const destinationIds = columns[to].reservationIds;
-        const destinationIndex = destinationIds.length;
-        console.log("DestinationIndex: ",destinationIndex)
+         const destinationIds = columns[to].reservationIds;
+         const destinationIndex = destinationIds.length;
+         console.log("DestinationIndex: ", destinationIndex);
 
-
-        const source: IDroppable = {
+         const source: IDroppable = {
             index: sourceIndex,
-            droppableId: from
-        }
-        const destination: IDroppable = {
+            droppableId: from,
+         };
+         const destination: IDroppable = {
             index: destinationIndex,
-            droppableId: to
-        }
+            droppableId: to,
+         };
 
-        await updateDragDrop(source, destination, reservation.current.id)
+         // await updateDragDrop(source, destination, reservation.current.id)
 
-        const newRes = getReservation(reservation.current.id);
-        if(newRes) {
-            console.log(newRes)
-            modifiedReservation.current.previous = newRes.previous
-            modifiedReservation.current.next = newRes.next
-        }
-    }
+         const newRes = getReservation(reservation.current.id);
+         if (newRes) {
+            console.log(newRes);
+            modifiedReservation.current.previous = newRes.previous;
+            modifiedReservation.current.next = newRes.next;
+         }
+      }
 
       // Update previous reservation with the new modified one
       reservation.current = { ...modifiedReservation.current };
@@ -117,7 +116,6 @@ const CalendarModal: React.FC<CalendarModalProps> = () => {
       setIsReadOnly(true);
 
       updateReservation({ ...modifiedReservation.current });
-
 
       enqueueSnackbar("Modifié", { variant: "success" });
    };

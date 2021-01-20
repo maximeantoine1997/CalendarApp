@@ -3,7 +3,7 @@ import { useSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
 import useCalendarContext from "../../../Contexts/CalendarContext";
 import UseDragDrop from "../../../Hooks/UseDragDrop";
-import { ReservationType, typeColors } from "../../../Utils";
+import { HashMap, IColumn, ReservationType, typeColors } from "../../../Utils";
 import { Reservation } from "../../reservation_form";
 import ColorBlock from "../Blocks/ColorBlock";
 import DeleteModal from "./DeleteModal";
@@ -12,7 +12,7 @@ interface CalendarMenuProps {}
 
 const CalendarMenu: React.FunctionComponent<CalendarMenuProps> = () => {
    const { enqueueSnackbar } = useSnackbar();
-   const { updateReservation, closeMenu, menuReservation, anchorEl } = useCalendarContext();
+   const { updateReservation, closeMenu, menuReservation, anchorEl, columns, setColumns } = useCalendarContext();
    const { deleteDragDrop } = UseDragDrop();
 
    const [openModal, setOpenModal] = useState<boolean>(false);
@@ -34,9 +34,32 @@ const CalendarMenu: React.FunctionComponent<CalendarMenuProps> = () => {
    };
 
    const onDeleteReservation = async () => {
-      await deleteDragDrop(menuReservation as Reservation).then(() => {
-         onClosMenu();
-      });
+      try {
+         const col = columns[menuReservation?.startDate!];
+         const res = [...col.reservationIds];
+
+         const index = res.indexOf(menuReservation?.id as string);
+
+         if (index > -1) {
+            res.splice(index, 1);
+         }
+
+         const newColumn: IColumn = {
+            ...col,
+            reservationIds: res,
+         };
+         const newColumns: HashMap<IColumn> = {
+            ...columns,
+            [newColumn.id]: newColumn,
+         };
+         setColumns(newColumns);
+
+         await deleteDragDrop(menuReservation as Reservation).then(() => {
+            onClosMenu();
+         });
+      } catch {
+         enqueueSnackbar("Erreur", { variant: "error" });
+      }
    };
 
    const onClosMenu = () => {
