@@ -106,7 +106,6 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
       };
       const reorderColumns = (cols: HashMap<IColumn>, reservations: HashMap<Reservation>): HashMap<IColumn> => {
          for (let i in cols) {
-            console.log(i);
             const unorderedIds = [...cols[i].reservationIds];
             const orderedIds: Array<string> = [];
 
@@ -121,7 +120,6 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
             if (!firstId) continue;
 
             orderedIds.push(firstId);
-            console.log(unorderedIds);
             for (let i = 1; i < unorderedIds.length; i++) {
                const currId = unorderedIds.find(id => {
                   const res = reservations[id];
@@ -135,48 +133,6 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
 
                orderedIds.push(currId);
             }
-
-            //#region  old version
-            // const firstId = unorderedIds.find(id => {
-            //    const res = reservations[id];
-
-            //    return res?.previous === "FIRST";
-            // });
-
-            // if (!firstId) continue;
-
-            // orderedIds.push(firstId);
-
-            // const firstRes = reservations[firstId];
-            // if (!firstRes) continue;
-
-            // let nextId = firstRes.next;
-
-            // while (nextId && nextId !== "LAST") {
-            //    console.log("here")
-            //    const nextRes = reservations[nextId];
-
-            //    if (!nextRes) {
-            //       throw Error("No Next reservation was found");
-            //    }
-
-            //    orderedIds.push((nextRes.id as unknown) as string);
-
-            //    if (nextId === nextRes.next) {
-            //       throw Error("Current and next have the same ID");
-            //    }
-
-            // //    if (nextRes && nextRes.next && reservations[nextRes.next].next === nextRes.id) {
-            // //     throw Error(`Infinite loop on ${nextRes.startDate}`);
-            // //    }
-
-            //    nextId = nextRes.next;
-
-            //    if (!nextId) {
-            //       break;
-            //    }
-            // }
-            //#endregion
 
             cols[i].reservationIds = orderedIds;
          }
@@ -214,7 +170,7 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
          const element: Reservation | Note = conversion(items[0]);
          if (isReservation(element)) {
             setReservations(hashElements as HashMap<Reservation>);
-            console.log("reordering columns...");
+
             const reorderedColumns = { ...reorderColumns(cols, hashElements as HashMap<Reservation>) };
             setColumns(reorderedColumns);
          }
