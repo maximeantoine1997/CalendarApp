@@ -106,6 +106,7 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
       };
       const reorderColumns = (cols: HashMap<IColumn>, reservations: HashMap<Reservation>): HashMap<IColumn> => {
          for (let i in cols) {
+            console.log(i);
             const unorderedIds = [...cols[i].reservationIds];
             const orderedIds: Array<string> = [];
 

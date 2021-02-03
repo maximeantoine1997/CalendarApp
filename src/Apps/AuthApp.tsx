@@ -23,8 +23,6 @@ const useStyles = makeStyles((theme: Theme) =>
    })
 );
 
-// #region react-redux-firebase
-
 const AuthApp: React.FC = () => {
    const classes = useStyles();
 
