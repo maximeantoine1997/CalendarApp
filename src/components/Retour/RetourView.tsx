@@ -39,7 +39,7 @@ const CalendarView: React.FC = () => {
          };
          setColumns(newColumns);
       }
-      await updateDragDrop(source, destination, draggableId);
+    // await updateDragDrop(source, destination, draggableId);
    };
 
    if (Object.entries(columns).length === 0) return <> </>;

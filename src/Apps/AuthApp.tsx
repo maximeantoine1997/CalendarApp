@@ -23,8 +23,6 @@ const useStyles = makeStyles((theme: Theme) =>
    })
 );
 
-// #region react-redux-firebase
-
 const AuthApp: React.FC = () => {
    const classes = useStyles();
 
@@ -45,57 +43,55 @@ const AuthApp: React.FC = () => {
    });
 
    useEffect(() => {
-    // const onClick = async () => {
-    //     const data: Array<Fauna<Reservation>> = (await FDBgetReservations(["2021-01-05"])) as Array<
-    //        Fauna<Reservation>
-    //     >;
-    //     if (!data) return;
-    //     const hash: HashMap<Array<Reservation>> = {};
-    //     // store all reservations in a hash
-    //     data.forEach(async fReservation => {
-    //        const reservation = FDBconvertToReservation(fReservation);
-    //        const date = reservation.startDate;
-    //        // add new element to existing array
-    //        if (hash[date]) {
-    //           const newHash = Array.from(hash[date]);
-    //           newHash.push(reservation);
-    //           hash[date] = newHash;
-    //           return;
-    //        }
-    //        // hash has nothing stored yet so create array
-    //        hash[date] = [reservation];
-    //     });
-    //     for (let date in hash) {
-    //        const res = hash[date];
-    //        for (let i = 0; i < res.length - 1; i++) {
-    //           const currentReservation = res[i];
-    //           const nextReservation = res[i + 1];
-    //           let previousId = (currentReservation.id as unknown) as string;
-    //           let nextId = (nextReservation.id as unknown) as string;
-    //           if (!previousId || !nextId) return;
-    //           // Asign next ID to current item
-    //           res[i] = {
-    //              ...currentReservation,
-    //              next: nextId,
-    //           };
-    //           // Assign previous ID to the next item
-    //           res[i + 1] = {
-    //              ...nextReservation,
-    //              previous: previousId,
-    //           };
-    //        }
-    //        res[0] = { ...res[0], previous: "FIRST" };
-    //        res[res.length - 1] = { ...res[res.length - 1], next: "LAST" };
-    //        res.forEach(async element => {
-    //           await FDBupdateReservationAsync(element);
-    //        });
-    //     }
-    //     console.log("DONE");
-    //  };
-     //onClick()
-   })
-
-
+      // const onClick = async () => {
+      //     const data: Array<Fauna<Reservation>> = (await FDBgetReservations(["2021-01-05"])) as Array<
+      //        Fauna<Reservation>
+      //     >;
+      //     if (!data) return;
+      //     const hash: HashMap<Array<Reservation>> = {};
+      //     // store all reservations in a hash
+      //     data.forEach(async fReservation => {
+      //        const reservation = FDBconvertToReservation(fReservation);
+      //        const date = reservation.startDate;
+      //        // add new element to existing array
+      //        if (hash[date]) {
+      //           const newHash = Array.from(hash[date]);
+      //           newHash.push(reservation);
+      //           hash[date] = newHash;
+      //           return;
+      //        }
+      //        // hash has nothing stored yet so create array
+      //        hash[date] = [reservation];
+      //     });
+      //     for (let date in hash) {
+      //        const res = hash[date];
+      //        for (let i = 0; i < res.length - 1; i++) {
+      //           const currentReservation = res[i];
+      //           const nextReservation = res[i + 1];
+      //           let previousId = (currentReservation.id as unknown) as string;
+      //           let nextId = (nextReservation.id as unknown) as string;
+      //           if (!previousId || !nextId) return;
+      //           // Asign next ID to current item
+      //           res[i] = {
+      //              ...currentReservation,
+      //              next: nextId,
+      //           };
+      //           // Assign previous ID to the next item
+      //           res[i + 1] = {
+      //              ...nextReservation,
+      //              previous: previousId,
+      //           };
+      //        }
+      //        res[0] = { ...res[0], previous: "FIRST" };
+      //        res[res.length - 1] = { ...res[res.length - 1], next: "LAST" };
+      //        res.forEach(async element => {
+      //           await FDBupdateReservationAsync(element);
+      //        });
+      //     }
+      //     console.log("DONE");
+      //  };
+      //onClick()
+   });
 
    return (
       <Router>

@@ -1,7 +1,7 @@
 import { Reservation } from "../components/reservation_form";
-import { HashMap } from './../Utils';
+import { HashMap } from "./../Utils";
 import { client, q } from "./Database";
-import { autocompleteReverseMapping } from './FaunaDB.Utils';
+import { autocompleteReverseMapping } from "./FaunaDB.Utils";
 
 export interface Fauna<T> {
    ref: {
@@ -75,25 +75,22 @@ export const getAutoCompelteAsync = async () =>
    });
 
 export const updateAutoCompleteAsync = async (autocomplete: HashMap<Array<string>>) => {
-    const categories = Object.keys(autocomplete)
-    categories.forEach(category => {
-        if (autocomplete[category].length){
-            const id = autocompleteReverseMapping[category]
-            const uniqueItems = Array.from(new Set(autocomplete[category]))
-            const items = { "items": uniqueItems}
-            client.query(q.Update(q.Ref(q.Collection("autocomplete"), id), { data: items }));
-        }
-    });
+   const categories = Object.keys(autocomplete);
+   categories.forEach(category => {
+      if (autocomplete[category].length) {
+         const id = autocompleteReverseMapping[category];
+         const uniqueItems = Array.from(new Set(autocomplete[category]));
+         const items = { items: uniqueItems };
+         client.query(q.Update(q.Ref(q.Collection("autocomplete"), id), { data: items }));
+      }
+   });
+};
 
-
-}
-
-   //#endregion
-
+//#endregion
 
 //#region RESERVATION
 
-export const FDBgetReservations = (dates: Array<string>) =>
+export const FDBgetReservationsAsync = async (dates: Array<string>) =>
    client
       .query(
          q.Paginate(
@@ -143,7 +140,7 @@ export const FDBUpdateReservationsAsync = async (reservations: Array<Reservation
          update(reservation, "reservations");
          return "";
       })
-   ).then(() => console.log("DONE WITH UPDATES"));
+   ).then(() => console.log("DONE WITH FDB UPDATES"));
 };
 
 export const FDBDeleteReservationAsync = async (reservation: Reservation) => {
