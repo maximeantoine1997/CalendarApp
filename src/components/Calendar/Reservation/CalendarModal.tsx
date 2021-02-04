@@ -48,7 +48,7 @@ interface CalendarModalProps {}
 
 const CalendarModal: React.FC<CalendarModalProps> = () => {
    const classes = useStyles();
-   const { closeModal, modalReservation, columns, setColumns } = useCalendarContext();
+   const { closeModal, modalReservation, columns, setColumns, updateReservation } = useCalendarContext();
    const { updateDragDrop } = UseDragDrop();
 
    const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -108,8 +108,17 @@ const CalendarModal: React.FC<CalendarModalProps> = () => {
             [newFinish.id]: newFinish,
          };
 
+         // Update previous reservation with the new modified one
+         reservation.current = { ...modifiedReservation.current };
+
          setColumns(newColumns);
-         await updateDragDrop(startReservationIds, finishReservationIds, reservation.current.id!, finish.id);
+         await updateDragDrop(
+            startReservationIds,
+            finishReservationIds,
+            reservation.current.id!,
+            finish.id,
+            reservation.current
+         );
       }
 
       // Update previous reservation with the new modified one
@@ -118,9 +127,9 @@ const CalendarModal: React.FC<CalendarModalProps> = () => {
       // Make the Modal read-only again
       setIsReadOnly(true);
 
-      //   updateReservation({ ...modifiedReservation.current });
+      updateReservation({ ...modifiedReservation.current });
 
-      //   enqueueSnackbar("Modifié", { variant: "success" });
+      //enqueueSnackbar("Modifié", { variant: "success" });
    };
 
    const onChange = (key: keyof Reservation, value: unknown) => {

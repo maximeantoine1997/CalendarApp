@@ -8,7 +8,13 @@ export interface IDroppable {
    droppableId: string;
 }
 interface UseDragDropProps {
-   updateDragDrop: (newIds: Array<string>, newOtherIds?: Array<string>, id?: string, newdate?: string) => Promise<void>;
+   updateDragDrop: (
+      newIds: Array<string>,
+      newOtherIds?: Array<string>,
+      id?: string,
+      newdate?: string,
+      updateRes?: Reservation
+   ) => Promise<void>;
    addDragDrop: (newReservation: Reservation) => Promise<void>;
    deleteDragDrop: (reservation: Reservation) => Promise<void>;
 }
@@ -28,7 +34,8 @@ const UseDragDrop = (): UseDragDropProps => {
       newIds: Array<string>,
       newOtherIds?: Array<string>,
       toUpdateId?: string,
-      newDate?: string
+      newDate?: string,
+      updateRes?: Reservation
    ): Promise<void> => {
       const resToUpdate: Array<Reservation> = [];
 
@@ -40,13 +47,22 @@ const UseDragDrop = (): UseDragDropProps => {
                throw Error("No Reservation was found");
             }
 
-            // Update to new column date if moved to another column
-            if (id === toUpdateId && newDate) {
-               res.startDate = newDate;
-            }
+            if (id === toUpdateId && updateRes) {
+               // Update to new column date if moved to another column
+               if (id === toUpdateId && newDate) {
+                  updateRes.startDate = newDate;
+               }
+               updateRes.columnIndex = index;
+               resToUpdate.push(updateRes);
+            } else {
+               // Update to new column date if moved to another column
+               if (id === toUpdateId && newDate) {
+                  res.startDate = newDate;
+               }
 
-            res.columnIndex = index;
-            resToUpdate.push(res);
+               res.columnIndex = index;
+               resToUpdate.push(res);
+            }
          });
       };
       updateIds(newIds);
