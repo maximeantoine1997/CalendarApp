@@ -157,6 +157,17 @@ export const FDBGetReservationWith = async (date: string, index: string, value: 
       )
    );
 };
+
+export const FDBGetReservationsV2 = async (date: string): Promise<Array<Reservation>> => {
+   const data: Array<Fauna<Reservation>> = ((await FDBgetReservationsAsync([date])) as Array<Fauna<Reservation>>) || [];
+
+   return data.map(fReservation => FDBconvertToReservation(fReservation));
+};
+
+export const FDBGetReservationIdsV2 = async (date: string): Promise<Array<string>> => {
+   const reservations = (await FDBGetReservationsV2(date)) || [];
+   return reservations.map(res => res.id as string);
+};
 //#endregion
 // ------------------------------------------------------
 

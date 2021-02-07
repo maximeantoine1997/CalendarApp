@@ -13,7 +13,8 @@ interface UseDragDropProps {
       newOtherIds?: Array<string>,
       id?: string,
       newdate?: string,
-      updateRes?: Reservation
+      updateRes?: Reservation,
+      finishElements?: Array<Reservation>
    ) => Promise<void>;
    addDragDrop: (newReservation: Reservation) => Promise<void>;
    deleteDragDrop: (reservation: Reservation) => Promise<void>;
@@ -35,13 +36,23 @@ const UseDragDrop = (): UseDragDropProps => {
       newOtherIds?: Array<string>,
       toUpdateId?: string,
       newDate?: string,
-      updateRes?: Reservation
+      updateRes?: Reservation,
+      finishElements?: Array<Reservation>
    ): Promise<void> => {
       const resToUpdate: Array<Reservation> = [];
 
-      const updateIds = (ids: Array<string>): void => {
+      const getResa = (res: Array<Reservation>, id: string): Reservation => {
+         const el = res.find(res => res.id === id) as Reservation;
+         return el;
+      };
+
+      const updateIds = async (
+         ids: Array<string>,
+         isFinishelements?: boolean,
+         newFinishElements?: Array<Reservation>
+      ): Promise<void> => {
          ids.forEach((id, index) => {
-            const res = getReservation(id);
+            const res = !isFinishelements ? getReservation(id) : getResa(newFinishElements!, id);
 
             if (!res) {
                throw Error("No Reservation was found");
@@ -53,6 +64,8 @@ const UseDragDrop = (): UseDragDropProps => {
                   updateRes.startDate = newDate;
                }
                updateRes.columnIndex = index;
+               console.log("new element: ");
+               console.log(updateRes);
                resToUpdate.push(updateRes);
             } else {
                // Update to new column date if moved to another column
@@ -61,13 +74,20 @@ const UseDragDrop = (): UseDragDropProps => {
                }
 
                res.columnIndex = index;
+               console.log("new element: ");
+               console.log(res);
                resToUpdate.push(res);
             }
          });
       };
       updateIds(newIds);
       if (newOtherIds) {
-         updateIds(newOtherIds);
+         if (finishElements) {
+            console.log("In FinishElements");
+            updateIds(newOtherIds, true, [...finishElements, updateRes!]);
+         } else {
+            updateIds(newOtherIds);
+         }
       }
 
       await updateReservations(resToUpdate).then(() => {

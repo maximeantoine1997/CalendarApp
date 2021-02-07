@@ -15,8 +15,10 @@ import ClearIcon from "@material-ui/icons/Clear";
 import DoneIcon from "@material-ui/icons/Done";
 import LocalShippingIcon from "@material-ui/icons/LocalShipping";
 import PaymentIcon from "@material-ui/icons/Payment";
+import { useSnackbar } from "notistack";
 import React, { useEffect, useRef, useState } from "react";
 import useCalendarContext from "../../../Contexts/CalendarContext";
+import { FDBGetReservationIdsV2, FDBGetReservationsV2 } from "../../../FaunaDB/Api";
 import UseDragDrop from "../../../Hooks/UseDragDrop";
 import { IColumn } from "../../../Utils";
 import DateComponent from "../../FormElements/DateComponent";
@@ -50,6 +52,7 @@ const CalendarModal: React.FC<CalendarModalProps> = () => {
    const classes = useStyles();
    const { closeModal, modalReservation, columns, setColumns, updateReservation } = useCalendarContext();
    const { updateDragDrop } = UseDragDrop();
+   const { enqueueSnackbar } = useSnackbar();
 
    const [isOpen, setIsOpen] = useState<boolean>(false);
    const [isReadOnly, setIsReadOnly] = useState<boolean>(true);
@@ -76,7 +79,13 @@ const CalendarModal: React.FC<CalendarModalProps> = () => {
 
       if (oldDate !== newDate) {
          const start = columns[oldDate];
-         const finish = columns[newDate];
+         const finish: IColumn | undefined = columns[newDate];
+
+         console.log(finish);
+         let finishRes: Array<Reservation> = [];
+         if (!finish) {
+            finishRes = await FDBGetReservationsV2(newDate);
+         }
 
          // Item moves to another column
          const startReservationIds = Array.from(start.reservationIds);
@@ -88,8 +97,11 @@ const CalendarModal: React.FC<CalendarModalProps> = () => {
 
          startReservationIds.splice(index, 1);
 
-         const finishReservationIds = Array.from(finish.reservationIds);
+         const finishReservationIds = finish
+            ? Array.from(finish.reservationIds)
+            : finishRes.map(res => res.id as string);
 
+         console.log("ids: ", finishReservationIds);
          // Places the id of the reservation at last index of new column
          finishReservationIds.splice(finishReservationIds.length, 0, reservation.current.id!);
 
@@ -97,28 +109,54 @@ const CalendarModal: React.FC<CalendarModalProps> = () => {
             ...start,
             reservationIds: startReservationIds,
          };
-         const newFinish: IColumn = {
-            ...finish,
-            reservationIds: finishReservationIds,
-         };
 
-         const newColumns = {
-            ...columns,
-            [newStart.id]: newStart,
-            [newFinish.id]: newFinish,
-         };
+         const newColumns = { ...columns };
+
+         if (finish) {
+            const newFinish: IColumn = {
+               ...finish,
+               reservationIds: finishReservationIds,
+            };
+
+            newColumns[newStart.id] = newStart;
+            newColumns[newFinish.id] = newFinish;
+         } else {
+            newColumns[newStart.id] = newStart;
+         }
 
          // Update previous reservation with the new modified one
          reservation.current = { ...modifiedReservation.current };
 
          setColumns(newColumns);
-         await updateDragDrop(
-            startReservationIds,
-            finishReservationIds,
-            reservation.current.id!,
-            finish.id,
-            reservation.current
-         );
+         if (finish) {
+            await updateDragDrop(
+               startReservationIds,
+               finishReservationIds,
+               reservation.current.id!,
+               newDate,
+               reservation.current
+            );
+         } else {
+            // No finish date in columns (so other week)
+            await updateDragDrop(
+               startReservationIds,
+               finishReservationIds,
+               reservation.current.id!,
+               newDate,
+               reservation.current,
+               finishRes
+            );
+         }
+
+         // Update previous reservation with the new modified one
+         reservation.current = { ...modifiedReservation.current };
+
+         // Make the Modal read-only again
+         setIsReadOnly(true);
+
+         onClose(reservation.current);
+
+         return;
       }
 
       // Update previous reservation with the new modified one
@@ -129,7 +167,9 @@ const CalendarModal: React.FC<CalendarModalProps> = () => {
 
       updateReservation({ ...modifiedReservation.current });
 
-      //enqueueSnackbar("Modifié", { variant: "success" });
+      enqueueSnackbar("Modifié", { variant: "success" });
+
+      onClose(reservation.current);
    };
 
    const onChange = (key: keyof Reservation, value: unknown) => {
