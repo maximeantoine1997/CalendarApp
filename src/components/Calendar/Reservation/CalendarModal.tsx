@@ -391,7 +391,7 @@ const CalendarModal: React.FC<CalendarModalProps> = () => {
                                  isReadOnly={isReadOnly}
                                  variant="standard"
                                  placeholder="Montant"
-                                 value={reservation.current.amount}
+                                 value={reservation.current.amount || "0"}
                                  onChange={e => onChange("amount", e)}
                                  customClass={{ width: "90%" }}
                               />

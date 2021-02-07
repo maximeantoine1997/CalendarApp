@@ -77,8 +77,8 @@ const TextComponent: FunctionComponent<TextProps> = ({
                      </Grid>
                   )}
                   <Grid item xs={12}>
-                     {value.map((val: string) => {
-                        return <Typography>{val}</Typography>;
+                     {value.map((val: string, index: number) => {
+                        return <Typography key={index}>{val}</Typography>;
                      })}
                   </Grid>
                </Grid>
