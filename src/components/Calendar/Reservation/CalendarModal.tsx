@@ -18,7 +18,7 @@ import PaymentIcon from "@material-ui/icons/Payment";
 import { useSnackbar } from "notistack";
 import React, { useEffect, useRef, useState } from "react";
 import useCalendarContext from "../../../Contexts/CalendarContext";
-import { FDBGetReservationIdsV2, FDBGetReservationsV2 } from "../../../FaunaDB/Api";
+import { FDBGetReservationsV2 } from "../../../FaunaDB/Api";
 import UseDragDrop from "../../../Hooks/UseDragDrop";
 import { IColumn } from "../../../Utils";
 import DateComponent from "../../FormElements/DateComponent";
