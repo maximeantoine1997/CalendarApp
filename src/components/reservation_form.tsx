@@ -56,7 +56,6 @@ type ValidReservation = {
 
 export type ReservationKeys =
    | "startDate"
-   | "endDate"
    | "amount"
    | "isReceived"
    | "isCash"
@@ -79,7 +78,6 @@ export type ReservationKeys =
 export interface Reservation {
    // Date:
    startDate: string;
-   endDate?: string;
 
    // Caution:
    amount: number;
@@ -170,10 +168,6 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
          hasError: false,
          errorMessage: "",
       },
-      endDate: {
-         hasError: false,
-         errorMessage: "",
-      },
       amount: {
          hasError: false,
          errorMessage: "",
@@ -233,7 +227,6 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    });
 
    const [validForm, setValidForm] = useState<ValidReservation>({ ...initValidForm });
-   const [hasEndDate, setHasEndDate] = useState<boolean>(false);
    const [isCompany, setIsCompany] = useState<boolean>(true);
    const [isToBeDelivered, setIsToBeDelivered] = useState<boolean>(true);
    const [hasCaution, setHasCaution] = useState<boolean>(false);
@@ -244,20 +237,16 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
       res[key] = value;
    };
 
-    const addAutocompleteItem = (docName: ReservationKeys, newItem: unknown) => {
-        const items = autocomplete[docName] as Array<string>;
-        items.push(newItem as string);
-    };
+   const addAutocompleteItem = (docName: ReservationKeys, newItem: unknown) => {
+      const items = autocomplete[docName] as Array<string>;
+      items.push(newItem as string);
+   };
 
    const addReservation = async (): Promise<void> => {
       const res = newReservation.current;
 
       const date = res.startDate as Moment;
       res.startDate = date.clone().format("YYYY-MM-DD");
-
-      if (res.endDate) {
-         res.endDate = res.endDate.clone().format("YYYY-MM-DD");
-      }
 
       if (!res.isToBeDelivered) {
          res.type = "Client Vient Chercher";
@@ -267,33 +256,33 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
       if (res.amount > 0) {
          res.type = "Attente Caution";
       }
-    //#region Autocomplete
+      //#region Autocomplete
 
-    addAutocompleteItem("street", res.street);
-    addAutocompleteItem("city", res.city);
-    if(res.sitePhone) addAutocompleteItem("sitePhone", res.sitePhone);
+      addAutocompleteItem("street", res.street);
+      addAutocompleteItem("city", res.city);
+      if (res.sitePhone) addAutocompleteItem("sitePhone", res.sitePhone);
 
-    addAutocompleteItem("modele", res.modele);
-    const accItems = autocomplete["accessoires"];
-    res.accessoires.forEach((accessoire: string) => {
-        accItems.push(accessoire);
-    });
+      addAutocompleteItem("modele", res.modele);
+      const accItems = autocomplete["accessoires"];
+      res.accessoires.forEach((accessoire: string) => {
+         accItems.push(accessoire);
+      });
 
-    if (isCompany) {
-        addAutocompleteItem("company", res.company);
-        if (res.VATNumber) addAutocompleteItem("VATNumber", res.VATNumber);
-    } else {
-        addAutocompleteItem("name", res.name);
-        addAutocompleteItem("facturationAddress", res.name);
-    }
-    updateAutoCompleteAsync(autocomplete);
+      if (isCompany) {
+         addAutocompleteItem("company", res.company);
+         if (res.VATNumber) addAutocompleteItem("VATNumber", res.VATNumber);
+      } else {
+         addAutocompleteItem("name", res.name);
+         addAutocompleteItem("facturationAddress", res.name);
+      }
+      updateAutoCompleteAsync(autocomplete);
 
-    //#endregion
+      //#endregion
 
-    // Will add the reservation and make it drag and droppable
-    addDragDrop(res).then(() => {
-        history.push("/calendrier");
-    });
+      // Will add the reservation and make it drag and droppable
+      addDragDrop(res).then(() => {
+         history.push("/calendrier");
+      });
    };
 
    /**
@@ -350,7 +339,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
 
    useEffect(() => {
       const getAutocomplete = async () => {
-         const data = ((await getAutoCompelteAsync()) as unknown) as Array<Fauna<Autocomplete>>;
+         const data = (await getAutoCompelteAsync()) as unknown as Array<Fauna<Autocomplete>>;
          const hash: HashMap<Array<string>> = {};
          data.forEach(item => {
             const name = autocompleteMapping[item.ref.id];
@@ -370,15 +359,6 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                onChange={(e: any) => onChange("startDate", e)}
                value={newReservation.current.startDate}
             />
-            <SquareButtons
-               iconLeft={<DoneIcon />}
-               iconRight={<ClearIcon />}
-               labelLeft="Date de fin"
-               labelRight="aucune date"
-               value={hasEndDate}
-               onClick={value => setHasEndDate(value)}
-            />
-            {hasEndDate && <DateComponent placeholder="Fin *" onChange={(e: any) => onChange("endDate", e)} />}
             <TextComponent placeholder="Dossier Vary" value="" onChange={e => onChange("varyNumber", e)} />
             <Grid container style={{ paddingTop: "25px" }} alignItems="center">
                <Grid item>

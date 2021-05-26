@@ -70,34 +70,6 @@ const CalendarView: React.FC = () => {
          setColumns(newColumns);
          await updateDragDrop(startReservationIds, finishReservationIds, draggableId, finish.id);
       }
-      //   else {
-      //      // Item moves to another list
-      //      const startReservationIds = Array.from(start.reservationIds);
-      //      startReservationIds.splice(source.index, 1);
-
-      //      const newStart: IColumn = {
-      //         ...start,
-      //         reservationIds: startReservationIds,
-      //      };
-
-      //      const finishReservationIds = Array.from(finish.reservationIds);
-      //      finishReservationIds.splice(destination.index, 0, draggableId);
-
-      //      const newFinish: IColumn = {
-      //         ...finish,
-      //         reservationIds: finishReservationIds,
-      //      };
-
-      //      const newColumns = {
-      //         ...columns,
-      //         [newStart.id]: newStart,
-      //         [newFinish.id]: newFinish,
-      //      };
-
-      //      setColumns(newColumns);
-      //   }
-
-      // await updateDragDrop(source, destination, draggableId);
    };
 
    return (

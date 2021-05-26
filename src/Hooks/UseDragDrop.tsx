@@ -21,13 +21,8 @@ interface UseDragDropProps {
 }
 
 const UseDragDrop = (): UseDragDropProps => {
-   const {
-      addReservation,
-      updateReservations,
-      getReservation,
-      deleteReservation,
-      setNewReservationId,
-   } = useCalendarContext();
+   const { addReservation, updateReservations, getReservation, deleteReservation, setNewReservationId } =
+      useCalendarContext();
 
    const { enqueueSnackbar } = useSnackbar();
 
@@ -65,7 +60,7 @@ const UseDragDrop = (): UseDragDropProps => {
                }
                updateRes.columnIndex = index;
                console.log("new element: ");
-               console.log(updateRes);
+               console.log(updateRes.id, updateRes.columnIndex);
                resToUpdate.push(updateRes);
             } else {
                // Update to new column date if moved to another column
@@ -75,7 +70,7 @@ const UseDragDrop = (): UseDragDropProps => {
 
                res.columnIndex = index;
                console.log("new element: ");
-               console.log(res);
+               console.log(res.modele, res.columnIndex);
                resToUpdate.push(res);
             }
          });
