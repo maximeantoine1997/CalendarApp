@@ -104,11 +104,58 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
          });
          return cols;
       };
+
+      const fixOrdering = (
+         ids: Array<string>,
+         reservations: HashMap<Reservation>,
+         notFoundIndex: number
+      ): Array<string> => {
+         const len = ids.length;
+
+         const seen: HashMap<string> = {};
+
+         // Find the wrong columnIndex and update the backend
+         ids.every(id => {
+            const res = reservations[id];
+            const index = res.columnIndex!;
+            console.log(id);
+
+            // id outside the length of the array
+            if (index >= len) {
+               console.log("LEN  >=");
+               reservations[id].columnIndex = notFoundIndex;
+               //updateReservation(reservations[id]);
+               return false;
+            }
+
+            // duplicate ID
+            if (seen[index.toString()]) {
+               console.log("Duplicate ID");
+               reservations[id].columnIndex = notFoundIndex;
+               //updateReservation(reservations[id]);
+               return false;
+            } else {
+               console.log("NOT SEEN YET");
+               seen[index] = "seen";
+               return true;
+            }
+         });
+
+         // Reorder the columnIndexes again
+         const res = ids.map(id => reservations[id]);
+         res.sort((a, b) => a.columnIndex! - b.columnIndex!);
+
+         const orderedIds = res.map(r => r.id! as string);
+
+         return orderedIds;
+      };
+
       const reorderColumns = (cols: HashMap<IColumn>, reservations: HashMap<Reservation>): HashMap<IColumn> => {
          for (let i in cols) {
             console.log(i);
             const unorderedIds = [...cols[i].reservationIds];
             const orderedIds: Array<string> = [];
+            let hasMissingId: null | number = null;
 
             if (unorderedIds.length === 0) continue;
 
@@ -129,13 +176,28 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
                });
 
                if (!currId) {
-                  throw Error(`ID at index ${i} not found`);
+                  hasMissingId = i;
+                  console.error(`ID at index ${i} not found`);
+                  break;
+                  //throw Error(`ID at index ${i} not found`);
                }
 
                orderedIds.push(currId);
             }
 
-            cols[i].reservationIds = orderedIds;
+            if (hasMissingId !== null) {
+               console.log("HAS MISSING ID !!!");
+               const fixedOrderedIds = fixOrdering(unorderedIds, reservations, hasMissingId);
+               console.log("fixedOrderedIds: ", fixedOrderedIds);
+               console.log(
+                  "indexes: ",
+                  fixedOrderedIds.map(id => reservations[id].columnIndex!)
+               );
+               cols[i].reservationIds = fixedOrderedIds;
+            } else {
+               cols[i].reservationIds = orderedIds;
+            }
+            hasMissingId = null;
          }
          return cols;
       };
@@ -156,7 +218,7 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
             if (isReservation(element)) {
                const day = element.startDate;
                const res = cols[day].reservationIds;
-               res.push((id as unknown) as string);
+               res.push(id as unknown as string);
             }
             if (isNote(element)) {
                const day = element.date;
@@ -235,6 +297,7 @@ export const CalendarContextProvider = (props: { children: ReactNode }): ReactEl
    };
 
    const updateReservation = async (newReservation: Reservation): Promise<void> => {
+      console.log(newReservation);
       const newHash = { ...reservations };
       const id = newReservation.id;
       if (!id) return;
