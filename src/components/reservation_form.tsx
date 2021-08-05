@@ -469,8 +469,6 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                   onChange("company", "");
                   onChange("VATNumber", "");
                   onChange("name", "");
-                  onChange("phone", "");
-                  onChange("email", "");
                   setIsCompany(value);
                }}
             />
