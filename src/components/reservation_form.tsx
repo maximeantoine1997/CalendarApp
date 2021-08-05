@@ -238,7 +238,7 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
    };
 
    const addAutocompleteItem = (docName: ReservationKeys, newItem: unknown) => {
-      const items = autocomplete[docName] as Array<string>;
+      const items = (autocomplete[docName] as Array<string>) || [];
       items.push(newItem as string);
    };
 
