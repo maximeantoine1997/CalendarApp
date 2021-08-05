@@ -464,7 +464,13 @@ const ReservationForm: React.FC<FormProps> = ({ onChange: onChange_ }) => {
                labelLeft="Société"
                value={isCompany}
                onClick={value => {
+                  console.log("isCompany: ", value);
                   onChange("isCompany", value);
+                  onChange("company", "");
+                  onChange("VATNumber", "");
+                  onChange("name", "");
+                  onChange("phone", "");
+                  onChange("email", "");
                   setIsCompany(value);
                }}
             />

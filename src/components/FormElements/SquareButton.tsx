@@ -57,9 +57,6 @@ const SquareButtons: React.FunctionComponent<SquareButtonProps> = ({
             disableTouchRipple
          >
             <Grid container justify="center">
-               {/* <Grid item xs={12}>
-                  {isActive ? iconLeft : iconRight}
-               </Grid> */}
                <Grid item xs={12}>
                   {isActive ? labelLeft : labelRight}
                </Grid>
